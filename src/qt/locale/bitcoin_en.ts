@@ -81,12 +81,12 @@
     <message>
         <location line="+7"/>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>These are your Blackcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
+        <translation>These are your Radium addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>These are your Blackcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
+        <translation>These are your Radium addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -212,7 +212,7 @@
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BLACKCOINS&lt;/b&gt;!</translation>
+        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR RadiumS&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -228,7 +228,7 @@
     <message>
         <location line="-56"/>
         <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
-        <translation>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your blackcoins from being stolen by malware infecting your computer.</translation>
+        <translation>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Radiums from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -431,7 +431,7 @@
     <message>
         <location line="-510"/>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Send coins to a Blackcoin address</translation>
+        <translation>Send coins to a Radium address</translation>
     </message>
     <message>
         <location line="+67"/>
@@ -461,7 +461,7 @@
     <message>
         <location line="+516"/>
         <source>Bitcoin</source>
-        <translation>Blackcoin</translation>
+        <translation>Radium</translation>
     </message>
     <message>
         <location line="-741"/>
@@ -496,12 +496,12 @@
     <message>
         <location line="+7"/>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>Sign messages with your Blackcoin addresses to prove you own them</translation>
+        <translation>Sign messages with your Radium addresses to prove you own them</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation>Verify messages to ensure they were signed with specified Blackcoin addresses</translation>
+        <translation>Verify messages to ensure they were signed with specified Radium addresses</translation>
     </message>
     <message>
         <location line="+58"/>
@@ -526,7 +526,7 @@
     <message>
         <location line="-158"/>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Request payments (generates QR codes and blackcoin: URIs)</translation>
+        <translation>Request payments (generates QR codes and Radium: URIs)</translation>
     </message>
     <message>
         <location line="+70"/>
@@ -541,7 +541,7 @@
     <message>
         <location line="+3"/>
         <source>Open a bitcoin: URI or payment request</source>
-        <translation>Open a blackcoin: URI or payment request</translation>
+        <translation>Open a Radium: URI or payment request</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -552,8 +552,8 @@
         <location line="+356"/>
         <source>%n active connection(s) to Bitcoin network</source>
         <translation>
-            <numerusform>%n active connection to Blackcoin network</numerusform>
-            <numerusform>%n active connections to Blackcoin network</numerusform>
+            <numerusform>%n active connection to Radium network</numerusform>
+            <numerusform>%n active connections to Radium network</numerusform>
         </translation>
     </message>
     <message>
@@ -612,7 +612,7 @@
     <message>
         <location line="-440"/>
         <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
-        <translation>Show the %1 help message to get a list with possible Blackcoin command-line options</translation>
+        <translation>Show the %1 help message to get a list with possible Radium command-line options</translation>
     </message>
     <message>
         <location line="+199"/>
@@ -1070,7 +1070,7 @@
     <message>
         <location line="+10"/>
         <source>%1 will download and store a copy of the Bitcoin block chain. At least %2GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>%1 will download and store a copy of the Blackcoin block chain. At least %2GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</translation>
+        <translation>%1 will download and store a copy of the Radium block chain. At least %2GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1119,12 +1119,12 @@
     <message>
         <location line="+119"/>
         <source>Recent transactions may not yet be visible, and therefore your wallet&apos;s balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the bitcoin network, as detailed below.</source>
-        <translation>Recent transactions may not yet be visible, and therefore your wallet&apos;s balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the Blackcoin network, as detailed below.</translation>
+        <translation>Recent transactions may not yet be visible, and therefore your wallet&apos;s balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the Radium network, as detailed below.</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Attempting to spend bitcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation>Attempting to spend blackcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</translation>
+        <translation>Attempting to spend Radiums that are affected by not-yet-displayed transactions will not be accepted by the network.</translation>
     </message>
     <message>
         <location line="+63"/>
@@ -1325,7 +1325,7 @@
     <message>
         <location line="+30"/>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatically open the Blackcoin client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
+        <translation>Automatically open the Radium client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1335,7 +1335,7 @@
     <message>
         <location line="+17"/>
         <source>Connect to the Bitcoin network through a SOCKS5 proxy.</source>
-        <translation>Connect to the Blackcoin network through a SOCKS5 proxy.</translation>
+        <translation>Connect to the Radium network through a SOCKS5 proxy.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1390,7 +1390,7 @@
     <message>
         <location line="+25"/>
         <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>Connect to the Blackcoin network through a separate SOCKS5 proxy for Tor hidden services.</translation>
+        <translation>Connect to the Radium network through a separate SOCKS5 proxy for Tor hidden services.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1515,7 +1515,7 @@
         <location line="+62"/>
         <location line="+386"/>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Blackcoin network after a connection is established, but this process has not completed yet.</translation>
+        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Radium network after a connection is established, but this process has not completed yet.</translation>
     </message>
     <message>
         <location line="-139"/>
@@ -1613,7 +1613,7 @@
     <message>
         <location line="-402"/>
         <source>Cannot start bitcoin: click-to-pay handler</source>
-        <translation>Cannot start blackcoin: click-to-pay handler</translation>
+        <translation>Cannot start Radium: click-to-pay handler</translation>
     </message>
     <message>
         <location line="+103"/>
@@ -1635,7 +1635,7 @@
     <message>
         <location line="+8"/>
         <source>URI cannot be parsed! This can be caused by an invalid Bitcoin address or malformed URI parameters.</source>
-        <translation>URI cannot be parsed! This can be caused by an invalid Blackcoin address or malformed URI parameters.</translation>
+        <translation>URI cannot be parsed! This can be caused by an invalid Radium address or malformed URI parameters.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1757,7 +1757,7 @@
     <message>
         <location filename="../guiutil.cpp" line="+136"/>
         <source>Enter a Bitcoin address (e.g. %1)</source>
-        <translation>Enter a Blackcoin address (e.g. %1)</translation>
+        <translation>Enter a Radium address (e.g. %1)</translation>
     </message>
     <message>
         <location line="+762"/>
@@ -2343,7 +2343,7 @@
         <location line="+14"/>
         <location line="+23"/>
         <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcoin network.</source>
-        <translation>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Blackcoin network.</translation>
+        <translation>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Radium network.</translation>
     </message>
     <message>
         <location line="-7"/>
@@ -2637,7 +2637,7 @@
         <location line="+30"/>
         <location line="+13"/>
         <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for bitcoin transactions than the network can process.</source>
-        <translation>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for blackcoin transactions than the network can process.</translation>
+        <translation>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for Radium transactions than the network can process.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2851,7 +2851,7 @@
     <message>
         <location line="+102"/>
         <source>Warning: Invalid Bitcoin address</source>
-        <translation>Warning: Invalid Blackcoin address</translation>
+        <translation>Warning: Invalid Radium address</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2906,7 +2906,7 @@
     <message>
         <location line="+39"/>
         <source>The Bitcoin address to send the payment to</source>
-        <translation>The Blackcoin address to send the payment to</translation>
+        <translation>The Radium address to send the payment to</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -2933,7 +2933,7 @@
     <message>
         <location line="-1021"/>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>he fee will be deducted from the amount being sent. The recipient will receive less blackcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</translation>
+        <translation>he fee will be deducted from the amount being sent. The recipient will receive less Radiums than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2963,7 +2963,7 @@
     <message>
         <location line="+47"/>
         <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
-        <translation>A message that was attached to the blackcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Blackcoin network.</translation>
+        <translation>A message that was attached to the Radium: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Radium network.</translation>
     </message>
     <message>
         <location line="+448"/>
@@ -3020,12 +3020,12 @@
     <message>
         <location line="+6"/>
         <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>You can sign messages/agreements with your addresses to prove you can receive blackcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</translation>
+        <translation>You can sign messages/agreements with your addresses to prove you can receive Radiums sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The Bitcoin address to sign the message with</source>
-        <translation>The Blackcoin address to sign the message with</translation>
+        <translation>The Radium address to sign the message with</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3067,7 +3067,7 @@
     <message>
         <location line="+21"/>
         <source>Sign the message to prove you own this Bitcoin address</source>
-        <translation>Sign the message to prove you own this Blackcoin address</translation>
+        <translation>Sign the message to prove you own this Radium address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3098,12 +3098,12 @@
     <message>
         <location line="+21"/>
         <source>The Bitcoin address the message was signed with</source>
-        <translation>The Blackcoin address the message was signed with</translation>
+        <translation>The Radium address the message was signed with</translation>
     </message>
     <message>
         <location line="+37"/>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
-        <translation>Verify the message to ensure it was signed with the specified Blackcoin address</translation>
+        <translation>Verify the message to ensure it was signed with the specified Radium address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3954,7 +3954,7 @@
     <message>
         <location line="-360"/>
         <source>Bitcoin Core</source>
-        <translation type="unfinished">Blackcoin More</translation>
+        <translation type="unfinished">Radium Core</translation>
     </message>
     <message>
         <location line="+1"/>

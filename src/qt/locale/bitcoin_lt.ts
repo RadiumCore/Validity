@@ -155,7 +155,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Siųsti monetas Blackcoin adresui</translation>
+        <translation>Siųsti monetas Radium adresui</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -179,7 +179,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Blackcoin</translation>
+        <translation>Radium</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -419,7 +419,7 @@
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatiškai atidaryti Blackcoin kliento prievadą maršrutizatoriuje. Tai veikia tik tada, kai jūsų maršrutizatorius palaiko UPnP ir ji įjungta.</translation>
+        <translation>Automatiškai atidaryti Radium kliento prievadą maršrutizatoriuje. Tai veikia tik tada, kai jūsų maršrutizatorius palaiko UPnP ir ji įjungta.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -864,7 +864,7 @@
     </message>
     <message>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
-        <translation>Patikrinkite žinutę, jog įsitikintumėte, kad ją pasirašė nurodytas Blackcoin adresas</translation>
+        <translation>Patikrinkite žinutę, jog įsitikintumėte, kad ją pasirašė nurodytas Radium adresas</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -937,7 +937,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Blackcoin More</translation>
+        <translation>Radium Core</translation>
     </message>
     <message>
         <source>Error opening block database</source>

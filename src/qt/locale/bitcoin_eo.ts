@@ -291,7 +291,7 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Peti pagon (kreas QR-kodojn kaj URI-ojn kun prefikso blackcoin:)</translation>
+        <translation>Peti pagon (kreas QR-kodojn kaj URI-ojn kun prefikso Radium:)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -303,7 +303,7 @@
     </message>
     <message>
         <source>Open a bitcoin: URI or payment request</source>
-        <translation>Malfermi blackcoin:-URI-on aŭ pagpeton</translation>
+        <translation>Malfermi Radium:-URI-on aŭ pagpeton</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -1339,7 +1339,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Blackcoin More</translation>
+        <translation>Radium Core</translation>
     </message>
     <message>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>

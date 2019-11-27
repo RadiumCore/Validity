@@ -143,7 +143,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Trimite monedele către o adresă Blackcoin</translation>
+        <translation>Trimite monedele către o adresă Radium</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -167,7 +167,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Blackcoin</translation>
+        <translation>Radium</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -195,11 +195,11 @@
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>Semnează mesajele cu adresa ta de Blackcoin pentru a face dovada că îți aparțin.</translation>
+        <translation>Semnează mesajele cu adresa ta de Radium pentru a face dovada că îți aparțin.</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation>Verifică mesajele cu scopul de a asigura faptul că au fost semnate cu adresa de Blackcoin specificată.</translation>
+        <translation>Verifică mesajele cu scopul de a asigura faptul că au fost semnate cu adresa de Radium specificată.</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -215,11 +215,11 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Cerere plată (generează coduri QR și blackcoin: URIs)</translation>
+        <translation>Cerere plată (generează coduri QR și Radium: URIs)</translation>
     </message>
     <message>
         <source>Open a bitcoin: URI or payment request</source>
-        <translation>Deschide un blackcoin: URI sau cerere de plată</translation>
+        <translation>Deschide un Radium: URI sau cerere de plată</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -749,7 +749,7 @@
     <name>bitcoin-core</name>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Blackcoin More</translation>
+        <translation>Radium Core</translation>
     </message>
     <message>
         <source>Information</source>

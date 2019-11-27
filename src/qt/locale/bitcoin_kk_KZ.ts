@@ -71,7 +71,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Blackcoin</translation>
+        <translation>Radium</translation>
     </message>
     <message>
         <source>Wallet</source>

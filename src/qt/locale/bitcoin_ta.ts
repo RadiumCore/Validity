@@ -91,7 +91,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Blackcoin</translation>
+        <translation>Radium</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -709,7 +709,7 @@
     <name>bitcoin-core</name>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Blackcoin More</translation>
+        <translation>Radium Core</translation>
     </message>
     <message>
         <source>(default: %u)</source>

@@ -1,42 +1,42 @@
-Blackcoin More
+Radium Core More
 =====================================
 
-https://blackcoinmore.org
+https://radiumcore.org
 
-What is Blackcoin?
+What is Radium Core?
 ----------------
 
-Blackcoin is a decentralised digital currency with near-instant transaction speeds and negligible transaction fees built upon Proof of Stake 3.0 (PoSV3, BPoS) as
-introduced by the Blackcoin development team.
+Radium Core is a decentralised digital currency with near-instant transaction speeds and negligible transaction fees built upon Proof of Stake 3.0 (PoSV3, BPoS) as
+introduced by the Radium Core development team.
 
-For more information about Blackcoin itself, see https://blackcoin.org.
+For more information about Radium Core itself, see https://radiumcore.org.
 
-What is Blackcoin More?
+What is Radium Core?
 ----------------
 
-Blackcoin More is the name of open source software which enables the use of this currency. It takes Blackcoin to the next level by building upon
+Radium Core is the name of open source software which enables the use of this currency. It takes Radium Core to the next level by building upon
 Bitcoin Core 0.13.2 with some patches from newer Bitcoin Core versions to offer performance enhancements, wider compatibility with third party services and a more advanced base.
 
-For more information, as well as an immediately useable, binary version of the Blackcoin More software, see https://blackcoinmore.org.
+For more information, as well as an immediately useable, binary version of the Radium Core More software, see https://radiumcore.org.
 
 License
 -------
 
-Blackcoin More is released under the terms of the MIT license. See [COPYING](COPYING) for more
+Radium Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
 information or see https://opensource.org/licenses/MIT.
 
 Development Process
 -------------------
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://gitlab.com/blackcoin/blackcoin-more/tags) are created
-regularly to indicate new official, stable release versions of Blackcoin More.
+completely stable. [Tags](<>) are created
+regularly to indicate new official, stable release versions of Radium Core.
 
 Change log can be found in [CHANGELOG.md](CHANGELOG.md).
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The best place to get started is to join the Development channel on Gitter: https://gitter.im/Blackcoin_Hub/Development
+
 
 Testing
 -------

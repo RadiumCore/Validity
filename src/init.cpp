@@ -494,13 +494,18 @@ std::string LicenseInfo()
     // todo: remove urls from translations on next change
 
     // return FormatParagraph(strprintf(_("Copyright (C) %i-%i %s"), 2009, COPYRIGHT_YEAR, CopyrightHolders())) + "\n" +
-    return FormatParagraph(strprintf("Copyright (C) %i-%i The Bitcoin Core Developers", 2009, COPYRIGHT_YEAR)) + "\n" +
+    return 
+           FormatParagraph(strprintf("Copyright (C) %i-%i The Bitcoin Core Developers", 2009, COPYRIGHT_YEAR)) + "\n" +
            "\n" +
            FormatParagraph(strprintf("Copyright (C) %i-%i The Blackcoin Developers", 2014, 2018)) + "\n" +
            "\n" +
            FormatParagraph(strprintf("Copyright (C) %i-%i The Blackcoin More Developers", 2018, COPYRIGHT_YEAR)) + "\n" +
            "\n" +
-           FormatParagraph(strprintf(_("Please contribute if you find Blackcoin More useful. "
+           FormatParagraph(strprintf("Copyright (C) %i-%i The Bitcoin Core Developers", 2009, COPYRIGHT_YEAR)) + "\n" +
+           "\n" +
+           FormatParagraph(strprintf("Copyright (C) %i-%i The Radium Core Developers", 2020, COPYRIGHT_YEAR)) + "\n" +
+           "\n" +
+           FormatParagraph(strprintf(_("Please contribute if you find Radium Core useful. "
                        "Visit %s for further information about the software."),
                URL_WEBSITE)) +
            "\n" +

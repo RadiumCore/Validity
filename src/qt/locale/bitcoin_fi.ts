@@ -167,7 +167,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Lähetä kolikoita Blackcoin-osoitteeseen</translation>
+        <translation>Lähetä kolikoita Radium-osoitteeseen</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -191,7 +191,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Blackcoin</translation>
+        <translation>Radium</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -211,7 +211,7 @@
     </message>
     <message>
         <source>Show or hide the main Window</source>
-        <translation>Näytä tai piilota Blackcoin-ikkuna</translation>
+        <translation>Näytä tai piilota Radium-ikkuna</translation>
     </message>
     <message>
         <source>Encrypt the private keys that belong to your wallet</source>
@@ -219,11 +219,11 @@
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>Allekirjoita viestisi omalla Blackcoin -osoitteellasi todistaaksesi, että omistat ne</translation>
+        <translation>Allekirjoita viestisi omalla Radium -osoitteellasi todistaaksesi, että omistat ne</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation>Varmista, että viestisi on allekirjoitettu määritetyllä Blackcoin -osoitteella</translation>
+        <translation>Varmista, että viestisi on allekirjoitettu määritetyllä Radium -osoitteella</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -243,7 +243,7 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Pyydä maksuja (Luo QR koodit ja blackcoin: URIt)</translation>
+        <translation>Pyydä maksuja (Luo QR koodit ja Radium: URIt)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -255,7 +255,7 @@
     </message>
     <message>
         <source>Open a bitcoin: URI or payment request</source>
-        <translation>Avaa blackcoin: URI tai maksupyyntö</translation>
+        <translation>Avaa Radium: URI tai maksupyyntö</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -263,7 +263,7 @@
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network</source>
-        <translation><numerusform>%n aktiivinen yhteys Blackcoin-verkkoon</numerusform><numerusform>%n aktiivista yhteyttä Blackcoin-verkkoon</numerusform></translation>
+        <translation><numerusform>%n aktiivinen yhteys Radium-verkkoon</numerusform><numerusform>%n aktiivista yhteyttä Radium-verkkoon</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -307,7 +307,7 @@
     </message>
     <message>
         <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
-        <translation>Näytä %1 ohjeet saadaksesi listan mahdollisista Blackcoinin komentorivivalinnoista</translation>
+        <translation>Näytä %1 ohjeet saadaksesi listan mahdollisista Radiumin komentorivivalinnoista</translation>
     </message>
     <message>
         <source>%1 client</source>
@@ -552,7 +552,7 @@
     </message>
     <message>
         <source>%1 will download and store a copy of the Bitcoin block chain. At least %2GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>%1 lataa ja tallentaa kopion Blackcoinin lohkoketjusta. Vähintään %2Gt dataa tullaan tallentamaan tähän hakemistoon, ja tarve kasvaa ajan myötä. Lompakko tullaan myös tallentamaan tähän hakemistoon.</translation>
+        <translation>%1 lataa ja tallentaa kopion Radiumin lohkoketjusta. Vähintään %2Gt dataa tullaan tallentamaan tähän hakemistoon, ja tarve kasvaa ajan myötä. Lompakko tullaan myös tallentamaan tähän hakemistoon.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -709,7 +709,7 @@
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Avaa Blackcoin-asiakasohjelman portti reitittimellä automaattisesti. Tämä toimii vain, jos reitittimesi tukee UPnP:tä ja se on käytössä.</translation>
+        <translation>Avaa Radium-asiakasohjelman portti reitittimellä automaattisesti. Tämä toimii vain, jos reitittimesi tukee UPnP:tä ja se on käytössä.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -717,7 +717,7 @@
     </message>
     <message>
         <source>Connect to the Bitcoin network through a SOCKS5 proxy.</source>
-        <translation>Yhdistä Blackcoin-verkkoon SOCKS5-välityspalvelimen kautta.</translation>
+        <translation>Yhdistä Radium-verkkoon SOCKS5-välityspalvelimen kautta.</translation>
     </message>
     <message>
         <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
@@ -757,7 +757,7 @@
     </message>
     <message>
         <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>Yhdistä Blackcoin-verkkoon erillisen SOCKS5-välityspalvelimen kautta piilotettuja Tor-palveluja varten.</translation>
+        <translation>Yhdistä Radium-verkkoon erillisen SOCKS5-välityspalvelimen kautta piilotettuja Tor-palveluja varten.</translation>
     </message>
     <message>
         <source>Use separate SOCKS5 proxy to reach peers via Tor hidden services:</source>
@@ -793,11 +793,11 @@
     </message>
     <message>
         <source>&amp;Unit to show amounts in:</source>
-        <translation>Yksikkö jona blackcoin-määrät näytetään</translation>
+        <translation>Yksikkö jona Radium-määrät näytetään</translation>
     </message>
     <message>
         <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>Valitse mitä yksikköä käytetään ensisijaisesti blackcoin-määrien näyttämiseen.</translation>
+        <translation>Valitse mitä yksikköä käytetään ensisijaisesti Radium-määrien näyttämiseen.</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
@@ -848,7 +848,7 @@
     </message>
     <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>Näytetyt tiedot eivät välttämättä ole ajantasalla. Lompakkosi synkronoituu Blackcoin-verkon kanssa automaattisesti yhteyden muodostamisen jälkeen, mutta synkronointi on vielä meneillään.</translation>
+        <translation>Näytetyt tiedot eivät välttämättä ole ajantasalla. Lompakkosi synkronoituu Radium-verkon kanssa automaattisesti yhteyden muodostamisen jälkeen, mutta synkronointi on vielä meneillään.</translation>
     </message>
     <message>
         <source>Watch-only:</source>
@@ -888,7 +888,7 @@
     </message>
     <message>
         <source>Your current total balance</source>
-        <translation>Tililläsi tällä hetkellä olevien Blackcoinien määrä</translation>
+        <translation>Tililläsi tällä hetkellä olevien Radiumien määrä</translation>
     </message>
     <message>
         <source>Your current balance in watch-only addresses</source>
@@ -937,7 +937,7 @@
     </message>
     <message>
         <source>Enter a Bitcoin address (e.g. %1)</source>
-        <translation>Syötä Blackcoin-osoite (esim. %1)</translation>
+        <translation>Syötä Radium-osoite (esim. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -1277,7 +1277,7 @@
     </message>
     <message>
         <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcoin network.</source>
-        <translation>Valinnainen viesti liitetään maksupyyntöön ja näytetään avattaessa. Viestiä ei lähetetä Blackcoin-verkkoon.</translation>
+        <translation>Valinnainen viesti liitetään maksupyyntöön ja näytetään avattaessa. Viestiä ei lähetetä Radium-verkkoon.</translation>
     </message>
     <message>
         <source>An optional label to associate with the new receiving address.</source>
@@ -1354,7 +1354,7 @@
     <name>SendCoinsDialog</name>
     <message>
         <source>Send Coins</source>
-        <translation>Lähetä Blackcoineja</translation>
+        <translation>Lähetä Radiumeja</translation>
     </message>
     <message>
         <source>Coin Control Features</source>
@@ -1509,7 +1509,7 @@
     </message>
     <message>
         <source>The Bitcoin address to send the payment to</source>
-        <translation>Blackcoin-osoite johon maksu lähetetään</translation>
+        <translation>Radium-osoite johon maksu lähetetään</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -1529,7 +1529,7 @@
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>Kulu vähennetään lähetettävästä määrästä. Saaja vastaanottaa vähemmän blackcoineja kuin merkitset Määrä-kenttään. Jos saajia on monia, kulu jaetaan tasan.</translation>
+        <translation>Kulu vähennetään lähetettävästä määrästä. Saaja vastaanottaa vähemmän Radiumeja kuin merkitset Määrä-kenttään. Jos saajia on monia, kulu jaetaan tasan.</translation>
     </message>
     <message>
         <source>S&amp;ubtract fee from amount</source>
@@ -1553,7 +1553,7 @@
     </message>
     <message>
         <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
-        <translation>Viesti joka liitettiin blackcoin: URI:iin tallennetaan rahansiirtoon viitteeksi. Tätä viestiä ei lähetetä Blackcoin-verkkoon.</translation>
+        <translation>Viesti joka liitettiin Radium: URI:iin tallennetaan rahansiirtoon viitteeksi. Tätä viestiä ei lähetetä Radium-verkkoon.</translation>
     </message>
     <message>
         <source>Pay To:</source>
@@ -1590,7 +1590,7 @@
     </message>
     <message>
         <source>The Bitcoin address to sign the message with</source>
-        <translation>Blackcoin-osoite jolla viesti allekirjoitetaan</translation>
+        <translation>Radium-osoite jolla viesti allekirjoitetaan</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -1622,7 +1622,7 @@
     </message>
     <message>
         <source>Sign the message to prove you own this Bitcoin address</source>
-        <translation>Allekirjoita viesti todistaaksesi, että omistat tämän Blackcoin-osoitteen</translation>
+        <translation>Allekirjoita viesti todistaaksesi, että omistat tämän Radium-osoitteen</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -1642,11 +1642,11 @@
     </message>
     <message>
         <source>The Bitcoin address the message was signed with</source>
-        <translation>Blackcoin-osoite jolla viesti on allekirjoitettu</translation>
+        <translation>Radium-osoite jolla viesti on allekirjoitettu</translation>
     </message>
     <message>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
-        <translation>Tarkista viestin allekirjoitus varmistaaksesi, että se allekirjoitettiin tietyllä Blackcoin-osoitteella</translation>
+        <translation>Tarkista viestin allekirjoitus varmistaaksesi, että se allekirjoitettiin tietyllä Radium-osoitteella</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -1779,7 +1779,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Blackcoin More</translation>
+        <translation>Radium Core</translation>
     </message>
     <message>
         <source>The %s developers</source>
