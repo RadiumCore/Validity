@@ -278,8 +278,21 @@ std::string GetWarnings(const std::string& strFor);
 bool GetTransaction(const uint256 &hash, CTransaction &tx, const Consensus::Params& params, uint256 &hashBlock, bool fAllowSlow = false);
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState& state, const CChainParams& chainparams, const CBlock* pblock = NULL);
-CAmount GetProofOfWorkSubsidy();
-CAmount GetProofOfStakeSubsidy();
+CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev);
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev);
+
+
+static const signed int AVG_FEE_START_BLOCK = 619480;
+static const signed int AVG_FEE_START_BLOCK_REVERT = 626550;
+static const signed int AVG_FEE_START_BLOCK_V2 = 682240;
+
+static const signed int AVG_FEE_START_BLOCK_TESTNET = 123000;
+static const signed int AVG_FEE_START_BLOCK_TESTNET_REVERT = 160250;
+static const signed int AVG_FEE_START_BLOCK_TESTNET_V2 = 164750;
+
+
+static const signed int AVG_FEE_SPAN = 1440;
+int64_t GetRunningFee(const CBlockIndex* pindexPrev);
 
 /**
  * Prune block and undo files (blk???.dat and undo???.dat) so that the disk space used is less than a user-defined target.

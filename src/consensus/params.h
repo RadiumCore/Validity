@@ -65,17 +65,25 @@ struct Params {
     int64_t nTargetTimespan;
     int64_t DifficultyAdjustmentInterval() const { return nTargetTimespan / nTargetSpacing; }
     int64_t nProtocolV1RetargetingFixedTime;
+    int64_t nGenesisBlockTime = 1431857735;
     int64_t nProtocolV2Time;
-    int64_t nProtocolV3Time;
-    bool IsProtocolV1RetargetingFixed(int64_t nTime) const { return nTime > nProtocolV1RetargetingFixedTime && nTime != 1395631999; }
-    bool IsProtocolV2(int64_t nTime) const { return nTime > nProtocolV2Time && nTime != 1407053678; }
-    bool IsProtocolV3(int64_t nTime) const { return nTime > nProtocolV3Time && nTime != 1444028400; }
-    unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV2(nHeight) ? 64 : 60; }
+    int64_t nProtocolV3Time = 1461851161;
+    bool IsProtocolV1RetargetingFixed(int64_t nTime) const { return nTime > nGenesisBlockTime; }
+    bool IsProtocolV2(int64_t nTime) const { return nTime > nGenesisBlockTime; }
+    bool IsProtocolV3(int64_t nTime) const { return nTime > nProtocolV3Time; }
+	// useto rely on IsProtocolV2 due to blackcoin having chain history of using protocol previous to V2,  however radium 
+	// was always >= v2, so IsProtocolV2 will allways be positive. 
+	// will have to add is v4 logic in later commit
+    unsigned int GetTargetSpacing(int nHeight) { return 60; }
     int nLastPOWBlock;
     int nStakeTimestampMask;
     int nCoinbaseMaturity;
     unsigned int nStakeMinAge;
     uint256 nMinimumChainWork;
+
+	
+
+
 };
 } // namespace Consensus
 

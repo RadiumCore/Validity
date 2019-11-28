@@ -166,7 +166,7 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, in
     }
     else {
         coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
-        coinbaseTx.vout[0].nValue = nFees + GetProofOfWorkSubsidy();
+        coinbaseTx.vout[0].nValue = nFees + GetProofOfWorkSubsidy(pindexPrev);
     }
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
     pblock->vtx[0] = coinbaseTx;

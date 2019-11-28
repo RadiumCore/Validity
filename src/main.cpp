@@ -102,6 +102,7 @@ CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);
 FeeFilterRounder filterRounder(::minRelayTxFee);
+map<const uint256*, int64_t> mapFeeCache;
 
 struct IteratorComparator
 {
@@ -1767,14 +1768,144 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
     return true;
 }
 
-CAmount GetProofOfWorkSubsidy()
+CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev)
 {
-    return 10000 * COIN;
+    int nHeight = pindexPrev->nHeight + 1; 
+    int64_t nSubsidy = 0 * COIN;
+
+    if (nHeight >= 1 &&nHeight  <= 20160) 
+        nSubsidy = 50 * COIN;
+    return nSubsidy;
 }
 
-CAmount GetProofOfStakeSubsidy()
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev)
 {
-    return COIN * 3 / 2;
+    int nHeight = pindexPrev->nHeight + 1; 
+    int64_t nSubsidy = 5 * COIN;
+    if (nHeight >= 0 && nHeight <= 2779) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight >= 2880 && nHeight <= 30240) {
+        nSubsidy = 25 * COIN;
+    } else if (nHeight >= 30241 && nHeight <= 337999) {
+        nSubsidy = 5 * COIN; // 5 coins per block until the re-branding
+    } else if (nHeight >= 338000 && nHeight <= 339439) {
+        nSubsidy = 4.5 * COIN; // 1st reward drop
+    } else if (nHeight >= 339440 && nHeight <= 340879) {
+        nSubsidy = 4 * COIN; // 2nd reward drop
+    } else if (nHeight >= 340880 && nHeight <= 342319) {
+        nSubsidy = 3.5 * COIN; // 3rd reward drop
+    } else if (nHeight >= 342320 && nHeight <= 343759) {
+        nSubsidy = 3 * COIN; // 4th reward drop
+    } else if (nHeight >= 343760 && nHeight <= 345199) {
+        nSubsidy = 2.5 * COIN; // 5th reward drop
+    } else if (nHeight >= 345200 && nHeight <= 346639) {
+        nSubsidy = 2 * COIN; // 6th reward drop
+    } else if (nHeight >= 346640 && nHeight <= 348079) {
+        nSubsidy = 1.5 * COIN; // 7th reward drop
+    } else if (nHeight >= 348080 && nHeight <= 874359) {
+        nSubsidy = 1 * COIN; // 8th reward drop
+    } else if (nHeight >= 874360 && nHeight <= 1133559) {
+        nSubsidy = 0.75 * COIN; // First reward drop 6 months from the average fee fork.
+    } else if (nHeight >= 1133560 && nHeight <= 1392759) {
+        nSubsidy = 0.5 * COIN; // Second reward drop 12 months from the average fee fork.
+    } else if (nHeight >= 1392760) {
+        nSubsidy = 0.25 * COIN; // Third and final reward drop 18 months from the average fee fork.
+    }
+
+
+    if (fDebug && GetBoolArg("-printcreation", false))
+        LogPrint("creation", "GetProofOfStakeReward(): create=%s ", FormatMoney(nSubsidy));
+
+    return nSubsidy;
+
+    
+
+      
+      
+        
+
+
+    if (nHeight >= AVG_FEE_START_BLOCK_V2) {
+        int64_t nRFee;
+
+        nRFee = GetRunningFee( pindexPrev);
+        return nSubsidy + nRFee;
+    } else if (nHeight >= AVG_FEE_START_BLOCK_REVERT) {
+        return nSubsidy ;
+    } else if (nHeight >= AVG_FEE_START_BLOCK) {
+        int64_t nRFee;
+
+        nRFee = GetRunningFee( pindexPrev);
+        return nSubsidy + nRFee;
+    } else {
+        return nSubsidy ;
+    }
+
+
+}
+
+int64_t GetRunningFee(const CBlockIndex* pindexPrev)
+{
+    const CChainParams& chainParams = Params();
+    int64_t nRFee = 0;
+    int64_t nCumulatedFee = 0;
+    int feesCount = 0;
+    int startHeight = pindexPrev->nHeight;
+    CBlock blockTmp;
+    //dont know if this line is needed or not. Probally not?
+    const CBlockIndex* pblockindexTmp = pindexPrev;
+    //LogPrintf("---------------------->Getting fee for block :%d Current best %d\n" , pindexPrev->nHeight+1 ,pblockindexTmp->nHeight );
+    //LogPrintf("---------------------->Loop start block: %d\n hash: %s\n",pblockindexTmp->nHeight ,pblockindexTmp->phashBlock->ToString() );
+    //LogPrintf("---------------------->Loop start hash: %s\n",pblockindexTmp->phashBlock->ToString());
+    while (pblockindexTmp->nHeight > startHeight - (AVG_FEE_SPAN - 1)) {
+        int64_t blockFee = 0;
+        if (mapFeeCache.count(pblockindexTmp->phashBlock)) {
+            blockFee = mapFeeCache[pblockindexTmp->phashBlock];
+            if (blockFee > 0) {
+                // LogPrintf("---------------------->height=%d hash=%s retreived block fee:%s\n",pblockindexTmp->nHeight,pblockindexTmp->phashBlock->ToString(),(int)blockFee);
+            }
+        } else {
+            uint256 hash = *pblockindexTmp->phashBlock;
+            pblockindexTmp = mapBlockIndex[hash];
+            if (!ReadBlockFromDisk(blockTmp, pblockindexTmp, chainParams.GetConsensus()))
+                return error("Unable to read block from disk", pblockindexTmp->GetBlockHash().ToString());
+                        
+            BOOST_FOREACH(CTransaction tx, blockTmp.vtx) {
+                if (!tx.IsCoinStake() && !tx.IsCoinBase()) {
+                    int64_t nFee = 0;
+					nFee = pcoinsTip->GetValueIn(tx) - tx.GetValueOut();
+					if (!MoneyRange(nFee)) {
+						nFee = 0;
+					}
+					blockFee += nFee;
+                   
+                }
+            }
+            if (!MoneyRange(blockFee)) {
+                blockFee = 0;
+            }
+            mapFeeCache[pblockindexTmp->phashBlock] = blockFee;
+            //LogPrintf("---------------------->height=%d hash=%s Calculated New Fee:%d\n",pblockindexTmp->nHeight,pblockindexTmp->phashBlock->ToString(),(int)blockFee);
+        }
+        nCumulatedFee += blockFee;
+        if (!MoneyRange(nCumulatedFee)) {
+            nCumulatedFee = 0;
+        }
+        //LogPrintf("%d---------------------->blockFee:%d\n",pblockindexTmp->phashBlock,(int)blockFee);
+        // LogPrintf("---------------------->nCumulatedFee:%d\n",(int)nCumulatedFee);
+        // LogPrintf("---------------------->count:%d\n",(int)feesCount);
+        // LogPrintf("---------------------->avg:%d\n",(int64_t)((nCumulatedFee+nFees)/(feesCount+1)));
+        feesCount++;
+        pblockindexTmp = pblockindexTmp->pprev;
+    }
+    nRFee = (int64_t)((nCumulatedFee) / (feesCount + 1));
+    if (!MoneyRange(nRFee))
+        nRFee = 0;
+    //LogPrintf("---------------------->Fee:%d\n",(int)nFees);
+    //LogPrintf("---------------------->RFee:%d\n",(int)nRFee);
+    if (mapFeeCache.size() > 50000)
+        mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
+    return nRFee;
 }
 
 bool IsInitialBlockDownload()
@@ -2588,7 +2719,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime3 - nTime2), 0.001 * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * 0.000001);
 
     if (block.IsProofOfWork()) {
-            CAmount blockReward = nFees + GetProofOfWorkSubsidy();
+        CAmount blockReward = nFees + GetProofOfWorkSubsidy(pindex->pprev);
             if (block.vtx[0].GetValueOut() > blockReward)
                 return state.DoS(100,
                                  error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
@@ -2597,7 +2728,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     if (block.IsProofOfStake() && chainparams.GetConsensus().IsProtocolV3(block.GetBlockTime())) {
-            CAmount blockReward = nFees + GetProofOfStakeSubsidy();
+            CAmount blockReward = nFees + GetProofOfStakeSubsidy(pindex->pprev);
             if (nActualStakeReward > blockReward)
                 return state.DoS(100,
                                  error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)",
