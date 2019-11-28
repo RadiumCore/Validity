@@ -63,6 +63,7 @@ struct Params {
     bool fPoSNoRetargeting;
     int64_t nTargetSpacing;
     int64_t nTargetTimespan;
+    int64_t nTargetTimespanNEW; // 15 min
     int64_t DifficultyAdjustmentInterval() const { return nTargetTimespan / nTargetSpacing; }
     int64_t nProtocolV1RetargetingFixedTime;
     int64_t nGenesisBlockTime = 1431857735;

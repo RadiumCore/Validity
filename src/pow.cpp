@@ -71,6 +71,11 @@ unsigned int CalculateNextTargetRequired(const CBlockIndex* pindexLast, int64_t 
     arith_uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
     int64_t nInterval = params.nTargetTimespan / nTargetSpacing;
+
+    if (pindexLast->nHeight >= 48)
+        nInterval = params.nTargetTimespanNEW / nTargetSpacing;
+
+
     bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
     bnNew /= ((nInterval + 1) * nTargetSpacing);
 
