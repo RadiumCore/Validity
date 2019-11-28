@@ -3697,6 +3697,18 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
 
     // Check coinbase timestamp
+
+	// ORIGINAL code commented below. Due to error in up to 1.4.6, coinbase timestamp check didnt run for
+    // initial round of PoW blocks. Due to this, new code below to skip check during PoW period.!block.IsProofOfWork &&
+    // if (block.GetBlockTime() > FutureDrift(block.vtx[0].nTime))
+    //    return state.DoS(50, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
+
+	// there were no ddos issues in the original PoW mining phase, but if PoW were to be re-enabled, future drift checks would
+	// need to be run.
+    if (block.IsProofOfWork() && consensusParams.IsProtocolV3(block.nTime))
+			return state.DoS(100, false, REJECT_INVALID, "bad-cb-time", false, "Danger validation issues if PoW is restarted!");
+
+	// this bypasses future drift checks on ALL PoW blocks. This is not a good idea in the case PoW were to be re-started. 
     if (block.GetBlockTime() > FutureDrift(block.vtx[0].nTime))
             return state.DoS(50, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
 
