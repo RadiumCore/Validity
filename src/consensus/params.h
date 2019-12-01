@@ -69,9 +69,11 @@ struct Params {
     int64_t nGenesisBlockTime = 1431857735;
     int64_t nProtocolV2Time;
     int64_t nProtocolV3Time = 1461851161;
+    int64_t AvgFeeProtocolTime = 1470919920;
     bool IsProtocolV1RetargetingFixed(int64_t nTime) const { return nTime > nGenesisBlockTime; }
     bool IsProtocolV2(int64_t nTime) const { return nTime > nGenesisBlockTime; }
     bool IsProtocolV3(int64_t nTime) const { return nTime > nProtocolV3Time; }
+    bool IsAvgFeeProtocol(int64_t nTime) const { return nTime > AvgFeeProtocolTime; }
 	// useto rely on IsProtocolV2 due to blackcoin having chain history of using protocol previous to V2,  however radium 
 	// was always >= v2, so IsProtocolV2 will allways be positive. 
 	// will have to add is v4 logic in later commit

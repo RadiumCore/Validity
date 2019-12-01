@@ -3647,6 +3647,9 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const 
     if (block.nVersion < 7 && consensusParams.IsProtocolV2(block.GetBlockTime()))
         return state.DoS(100, false, REJECT_OBSOLETE, "bad-version", false, strprintf("rejected nVersion=%d block", block.nVersion));
 
+	 if ( block.nVersion < 8 && consensusParams.IsAvgFeeProtocol(block.GetBlockTime()))
+        return state.DoS(100,  false, REJECT_OBSOLETE, "bad-version", false, strprintf("rejected for avg fee protocol nVersion=%d block", block.nVersion);
+
     // Check proof of work hash
     if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams))
         return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
