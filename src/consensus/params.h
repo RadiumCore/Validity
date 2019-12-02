@@ -70,13 +70,35 @@ struct Params {
     int64_t nProtocolV2Time;
     int64_t nProtocolV3Time = 1461851161;
     int64_t AvgFeeProtocolTime = 1470919920;
+    static const int DEV_FUND_BLOCK_HEIGHT = 1655000; // Developers Fund block height
+    std::string x = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
+    const char* DEV_FUND_SCRIPT = x.c_str(); // This is a 5-of-12 multisig address for radium development fund address: QVZ419DruuEQYxbCgvF6vNwYTJizbhC9qw
+
+
+
+    
     bool IsProtocolV1RetargetingFixed(int64_t nTime) const { return nTime > nGenesisBlockTime; }
     bool IsProtocolV2(int64_t nTime) const { return nTime > nGenesisBlockTime; }
     bool IsProtocolV3(int64_t nTime) const { return nTime > nProtocolV3Time; }
     bool IsAvgFeeProtocol(int64_t nTime) const { return nTime > AvgFeeProtocolTime; }
-	// useto rely on IsProtocolV2 due to blackcoin having chain history of using protocol previous to V2,  however radium 
-	// was always >= v2, so IsProtocolV2 will allways be positive. 
-	// will have to add is v4 logic in later commit
+    bool IsProtocolV4(int nHeight) const {   return nHeight >= DEV_FUND_BLOCK_HEIGHT;    }
+    bool IsBlockDevFund(int nHeight) const
+    {
+        // first check if we are past dev fund start heigt
+        if (IsProtocolV4(nHeight)) {
+            // check if it is time to pay out (~ weekly, )
+
+            if (nHeight % 10080 == 0) {               
+                return true;
+            }
+           
+        }
+        return false;
+    }  
+
+	
+
+   
     unsigned int GetTargetSpacing(int nHeight) { return 60; }
     int nLastPOWBlock;
     int nStakeTimestampMask;

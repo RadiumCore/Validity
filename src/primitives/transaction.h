@@ -278,6 +278,9 @@ public:
     // GetValueIn() is a method on CCoinsViewCache, because
     // inputs must be known to compute value in.
 
+	 // Return value of dev subsidy.
+    CAmount GetTxDevSubsidy() const;
+
     // Compute priority, given priority of inputs and (optionally) tx size
     double ComputePriority(double dPriorityInputs, unsigned int nTxSize=0) const;
 

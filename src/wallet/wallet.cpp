@@ -7,8 +7,9 @@
 // Copyright (c) 2016-2018 The Qtum developers
 
 #include "wallet/wallet.h"
-
+#include "chainparams.h"
 #include "chain.h"
+
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "consensus/consensus.h"
@@ -49,6 +50,8 @@ const uint32_t BIP32_HARDENED_KEY_LIMIT = 0x80000000;
 
 static int64_t GetStakeCombineThreshold() { return 500 * COIN; }
 static int64_t GetStakeSplitThreshold() { return 2 * GetStakeCombineThreshold(); }
+
+
 
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)
@@ -674,7 +677,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CBlockIndex* pindexPrev = pindexBestHeader;
     arith_uint256 bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
-
+    const CChainParams& chainparams = Params();
     struct CMutableTransaction txNew(tx);
     txNew.vin.clear();
     txNew.vout.clear();
@@ -841,6 +844,15 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     }
     else
         txNew.vout[1].nValue = nCredit;
+
+
+	// Add Development reward
+    if (chainparams.GetConsensus().IsBlockDevFund(pindexPrev->nHeight + 1)) {
+        vector<unsigned char> rewardScript = ParseHex((chainparams.GetConsensus().DEV_FUND_SCRIPT));
+        int64_t vDevSubsidy = GetDevSubsidy(pindexPrev);
+        LogPrint("devfork", "*** This block %d is dev fund. Adding dev subsidy of %d \n", (pindexPrev->nHeight + 1), vDevSubsidy);
+        txNew.vout.push_back(CTxOut(vDevSubsidy, CScript(rewardScript.begin(), rewardScript.end())));
+    }
 
     // Sign
     int nIn = 0;

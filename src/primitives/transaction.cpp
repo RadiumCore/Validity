@@ -9,6 +9,8 @@
 #include "tinyformat.h"
 #include "utilstrencodings.h"
 #include "script/interpreter.h"
+#include "chainparams.h"
+
 
 std::string COutPoint::ToString() const
 {
@@ -105,6 +107,21 @@ CAmount CTransaction::GetValueOut() const
             throw std::runtime_error(std::string(__func__) + ": value out of range");
     }
     return nValueOut;
+}
+
+
+CAmount CTransaction::GetTxDevSubsidy() const
+{
+    const CChainParams& chainparams = Params();
+
+    
+    //check that 3rd output in 2nd tx in block contains dev output. (base 0)
+    if (vout[2].scriptPubKey == CScript(ParseHex(chainparams.GetConsensus().DEV_FUND_SCRIPT))) {
+        
+        return vout[2].nValue;
+    }
+   
+    return 0;
 }
 
 unsigned int CTransaction::GetTotalSize() const
