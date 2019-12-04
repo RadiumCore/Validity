@@ -115,3 +115,8 @@ share/BitcoindComparisonTool.jar
 
 libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh
+
+/.vs/*
+/Debug/*
+/radium-more.sln
+*.vcxproj*
