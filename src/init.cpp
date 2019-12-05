@@ -489,8 +489,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://gitlab.com/blackcoin/blackcoin-more>";
-    const std::string URL_WEBSITE = "<https://blackcoinmore.org/>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/JJ12880/radium-more>";
+    const std::string URL_WEBSITE = "<https://radiumcore.org/>";
     // todo: remove urls from translations on next change
 
     // return FormatParagraph(strprintf(_("Copyright (C) %i-%i %s"), 2009, COPYRIGHT_YEAR, CopyrightHolders())) + "\n" +
