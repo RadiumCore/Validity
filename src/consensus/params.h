@@ -101,7 +101,7 @@ struct Params {
 	
 
    
-    unsigned int GetTargetSpacing(int nHeight) { return 60; }
+    unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV4(nHeight) ? 57 : 60; }
     int nLastPOWBlock;
     int nStakeTimestampMask;
     int nCoinbaseMaturity;
