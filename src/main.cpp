@@ -2284,12 +2284,21 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
             const CCoins *coins = inputs.AccessCoins(prevout.hash);
             assert(coins);
 
-            // If prev is coinbase or coinstake, check that it's matured
-            if (coins->IsCoinBase() || coins->IsCoinStake()) {
+            // If prev is coinbase, check that it's matured
+            if (coins->IsCoinBase()) {
                      if (nSpendHeight - coins->nHeight < Params().nCoinbaseMaturity)
                              return state.Invalid(
-                                    error("CheckInputs(): tried to spend %s at depth %d", coins->IsCoinBase() ? "coinbase" : "coinstake", nSpendHeight - coins->nHeight),
+                                    error("CheckInputs(): tried to spend %s at depth %d", "coinbase", nSpendHeight - coins->nHeight),
                                     REJECT_INVALID, "bad-txns-premature-spend-of-coinbase");
+            }
+
+
+			 // If prev is coinstake, check that it's matured
+            if (coins->IsCoinBase() || coins->IsCoinStake()) {
+                if (nSpendHeight - coins->nHeight < Params().nStakeMaturity(coins->nHeight))
+                    return state.Invalid(
+                        error("CheckInputs(): tried to spend %s at depth %d", "coinstake", nSpendHeight - coins->nHeight),
+                        REJECT_INVALID, "bad-txns-premature-spend-of-coinstake");
             }
 
 
@@ -2691,7 +2700,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                 REJECT_INVALID, "bad-cs-kernel");
 
          // Check proof-of-stake min confirmations
-         if (pindex->nHeight - coins->nHeight < chainparams.GetConsensus().nCoinbaseMaturity)
+          if (pindex->nHeight - coins->nHeight < chainparams.GetConsensus().nStakeMaturity(pindex->nHeight))
               return state.DoS(100,
                   error("ConnectBlock(): tried to stake at depth %d", pindex->nHeight - coins->nHeight),
                     REJECT_INVALID, "bad-cs-premature");

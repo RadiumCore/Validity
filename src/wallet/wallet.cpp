@@ -602,11 +602,12 @@ void CWallet::AvailableCoinsForStaking(std::vector<COutput>& vCoins) const
             const uint256& wtxid = it->first;
             const CWalletTx* pcoin = &(*it).second;
             int nDepth = pcoin->GetDepthInMainChain();
+			
 
             if (nDepth < 1)
                 continue;
 
-            if (nDepth < Params().GetConsensus().nCoinbaseMaturity)
+            if (nDepth < Params().GetConsensus().nStakeMaturity(chainActive.Height()))
                 continue;
 
             if (pcoin->GetBlocksToMaturity() > 0)
@@ -3573,7 +3574,8 @@ uint64_t CWallet::GetStakeWeight() const
     LOCK2(cs_main, cs_wallet);
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
-		if (pcoin.first->GetDepthInMainChain() >= Params().GetConsensus().nCoinbaseMaturity)
+       
+		if (pcoin.first->GetDepthInMainChain() >= Params().GetConsensus().nStakeMaturity_Time(pcoin.first->nTime))
 			nWeight += pcoin.first->vout[pcoin.second].nValue;
     }
 
@@ -4071,9 +4073,13 @@ int CMerkleTx::GetDepthInMainChain(const CBlockIndex* &pindexRet) const
 
 int CMerkleTx::GetBlocksToMaturity() const
 {
-    if (!(IsCoinBase() || IsCoinStake()))
-        return 0;
-    return max(0, (Params().GetConsensus().nCoinbaseMaturity+1) - GetDepthInMainChain());
+    if (IsCoinBase())
+        return max(0, (Params().GetConsensus().nCoinbaseMaturity + 1) - GetDepthInMainChain());
+
+	 if (IsCoinStake())
+        return max(0, (Params().GetConsensus().nStakeMaturity_Time(nTime) + 1) - GetDepthInMainChain());
+	 return 0;
+   
 }
 
 

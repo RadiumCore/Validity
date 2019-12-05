@@ -71,6 +71,7 @@ struct Params {
     int64_t nProtocolV3Time = 1461851161;
     int64_t AvgFeeProtocolTime = 1470919920;
     static const int DEV_FUND_BLOCK_HEIGHT = 1655000; // Developers Fund block height
+    static const int64_t DEV_FUND_TIME = 1535581967;
     std::string x = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
     const char* DEV_FUND_SCRIPT = x.c_str(); // This is a 5-of-12 multisig address for radium development fund address: QVZ419DruuEQYxbCgvF6vNwYTJizbhC9qw
 
@@ -82,6 +83,7 @@ struct Params {
     bool IsProtocolV3(int64_t nTime) const { return nTime > nProtocolV3Time; }
     bool IsAvgFeeProtocol(int64_t nTime) const { return nTime > AvgFeeProtocolTime; }
     bool IsProtocolV4(int nHeight) const {   return nHeight >= DEV_FUND_BLOCK_HEIGHT;    }
+    bool IsProtocolV4(int64_t nTime) const { return nTime >= DEV_FUND_TIME; }
     bool IsBlockDevFund(int nHeight) const
     {
         // first check if we are past dev fund start heigt
@@ -103,6 +105,23 @@ struct Params {
     int nLastPOWBlock;
     int nStakeTimestampMask;
     int nCoinbaseMaturity;
+    static const unsigned int nStakeMinConfirmationsTest = 10;
+    static const unsigned int nStakeMinConfirmationsV3 = 60;
+    static const unsigned int nStakeMinConfirmationsV4 = 120;
+    int nStakeMaturity(int nHeight) const
+    {
+        if (IsProtocolV4(nHeight))
+            return nStakeMinConfirmationsV4;
+        else
+            return nStakeMinConfirmationsV3;
+    }
+    int nStakeMaturity_Time(int64_t nTime) const
+    {
+        if (IsProtocolV4(nTime))
+            return nStakeMinConfirmationsV4;
+        else
+            return nStakeMinConfirmationsV3;
+    }
     unsigned int nStakeMinAge;
     uint256 nMinimumChainWork;
 
