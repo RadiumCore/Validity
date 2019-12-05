@@ -43,6 +43,28 @@ static const int SENDHEADERS_VERSION = 70012;
 //! "feefilter" tells peers to filter invs to you by fee starts with this version
 static const int FEEFILTER_VERSION = 70013;
 
+// only used when hard forking. Alows for disconnecting from peers after a given time/block
+bool static GoodNodeVersion(int nVersion)
+{
+    if (nVersion >= MIN_PEER_PROTO_VERSION) {
+        return true;
+	}
+       
+
+	return false;
+
+    // if version >= dev subsidy version, we can connect
+    //if (nVersion >= DEV_SUBSIDY_PROTOCOL_VERSION)
+     //   return true;
+
+    // assuming less than dev subsidy, AND we have not yet forked, we can connect
+    //if (nVersion >= MIN_PEER_PROTO_VERSION && pindexBest->nHeight <= DEV_FUND_BLOCK_HEIGHT)
+        //return true;
+
+    // all other conditions, this is not a good peer version
+   // return false;
+}
+
 /*
 // Disable BIP152
 //! shord-id-based block download starts with this version
