@@ -69,7 +69,7 @@ struct Params {
     int64_t nGenesisBlockTime = 1431857735;
     int64_t nProtocolV2Time;
     int64_t nProtocolV3Time = 1461851161;
-    int64_t AvgFeeProtocolTime = 1470919920;
+    int64_t AvgFeeProtocolTime = 1470919889;
     static const int DEV_FUND_BLOCK_HEIGHT = 1655000; // Developers Fund block height
     static const int64_t DEV_FUND_TIME = 1535581967;
     std::string x = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
