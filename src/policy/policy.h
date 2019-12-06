@@ -53,7 +53,6 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType);
      * @return True if all outputs (scriptPubKeys) use only standard transaction forms
      */
 
-int64_t FutureDrift(int64_t nTime);
 
 bool IsStandardTx(const CTransaction& tx, std::string& reason);
     /**

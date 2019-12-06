@@ -1273,7 +1273,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         return state.DoS(0, false, REJECT_NONSTANDARD, "non-final");
 
     // For the same reasons as in the case with non-final transactions
-    if (tx.nTime > FutureDrift(GetAdjustedTime())) {
+    if (tx.nTime > Params().GetConsensus().FutureDrift(GetAdjustedTime())) {
         return state.DoS(0, false, REJECT_NONSTANDARD, "time-too-new");
     }
 
@@ -3853,15 +3853,15 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // if (block.GetBlockTime() > FutureDrift(block.vtx[0].nTime))
     //    return state.DoS(50, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
 
-	// there were no ddos issues in the original PoW mining phase, but if PoW were to be re-enabled, future drift checks would
-	// need to be run.
-    if (block.IsProofOfWork() && consensusParams.IsProtocolV3(block.nTime))
-			return state.DoS(100, false, REJECT_INVALID, "bad-cb-time", false, "Danger validation issues if PoW is restarted!");
 
-	// this bypasses future drift checks on ALL PoW blocks. This is not a good idea in the case PoW were to be re-started. 
-    if (block.GetBlockTime() > FutureDrift(block.vtx[0].nTime))
-            return state.DoS(50, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
+    // this bypasses future drift checks on blocks up untill time 1432733390, which is about nHeight 20160.
+    if (block.GetBlockTime() > 1433342883 && block.GetBlockTime() > consensusParams.FutureDrift(block.vtx[0].nTime)) {
 
+		LogPrintf("Future Drift error. Blocktime: %s future drift: %s", block.GetBlockTime(), consensusParams.FutureDrift(block.vtx[0].nTime));
+        return state.DoS(50, false, REJECT_INVALID, "bad-cb-time", false, "coinbase timestamp is too early");
+
+        
+    }
     // Check coinstake timestamp
     if (block.IsProofOfStake() && !CheckCoinStakeTimestamp(block.GetBlockTime(), block.vtx[1].nTime))
             return state.DoS(50, false, REJECT_INVALID, "bad-cs-time", false, "coinstake timestamp violation");

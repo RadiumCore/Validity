@@ -99,6 +99,9 @@ struct Params {
     }  
 
 	
+	inline int64_t FutureDriftV1(int64_t nTime) const { return nTime + 10 * 60; }
+    inline int64_t FutureDriftV2(int64_t nTime) const { return nTime + 2 * 60; }
+    inline int64_t FutureDrift(int64_t nTime) const { return IsProtocolV2(nTime) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
    
     unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV4(nHeight) ? 57 : 60; }
