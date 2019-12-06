@@ -2015,6 +2015,8 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
     LogPrintf("---------------------->RFee:%d\n", (int)nRFee);
    // if (mapFeeCache.size() > 50000)
     //    mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
+
+	// removal of above code will introduce slow memory leak. Must be fixed before release
     return nRFee;
 }
 
