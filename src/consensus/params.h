@@ -104,7 +104,7 @@ struct Params {
     inline int64_t FutureDrift(int64_t nTime) const { return IsProtocolV2(nTime) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
    
-    unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV4(nHeight) ? 57 : 60; }
+    int64_t GetTargetSpacing(int nHeight) const { return IsProtocolV4(nHeight) ? 57 : 60; }
     int nLastPOWBlock;
     int nStakeTimestampMask;
     int nCoinbaseMaturity;
