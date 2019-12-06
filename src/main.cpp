@@ -3932,7 +3932,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
                              REJECT_INVALID, "bad-pos-time");
 
     // Check timestamp
-    if (block.GetBlockTime() > FutureDrift(GetAdjustedTime()))
+    if (block.GetBlockTime() > consensusParams.FutureDrift(GetAdjustedTime()))
         return state.DoS(50, error("%s: block timestamp too far in the future", __func__),
                              REJECT_INVALID, "time-too-new");
 
