@@ -1987,57 +1987,34 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
     CBlock blockTmp;
     //dont know if this line is needed or not. Probally not?
     const CBlockIndex* pblockindexTmp = pindexPrev;
-    //LogPrintf("---------------------->Getting fee for block :%d Current best %d\n" , pindexPrev->nHeight+1 ,pblockindexTmp->nHeight );
-    //LogPrintf("---------------------->Loop start block: %d\n hash: %s\n",pblockindexTmp->nHeight ,pblockindexTmp->phashBlock->ToString() );
-    //LogPrintf("---------------------->Loop start hash: %s\n",pblockindexTmp->phashBlock->ToString());
+    const CCoinsViewDB* coinDB;
+    LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
+    LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
+    LogPrintf("---------------------->Loop start hash: %s\n", pblockindexTmp->phashBlock->ToString());
     while (pblockindexTmp->nHeight > startHeight - (AVG_FEE_SPAN - 1)) {
         int64_t blockFee = 0;
-        if (mapFeeCache.count(pblockindexTmp->phashBlock)) {
-            blockFee = mapFeeCache[pblockindexTmp->phashBlock];
-            if (blockFee > 0) {
-                // LogPrintf("---------------------->height=%d hash=%s retreived block fee:%s\n",pblockindexTmp->nHeight,pblockindexTmp->phashBlock->ToString(),(int)blockFee);
-            }
-        } else {
-            uint256 hash = *pblockindexTmp->phashBlock;
-            pblockindexTmp = mapBlockIndex[hash];
-            if (!ReadBlockFromDisk(blockTmp, pblockindexTmp, chainParams.GetConsensus()))
-                return error("Unable to read block from disk", pblockindexTmp->GetBlockHash().ToString());
-                        
-            BOOST_FOREACH(CTransaction tx, blockTmp.vtx) {
-                if (!tx.IsCoinStake() && !tx.IsCoinBase()) {
-                    int64_t nFee = 0;
-					nFee = pcoinsTip->GetValueIn(tx) - tx.GetValueOut();
-					if (!MoneyRange(nFee)) {
-						nFee = 0;
-					}
-					blockFee += nFee;
-                   
-                }
-            }
-            if (!MoneyRange(blockFee)) {
-                blockFee = 0;
-            }
-            mapFeeCache[pblockindexTmp->phashBlock] = blockFee;
-            //LogPrintf("---------------------->height=%d hash=%s Calculated New Fee:%d\n",pblockindexTmp->nHeight,pblockindexTmp->phashBlock->ToString(),(int)blockFee);
+        assert(mapFeeCache.count(pblockindexTmp->phashBlock));
+		blockFee = mapFeeCache[pblockindexTmp->phashBlock];
+        if (blockFee > 0) {
+            LogPrintf("---------------------->height=%d hash=%s retreived block fee:%s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString(), (int)blockFee);
         }
         nCumulatedFee += blockFee;
-        if (!MoneyRange(nCumulatedFee)) {
-            nCumulatedFee = 0;
-        }
-        //LogPrintf("%d---------------------->blockFee:%d\n",pblockindexTmp->phashBlock,(int)blockFee);
-        // LogPrintf("---------------------->nCumulatedFee:%d\n",(int)nCumulatedFee);
-        // LogPrintf("---------------------->count:%d\n",(int)feesCount);
-        // LogPrintf("---------------------->avg:%d\n",(int64_t)((nCumulatedFee+nFees)/(feesCount+1)));
+        assert(MoneyRange(nCumulatedFee));
+
+        LogPrintf("%d---------------------->blockFee:%d\n", pblockindexTmp->phashBlock, (int)blockFee);
+        LogPrintf("---------------------->nCumulatedFee:%d\n", (int)nCumulatedFee);
+        LogPrintf("---------------------->count:%d\n", (int)feesCount);
+        LogPrintf("---------------------->avg:%d\n", (int64_t)((nCumulatedFee) / (feesCount + 1)));
         feesCount++;
         pblockindexTmp = pblockindexTmp->pprev;
     }
     nRFee = (int64_t)((nCumulatedFee) / (feesCount + 1));
     if (!MoneyRange(nRFee))
         nRFee = 0;
-    //LogPrintf("---------------------->Fee:%d\n",(int)nFees);
-    //LogPrintf("---------------------->RFee:%d\n",(int)nRFee);
-    if (mapFeeCache.size() > 50000)
-        mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
+
+    LogPrintf("---------------------->RFee:%d\n", (int)nRFee);
+   // if (mapFeeCache.size() > 50000)
+    //    mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
     return nRFee;
 }
 
@@ -2936,6 +2913,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime6 = GetTimeMicros(); nTimeCallbacks += nTime6 - nTime5;
     LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime6 - nTime5), nTimeCallbacks * 0.000001);
 
+    if (chainparams.GetConsensus().IsProtocolV4( pindex->nHeight - AVG_FEE_SPAN)) {
+		// start building the mapFeeCashe, starting at AVG_FEE_SPAN before average fees actually starts
+        
+		mapFeeCache[pindex->phashBlock] = nFees;
+		LogPrintf("Connect Block: Adding block %d with fees %d to mapFeeCashe", block.GetHash().ToString(), nFees);
+	
+	}
     return true;
 }
 
