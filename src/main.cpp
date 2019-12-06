@@ -1876,7 +1876,6 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev)
     if (fDebug && GetBoolArg("-printcreation", false))
         LogPrint("creation", "GetProofOfStakeReward(): create=%s ", FormatMoney(nSubsidy));
 
-    return nSubsidy;
 
     
 
