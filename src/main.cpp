@@ -2258,8 +2258,10 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
             const CCoins *coins = inputs.AccessCoins(prevout.hash);
             assert(coins);
 
-            // If prev is coinbase, check that it's matured
-            if (coins->IsCoinBase()) {
+            // If prev is coinbase or coinstake, check that it's matured.
+			// we can move new coins so long as they have reached nCoinbaseMaturity, but cant stake unless
+			// they have reached nStakeMaturity
+            if (coins->IsCoinBase() || coins->IsCoinStake()) {
                      if (nSpendHeight - coins->nHeight < Params().nCoinbaseMaturity)
                              return state.Invalid(
                                     error("CheckInputs(): tried to spend %s at depth %d", "coinbase", nSpendHeight - coins->nHeight),
@@ -2267,13 +2269,7 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
             }
 
 
-			 // If prev is coinstake, check that it's matured
-            if (coins->IsCoinStake()) {
-                if (nSpendHeight - coins->nHeight < Params().nStakeMaturity(coins->nHeight))
-                    return state.Invalid(
-                        error("CheckInputs(): tried to spend %s at depth %d", "coinstake", nSpendHeight - coins->nHeight),
-                        REJECT_INVALID, "bad-txns-premature-spend-of-coinstake");
-            }
+			
 
 
             // Check transaction timestamp
