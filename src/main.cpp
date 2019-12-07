@@ -1992,19 +1992,15 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
     LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
     LogPrintf("---------------------->Loop start hash: %s\n", pblockindexTmp->phashBlock->ToString());
     while (pblockindexTmp->nHeight > startHeight - (AVG_FEE_SPAN - 1)) {
-        int64_t blockFee = 0;
-        assert(mapFeeCache.count(pblockindexTmp->phashBlock));
-		blockFee = mapFeeCache[pblockindexTmp->phashBlock];
-        if (blockFee > 0) {
-            LogPrintf("---------------------->height=%d hash=%s retreived block fee:%s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString(), (int)blockFee);
-        }
-        nCumulatedFee += blockFee;
+       
+        
+        nCumulatedFee += pblockindexTmp->nFees;
         assert(MoneyRange(nCumulatedFee));
 
-        LogPrintf("%d---------------------->blockFee:%d\n", pblockindexTmp->phashBlock, (int)blockFee);
-        LogPrintf("---------------------->nCumulatedFee:%d\n", (int)nCumulatedFee);
-        LogPrintf("---------------------->count:%d\n", (int)feesCount);
-        LogPrintf("---------------------->avg:%d\n", (int64_t)((nCumulatedFee) / (feesCount + 1)));
+        //LogPrintf("%d---------------------->blockFee:%d\n", pblockindexTmp->phashBlock, pblockindexTmp->nFees);
+        //LogPrintf("---------------------->nCumulatedFee:%d\n", (int)nCumulatedFee);
+       // LogPrintf("---------------------->count:%d\n", (int)feesCount);
+        //LogPrintf("---------------------->avg:%d\n", (int64_t)((nCumulatedFee) / (feesCount + 1)));
         feesCount++;
         pblockindexTmp = pblockindexTmp->pprev;
     }
@@ -2816,8 +2812,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         {
             if (tx.IsCoinStake())
                 nActualStakeReward = tx.GetValueOut()-view.GetValueIn(tx);
-            else
-                nFees += view.GetValueIn(tx)-tx.GetValueOut();
+            else {
+                //TODO is this the fastest way to reduce ops?
+                CAmount tempFee = view.GetValueIn(tx) - tx.GetValueOut();
+                nFees += tempFee;				
+				pindex->IncrementFee(tempFee);
+            }
+                
 
             std::vector<CScriptCheck> vChecks;
             bool fCacheResults = fJustCheck; /* Don't cache results if we're actually connecting blocks (still consult the cache, though) */
@@ -2915,13 +2916,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime6 = GetTimeMicros(); nTimeCallbacks += nTime6 - nTime5;
     LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime6 - nTime5), nTimeCallbacks * 0.000001);
 
-    if (chainparams.GetConsensus().IsProtocolV4( pindex->nHeight - AVG_FEE_SPAN)) {
-		// start building the mapFeeCashe, starting at AVG_FEE_SPAN before average fees actually starts
-        
-		mapFeeCache[pindex->phashBlock] = nFees;
-		LogPrintf("Connect Block: Adding block %d with fees %d to mapFeeCashe", block.GetHash().ToString(), nFees);
+
 	
-	}
+
     return true;
 }
 

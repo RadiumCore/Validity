@@ -171,6 +171,9 @@ public:
     //! height of the entry in the chain. The genesis block has height 0
     int nHeight;
 
+	//! fees included in the block, used by averagefee protocol
+    int64_t nFees;
+
     //! Which # file this block is stored in (blk?????.dat)
     int nFile;
 
@@ -223,13 +226,17 @@ public:
         nStatus = 0;
         nStakeModifier = uint256();
         nSequenceId = 0;
-
+        nFees = 0;
         nVersion       = 0;
         hashMerkleRoot = uint256();
         nTime          = 0;
         nBits          = 0;
         nNonce         = 0;
     }
+
+	bool IncrementFee(CAmount fee) {
+            nFees += fee;
+	}
 
     CBlockIndex()
     {
@@ -399,6 +406,7 @@ public:
             READWRITE(VARINT(nVersion));
 
         READWRITE(VARINT(nHeight));
+        READWRITE(VARINT(nFees));
         READWRITE(VARINT(nStatus));
         READWRITE(nStakeModifier);
         READWRITE(nHashBlock);
