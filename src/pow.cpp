@@ -11,7 +11,7 @@
 #include "uint256.h"
 #include "util.h"
 #include <stdio.h>
-
+#include <string> 
 static arith_uint256 GetTargetLimit(int64_t nTime, const Consensus::Params& params, bool fProofOfStake)
 {
     uint256 nLimit;
@@ -57,17 +57,30 @@ unsigned int CalculateNextTargetRequired(const CBlockIndex* pindexLast, int64_t 
             return pindexLast->nBits;
     }
 
-    int64_t nTargetSpacing = params.IsProtocolV2(pindexLast->GetBlockTime()) ? params.nTargetSpacing : params.nTargetSpacingV1;
-    int64_t nActualSpacing = pindexLast->GetBlockTime() - nFirstBlockTime;
+   
 
-    // Limit adjustment step
-    if (params.IsProtocolV1RetargetingFixed(pindexLast->GetBlockTime()) && nActualSpacing < 0)
-        nActualSpacing = nTargetSpacing;
-    if (params.IsProtocolV3(pindexLast->GetBlockTime()) && nActualSpacing > nTargetSpacing*10)
-        nActualSpacing = nTargetSpacing*10;
+  
 
     // retarget with exponential moving toward target spacing
     const arith_uint256 bnTargetLimit = GetTargetLimit(pindexLast->GetBlockTime(), params, fProofOfStake);
+
+	int64_t nTargetSpacing = params.GetTargetSpacing(pindexLast->nHeight);
+    int64_t nActualSpacing = pindexLast->GetBlockTime() - nFirstBlockTime;
+
+	  // Limit adjustment step
+  
+
+	if (params.IsProtocolV1RetargetingFixed(pindexLast->GetBlockTime())) {
+        if (nActualSpacing < 0)
+            nActualSpacing = nTargetSpacing;
+    }
+  
+    if (params.IsProtocolV3(pindexLast->nTime)) {
+        if (nActualSpacing > nTargetSpacing * 10)
+            nActualSpacing = nTargetSpacing * 10;
+    }
+
+
     arith_uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
     int64_t nInterval = params.nTargetTimespan / nTargetSpacing;
