@@ -120,3 +120,6 @@ contrib/devtools/split-debug.sh
 /Debug/*
 /radium-more.sln
 *.vcxproj*
+/src/blackmore-cli
+/src/blackmored
+/src/blackmore-tx
