@@ -2268,7 +2268,7 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
 
 
 			 // If prev is coinstake, check that it's matured
-            if (coins->IsCoinBase() || coins->IsCoinStake()) {
+            if (coins->IsCoinStake()) {
                 if (nSpendHeight - coins->nHeight < Params().nStakeMaturity(coins->nHeight))
                     return state.Invalid(
                         error("CheckInputs(): tried to spend %s at depth %d", "coinstake", nSpendHeight - coins->nHeight),
