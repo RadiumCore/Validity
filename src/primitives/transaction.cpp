@@ -10,6 +10,8 @@
 #include "utilstrencodings.h"
 #include "script/interpreter.h"
 #include "chainparams.h"
+#include "util.h"
+
 
 
 std::string COutPoint::ToString() const
@@ -110,19 +112,7 @@ CAmount CTransaction::GetValueOut() const
 }
 
 
-CAmount CTransaction::GetTxDevSubsidy() const
-{
-    const CChainParams& chainparams = Params();
 
-    
-    //check that 3rd output in 2nd tx in block contains dev output. (base 0)
-    if (vout[2].scriptPubKey == CScript(ParseHex(chainparams.GetConsensus().DEV_FUND_SCRIPT))) {
-        
-        return vout[2].nValue;
-    }
-   
-    return 0;
-}
 
 unsigned int CTransaction::GetTotalSize() const
 {

@@ -1973,7 +1973,7 @@ CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
         nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 RADS
     }
 
-    LogPrint("devfork", "GetDevSubsidy returned %d \n", nSubsidy);
+    LogPrintf("GetDevSubsidy returned %d \n", nSubsidy);
     return nSubsidy;
 }
 
@@ -2845,17 +2845,19 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                        REJECT_INVALID, "bad-cb-amount");
     }
 
-	// raise calculated block reward if block is dev fund block
-	if (chainparams.GetConsensus().IsBlockDevFund(pindex->nHeight))
-        nActualStakeReward += GetDevSubsidy(pindex->pprev);
+	
+	
 
     if (block.IsProofOfStake() && chainparams.GetConsensus().IsProtocolV3(block.GetBlockTime())) {
             CAmount blockReward = nFees + GetProofOfStakeSubsidy(pindex->pprev);
+			
+			//further checks to ensure correct amount is paid to the dev fund 
+			//occure in accept block
+			if (chainparams.GetConsensus().IsBlockDevFund(pindex->nHeight))
+				blockReward += GetDevSubsidy(pindex->pprev);
+
             if (nActualStakeReward > blockReward)
-                return state.DoS(100,
-                                 error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)",
-                                       nActualStakeReward, blockReward),
-                                       REJECT_INVALID, "bad-cs-amount");
+                return state.DoS(100, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, blockReward), REJECT_INVALID, "bad-cs-amount");
     }
 
     if (!control.Wait())
@@ -4173,10 +4175,18 @@ static bool AcceptBlock(const CBlock& block, CValidationState& state, const CCha
 
 	 // Second transaction must include dev subsidy
     if (chainparams.GetConsensus().IsBlockDevFund(nHeight)) {
-        if (block.vtx[1].GetTxDevSubsidy()  != (GetDevSubsidy(pindex->pprev)))
+		
+		//check that block contains payment to dev fund.
+        if (HexStr(block.vtx[1].vout[2].scriptPubKey) != chainparams.GetConsensus().DEV_FUND_SCRIPT)
             return state.DoS(100, error("%s:  Dev Subsidy missing %d",  __func__, nHeight));
-        else
-            LogPrint("devfork", "*** Accept Block dev subsidy found %d \n",GetDevSubsidy(pindex->pprev));
+            
+		// check that dev fund payment amount is correct.
+		if(block.vtx[1].vout[2].nValue != GetDevSubsidy(pindex->pprev))
+			return state.DoS(100, error("%s:  Dev Subsidy pays incorrect amount %d", __func__, GetDevSubsidy(pindex->pprev)));
+
+		LogPrintf("*** Accept Block dev subsidy found %d \n", GetDevSubsidy(pindex->pprev));
+
+			
     }
 
 

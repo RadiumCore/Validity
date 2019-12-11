@@ -72,8 +72,8 @@ struct Params {
     int64_t AvgFeeProtocolTime = 1470919889;
     static const int DEV_FUND_BLOCK_HEIGHT = 1655000; // Developers Fund block height
     static const int64_t DEV_FUND_TIME = 1535581967;
-    std::string x = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
-    const char* DEV_FUND_SCRIPT = x.c_str(); // This is a 5-of-12 multisig address for radium development fund address: QVZ419DruuEQYxbCgvF6vNwYTJizbhC9qw
+    std::string DEV_FUND_SCRIPT = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
+    //const char* DEV_FUND_SCRIPT = x.c_str(); // This is a 5-of-12 multisig address for radium development fund address: QVZ419DruuEQYxbCgvF6vNwYTJizbhC9qw
 
 
 
