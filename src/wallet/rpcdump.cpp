@@ -549,11 +549,11 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
     
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "dumpprivkey \"blackcoinaddress\"\n"
-            "\nReveals the private key corresponding to 'blackcoinaddress'.\n"
+            "dumpprivkey \"radiumaddress\"\n"
+            "\nReveals the private key corresponding to 'radiumaddress'.\n"
             "Then the importprivkey can be used with this output\n"
             "\nArguments:\n"
-            "1. \"blackcoinaddress\"   (string, required) The blackcoin address for the private key\n"
+            "1. \"radiumaddress\"   (string, required) The radium address for the private key\n"
             "\nResult:\n"
             "\"key\"                (string) The private key\n"
             "\nExamples:\n"

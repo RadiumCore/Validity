@@ -148,7 +148,7 @@ public:
         base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1,121);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x73)(0xAA)(0xA1).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x73)(0x44)(0x77).convert_to_container<std::vector<unsigned char> >();
-        cashaddrPrefix = "blackcoin";
+        cashaddrPrefix = "radium";
 
       
 

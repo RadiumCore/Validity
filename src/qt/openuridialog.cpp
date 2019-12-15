@@ -17,7 +17,7 @@ OpenURIDialog::OpenURIDialog(const Config *cfg, QWidget *parent) :
 {
     ui->setupUi(this);
 #if QT_VERSION >= 0x040700
-    ui->uriEdit->setPlaceholderText("blackcoin:");
+    ui->uriEdit->setPlaceholderText("radium:");
 #endif
 }
 

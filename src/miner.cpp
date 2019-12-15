@@ -585,7 +585,7 @@ void ThreadStakeMiner(CWallet *pwallet, const CChainParams& chainparams)
     LogPrintf("Staking started\n");
 
     // Make this thread recognisable as the mining thread
-    RenameThread("blackcoin-miner");
+    RenameThread("radium-miner");
 
     CReserveKey reservekey(pwallet);
 
