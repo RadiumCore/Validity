@@ -111,6 +111,15 @@ CAmount CTransaction::GetValueOut() const
     return nValueOut;
 }
 
+CAmount CTransaction::GetTxDevSubsidy() const
+{
+	const CChainParams& chainparams = Params();
+	if (HexStr(vout[2].scriptPubKey) == chainparams.GetConsensus().DEV_FUND_SCRIPT)
+		return vout[2].nValue;
+	return 0;
+}
+
+
 
 
 
