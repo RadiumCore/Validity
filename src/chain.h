@@ -234,7 +234,7 @@ public:
         nNonce         = 0;
     }
 
-	bool IncrementFee(CAmount fee) {
+	void IncrementFee(CAmount fee) {
             nFees += fee;
 	}
 
