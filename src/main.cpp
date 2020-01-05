@@ -1979,7 +1979,6 @@ CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
 
 int64_t GetRunningFee(const CBlockIndex* pindexPrev)
 {
-    const CChainParams& chainParams = Params();
     int64_t nRFee = 0;
     int64_t nCumulatedFee = 0;
     int feesCount = 0;
@@ -1987,7 +1986,6 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
     CBlock blockTmp;
     //dont know if this line is needed or not. Probally not?
     const CBlockIndex* pblockindexTmp = pindexPrev;
-    const CCoinsViewDB* coinDB;
     LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
     LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
     LogPrintf("---------------------->Loop start hash: %s\n", pblockindexTmp->phashBlock->ToString());
