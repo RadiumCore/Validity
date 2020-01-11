@@ -44,7 +44,7 @@ static const int SENDHEADERS_VERSION = 70012;
 static const int FEEFILTER_VERSION = 70013;
 
 // only used when hard forking. Alows for disconnecting from peers after a given time/block
-bool static GoodNodeVersion(int nVersion)
+static bool  GoodNodeVersion(int nVersion)
 {
     if (nVersion >= MIN_PEER_PROTO_VERSION) {
         return true;
