@@ -98,8 +98,8 @@ const int64_t nStartupTime = GetTime();
 
 using namespace std;
 
-const char * const BITCOIN_CONF_FILENAME = "blackmore.conf";
-const char * const BITCOIN_PID_FILENAME = "blackmored.pid";
+const char * const BITCOIN_CONF_FILENAME = "radium13.conf";
+const char * const BITCOIN_PID_FILENAME = "radium13d.pid";
 
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
@@ -434,7 +434,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "blackcoin";
+    const char* pszModule = "radium13";
 #endif
     if (pex)
         return strprintf(
@@ -454,13 +454,13 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Blackmore
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Blackmore
-    // Mac: ~/Library/Application Support/Blackmore
-    // Unix: ~/.blackmore
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Radium13
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Radium13
+    // Mac: ~/Library/Application Support/Radium13
+    // Unix: ~/.radium13
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Blackmore";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Radium13";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -470,10 +470,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/Blackmore";
+    return pathRet / "Library/Application Support/Radium13";
 #else
     // Unix
-    return pathRet / ".blackmore";
+    return pathRet / ".radium13";
 #endif
 #endif
 }

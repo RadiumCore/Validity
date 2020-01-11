@@ -7,17 +7,17 @@ define(_CLIENT_VERSION_BUILD, 4)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2019)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
-define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Blackcoin More]])
-AC_INIT([Blackcoin More],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://gitlab.com/blackcoin/blackcoin-more],[blackcoin-more])
+define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Radium 13]])
+AC_INIT([Radium 13],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/RadiumCore/radium13],[radium13])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-BITCOIN_DAEMON_NAME=blackmored
-BITCOIN_GUI_NAME=blackmore-qt
-BITCOIN_CLI_NAME=blackmore-cli
-BITCOIN_TX_NAME=blackmore-tx
+BITCOIN_DAEMON_NAME=radium13d
+BITCOIN_GUI_NAME=radium13-qt
+BITCOIN_CLI_NAME=radium13-cli
+BITCOIN_TX_NAME=radium13-tx
 
 AC_CANONICAL_HOST
 
