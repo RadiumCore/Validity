@@ -1643,7 +1643,7 @@ void ThreadOpenConnections()
         if (addrman.size() == 0 && (GetTime() - nStart > 60)) {
             static bool done = false;
             if (!done) {
-                LogPrintf("Adding fixed seed nodes as DNS doesn't seem to be available.\n");
+                LogPrintf("Adding %d fixed seed nodes as DNS doesn't seem to be available.\n", Params().FixedSeeds().size());
                 CNetAddr local;
                 LookupHost("127.0.0.1", local, false);
                 addrman.Add(convertSeed6(Params().FixedSeeds()), local);
