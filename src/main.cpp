@@ -4174,7 +4174,7 @@ static bool AcceptBlock(const CBlock& block, CValidationState& state, const CCha
 	 // Second transaction must include dev subsidy
     if (chainparams.GetConsensus().IsBlockDevFund(nHeight)) {
 		
-		if(block.vtx[1].GetTxDevSubsidy() != GetDevSubsidy(pindex->pprev))
+		if(GetTxDevSubsidy(block.vtx[1].vout) != GetDevSubsidy(pindex->pprev))
 			return state.DoS(100, error("%s:  Dev Subsidy pays incorrect amount %d", __func__, GetDevSubsidy(pindex->pprev)));
 
 
@@ -4218,7 +4218,17 @@ static bool AcceptBlock(const CBlock& block, CValidationState& state, const CCha
     return true;
 }
 
+CAmount GetTxDevSubsidy(const std::vector<CTxOut> vout)
+{
+	// all dev subsidy tx's have an output size of 3. 
 
+	if (vout.size() != 3)
+		return 0;
+	const CChainParams& chainparams = Params();
+	if (HexStr(vout[2].scriptPubKey) == chainparams.GetConsensus().DEV_FUND_SCRIPT)
+		return vout[2].nValue;
+	return 0;
+}
 
 
 static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned nRequired, const Consensus::Params& consensusParams)

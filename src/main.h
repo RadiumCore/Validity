@@ -281,7 +281,7 @@ bool ActivateBestChain(CValidationState& state, const CChainParams& chainparams,
 CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev);
 CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev);
 CAmount GetDevSubsidy(const CBlockIndex* pindexPrev);
-
+CAmount GetTxDevSubsidy(const std::vector<CTxOut> vout);
 static const signed int AVG_FEE_START_BLOCK = 619480;
 static const signed int AVG_FEE_START_BLOCK_REVERT = 626550;
 static const signed int AVG_FEE_START_BLOCK_V2 = 682240;
