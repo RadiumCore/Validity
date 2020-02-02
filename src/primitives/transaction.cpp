@@ -111,20 +111,6 @@ CAmount CTransaction::GetValueOut() const
     return nValueOut;
 }
 
-CAmount CTransaction::GetTxDevSubsidy() const
-{
-	// all dev subsidy tx's have an output size of 3. 
-	
-	if (vout.size() != 3)
-		return 0;
-	const CChainParams& chainparams = Params();
-	if (HexStr(vout[2].scriptPubKey) == chainparams.GetConsensus().DEV_FUND_SCRIPT)
-		return vout[2].nValue;
-	return 0;
-}
-
-
-
 
 
 unsigned int CTransaction::GetTotalSize() const
