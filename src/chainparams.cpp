@@ -160,9 +160,9 @@ public:
 		
         checkpointData = (CCheckpointData) {
                     boost::assign::map_list_of
-					(0, uint256S("0x000000770c6aea829bb1ace7b06497f71799a6358e0e292740c4f9443a17bfb6")) 
-			(2879, uint256S("0x675ebb9f0f934c35bbf1955565482601ef68977b2fef8248689626004fcbce2d"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //last pow
-            (2880, uint256S("0x3818386bc9fced59f21d5a9d1eab8a532c85efecb831eceee995ae1a7dc90419"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //first pos
+					(0, uint256S("0x000000770c6aea829bb1ace7b06497f71799a6358e0e292740c4f9443a17bfb6")) //genesis
+			(2879, uint256S("0x675ebb9f0f934c35bbf1955565482601ef68977b2fef8248689626004fcbce2d"))      //last pow                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //last pow
+            (2880, uint256S("0x3818386bc9fced59f21d5a9d1eab8a532c85efecb831eceee995ae1a7dc90419"))      //first pos                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              //first pos
             (100000, uint256S("0x97b8764441d1d0eff98e834cc743ec4cd6779d53f149dec9403c9758370abd8c"))
 			(200000, uint256S("0x98b0bcf0218293549a30d938a1d641b6bc6b498361cb432e3fafd6935c592846"))
 			(300000, uint256S("0xdcb25c38e2731a68d5bfa16b00b8479fed57c6a352cfd94d8e0dfdd690ac9ea2"))
@@ -171,10 +171,10 @@ public:
 			(550000, uint256S("0x8a39262d43135792a429a4e2a6deeb669c88b618ecfa3ca855edaf1e4c3631af"))
 			(600000, uint256S("0x23141467be3b6fe23419c8a9fbcd4df431b4b1abcd43a1fa689e7b6d137e89ef"))
 			(619480, uint256S("0x17895abf56169141d553891d00a4c46d37023250a0089800e389bfba37e91f9a")) // avg_fee start block
-            (625249, uint256S("0x677def44b35e162452fb12f00c4e4fa5f1339a90a4b82753266e1cd9f5b359e7"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // problem block on avg_fee
-            (626372, uint256S("0x977494d951029df80bee05bdd461e6e767c916c2b60ebd356133c38ae5cf5823"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // pre avg_fee revert block
-            (626555, uint256S("0xab4e8bdd76283070e11377f9497d7a644d9a813fc354152b36ded76d68eb5388"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // post avg_fee revert block
-            (655200, uint256S("0x0dbcd2799042832cb3c1c0255e34b1ca797d30db9438d836e9e830394e98b999 "))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // Radium 1.4.5 Code release
+            (625249, uint256S("0x677def44b35e162452fb12f00c4e4fa5f1339a90a4b82753266e1cd9f5b359e7")) // problem block on avg_fee                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // problem block on avg_fee
+            (626372, uint256S("0x977494d951029df80bee05bdd461e6e767c916c2b60ebd356133c38ae5cf5823")) // pre avg_fee revert block                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // pre avg_fee revert block
+            (626555, uint256S("0xab4e8bdd76283070e11377f9497d7a644d9a813fc354152b36ded76d68eb5388")) // post avg_fee revert block                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // post avg_fee revert block
+            (655200, uint256S("0x0dbcd2799042832cb3c1c0255e34b1ca797d30db9438d836e9e830394e98b999 ")) // Radium 1.4.5 Code release                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Radium 1.4.5 Code release
             (700000, uint256S("0x6ceebeff2760988638367e5e91a9061bdc9623db1dceeaa7cef1eb8da88ec2bd "))
 			(800000, uint256S("0xbce932a50e264133d5456f1a8076552f5186f3f6ff46310f4c769ae83c4a1723 "))
 			(900000, uint256S("0x5c58c0b472ab44dbde75c31e549615fc00feea3a93844d8c78837b2e85245c4e "))
@@ -192,6 +192,30 @@ public:
 			(1500000, uint256S("0xe01b2489defc9e272cf455718774341809c04ab97733a5c12308c9e9e9dda031"))
 			(1550000, uint256S("0x152f86b58e2f86467b1770e2ba2fa53d72f8f29f0c9ba19327a5b9f403358904"))
 			(1594200, uint256S("0x00062974544477352134e8396c2186610bf744998b2f34cf2005eacaccd2cffb"))
+			(1600000, uint256S("0xff5404d458f342ce6bee860e7c03ec847943da161cdb9914c23d5401d1744908"))
+			(1700000, uint256S("0x3191191349cecf60db3da8bb467f01d05c85f3d8cdd4f921060dda5be31cddd1"))
+			(1800000, uint256S("0x8cb0ad88427f7f98b66d1018bcba9e78a873c89fcdefa4c87c33e56aeaba2dde"))
+			(1900000, uint256S("0x95a2b47511627b57c4307f19fc45ba52a34446d68100c55bdaca1eb0f1b63bcb"))
+			(2000000, uint256S("0x6f5ffb06006b6724caf38de9fa67c8c98c3cd87ab0aca9a84cb983dc858be901"))
+			(2100000, uint256S("0x483f9d89fa11bee453f684eef918f1eb06e7ca2f0672f45c9fd7dd9d8e8fa995"))
+			(2200000, uint256S("0x231e74358bb0b0dc6b1261d16935d45a10982bf66c0c7ab208f02e28b9b6ae61"))
+			(2300000, uint256S("0x462e12a20897f054e182f83c20ee30d5c72755542fae6729afaa9ecdef714c9e"))
+			(2400000, uint256S("0xb670ba23f814d23ec129999b26bb734011c06f51cf5887ae871a9500fd7158ef"))
+
+			
+
+
+
+
+
+			
+			
+			
+			
+			
+			
+			
+
         };
     }
 };
