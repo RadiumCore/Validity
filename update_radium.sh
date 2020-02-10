@@ -1,3 +1,4 @@
+apt-get update
 git pull
 BITCOIN_ROOT=$(pwd) 
 BDB_PREFIX="${BITCOIN_ROOT}/build"
