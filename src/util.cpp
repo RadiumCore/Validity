@@ -98,7 +98,7 @@ const int64_t nStartupTime = GetTime();
 
 using namespace std;
 
-const char * const BITCOIN_CONF_FILENAME = "radium13.conf";
+const char * const BITCOIN_CONF_FILENAME = "radium.conf";
 const char * const BITCOIN_PID_FILENAME = "radium13d.pid";
 
 map<string, string> mapArgs;
