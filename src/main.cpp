@@ -1980,33 +1980,36 @@ CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
 int64_t GetRunningFee(const CBlockIndex* pindexPrev)
 {
     int64_t nRFee = 0;
-    int64_t nCumulatedFee = 0;
-    int feesCount = 0;
-    int startHeight = pindexPrev->nHeight;
-    CBlock blockTmp;
-    //dont know if this line is needed or not. Probally not?
+    int64_t nCumulatedFee = 0;   
+   
+   
+    
     const CBlockIndex* pblockindexTmp = pindexPrev;
-    LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
-    LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
-    LogPrintf("---------------------->Loop start hash: %s\n", pblockindexTmp->phashBlock->ToString());
-    while (pblockindexTmp->nHeight > startHeight - (AVG_FEE_SPAN - 1)) {
+    //LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
+    //LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
+    //LogPrintf("---------------------->Loop start hash: %s\n", pblockindexTmp->phashBlock->ToString());
+    while (pblockindexTmp->nHeight > pindexPrev->nHeight - (AVG_FEE_SPAN - 1)) {
        
         
         nCumulatedFee += pblockindexTmp->nFees;
-        assert(MoneyRange(nCumulatedFee));
+        
 
         //LogPrintf("%d---------------------->blockFee:%d\n", pblockindexTmp->phashBlock, pblockindexTmp->nFees);
         //LogPrintf("---------------------->nCumulatedFee:%d\n", (int)nCumulatedFee);
-       // LogPrintf("---------------------->count:%d\n", (int)feesCount);
+        //LogPrintf("---------------------->count:%d\n", (int)feesCount);
         //LogPrintf("---------------------->avg:%d\n", (int64_t)((nCumulatedFee) / (feesCount + 1)));
-        feesCount++;
+       
         pblockindexTmp = pblockindexTmp->pprev;
     }
-    nRFee = (int64_t)((nCumulatedFee) / (feesCount + 1));
+
+	assert(MoneyRange(nCumulatedFee));
+
+
+    nRFee = (int64_t)((nCumulatedFee) / AVG_FEE_SPAN);
     if (!MoneyRange(nRFee))
         nRFee = 0;
 
-    LogPrintf("---------------------->RFee:%d\n", (int)nRFee);
+   // LogPrintf("---------------------->RFee:%d\n", (int)nRFee);
    // if (mapFeeCache.size() > 50000)
     //    mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
 
