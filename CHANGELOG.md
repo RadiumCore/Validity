@@ -1,5 +1,35 @@
 # Changelog
 
+##v13.0.9-alpha-peer_blocks_64 (2010-2-11)
+- Change max concurrent blocks per peer from 16 to 64
+
+##v13.0.8-alpha-block_window_4096 (2010-2-11) DONE
+- Change block download window from 4096
+
+##v13.0.7-alpha-block_window_2048 (2010-2-11) DONE!
+- Change block download window from 1024 to 2048
+- Change max concurrent blocks per peer from 16 to 32
+
+##v13.0.6-alpha-set_conf_name (2010-2-11) DONE!
+- Revert config file name back to radium.conf
+
+##v13.0.5-alpha-avg_fee_optimize (2010-2-11) DONE!
+
+- Attempt to optimize average fee calculation loop
+
+##v13.0.4-alpha (2010-2-11)
+- Fix syncing delay
+- Fix v13 nodes not reporting completions of IBD
+
+##v13.0.2-alpha (2010-2-3)
+- Update fixed seed nodes
+- Fix wrong port in fixed node generation script
+- Refactor code causing windows build issues. 
+
+##v13.0.0-alpha (2010-1-12)
+- First Radium alpha build
+- Implemented Radium Chain
+
 ## v2.13.2.4 (2019-11-11)
 - Updated fixed seeds
 - Added burn RPC call
