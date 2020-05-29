@@ -1,20 +1,20 @@
 # Changelog
 
-##v13.0.9-alpha-peer_blocks_64 (2010-2-11)
-- Change max concurrent blocks per peer from 16 to 64
+##v13.0.12 (2010-5-29)
+- Fix db corruption
+- Update Berkeley db to  6.2.38
 
-##v13.0.8-alpha-block_window_4096 (2010-2-11) DONE
-- Change block download window from 4096
+##v13.0.11 (2010-2-17)
+- Fix sync progress calculation
 
-##v13.0.7-alpha-block_window_2048 (2010-2-11) DONE!
+##v13.0.10 (2010-2-12) 
 - Change block download window from 1024 to 2048
 - Change max concurrent blocks per peer from 16 to 32
 
-##v13.0.6-alpha-set_conf_name (2010-2-11) DONE!
+##v13.0.6- (2010-2-12) 
 - Revert config file name back to radium.conf
 
-##v13.0.5-alpha-avg_fee_optimize (2010-2-11) DONE!
-
+##v13.0.5-alpha-avg_fee_optimize (2010-2-11) 
 - Attempt to optimize average fee calculation loop
 
 ##v13.0.4-alpha (2010-2-11)
