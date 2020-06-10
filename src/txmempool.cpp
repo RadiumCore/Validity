@@ -1058,28 +1058,15 @@ const CTxMemPool::setEntries & CTxMemPool::GetMemPoolChildren(txiter entry) cons
     return it->second.children;
 }
 
-CFeeRate CTxMemPool::GetMinFee(size_t sizelimit) const {
+CFeeRate CTxMemPool::GetMinFee(size_t sizelimit) const
+{
     LOCK(cs);
-    if (!blockSinceLastRollingFeeBump || rollingMinimumFeeRate == 0)
-        return CFeeRate(rollingMinimumFeeRate);
 
-    int64_t time = GetTime();
-    if (time > lastRollingFeeUpdate + 10) {
-        double halflife = ROLLING_FEE_HALFLIFE;
-        if (DynamicMemoryUsage() < sizelimit / 4)
-            halflife /= 4;
-        else if (DynamicMemoryUsage() < sizelimit / 2)
-            halflife /= 2;
 
-        rollingMinimumFeeRate = rollingMinimumFeeRate / pow(2.0, (time - lastRollingFeeUpdate) / halflife);
-        lastRollingFeeUpdate = time;
+    int64_t nMinFee = (1 + (int64_t)sizelimit / 1000) * minReasonableRelayFee.GetFeePerK();
 
-        if (rollingMinimumFeeRate < minReasonableRelayFee.GetFeePerK() / 2) {
-            rollingMinimumFeeRate = 0;
-            return CFeeRate(0);
-        }
-    }
-    return std::max(CFeeRate(rollingMinimumFeeRate), minReasonableRelayFee);
+
+    return CFeeRate(nMinFee);
 }
 
 void CTxMemPool::trackPackageRemoved(const CFeeRate& rate) {
