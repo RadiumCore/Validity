@@ -41,7 +41,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     ui->passEdit2->installEventFilter(this);
     ui->passEdit3->installEventFilter(this);
 
-    ui->stakingCheckBox->setChecked(true);
+    ui->stakingCheckBox->setChecked(fWalletUnlockStakingOnly);
     ui->stakingCheckBox->hide();
 
     switch(mode)
