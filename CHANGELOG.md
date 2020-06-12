@@ -1,32 +1,36 @@
 # Changelog
 
-##v13.0.12 (2010-5-29)
+##v13.0.16 (2020-6-11)
+- Fix fee calculations
+- Change units from RAD to RADS
+
+##v13.0.12 (2020-5-29)
 - Fix db corruption
 - Update Berkeley db to  6.2.38
 
-##v13.0.11 (2010-2-17)
+##v13.0.11 (2020-2-17)
 - Fix sync progress calculation
 
-##v13.0.10 (2010-2-12) 
+##v13.0.10 (2020-2-12) 
 - Change block download window from 1024 to 2048
 - Change max concurrent blocks per peer from 16 to 32
 
-##v13.0.6- (2010-2-12) 
+##v13.0.6- (2020-2-12) 
 - Revert config file name back to radium.conf
 
 ##v13.0.5-alpha-avg_fee_optimize (2010-2-11) 
 - Attempt to optimize average fee calculation loop
 
-##v13.0.4-alpha (2010-2-11)
+##v13.0.4-alpha (2020-2-11)
 - Fix syncing delay
 - Fix v13 nodes not reporting completions of IBD
 
-##v13.0.2-alpha (2010-2-3)
+##v13.0.2-alpha (2020-2-3)
 - Update fixed seed nodes
 - Fix wrong port in fixed node generation script
 - Refactor code causing windows build issues. 
 
-##v13.0.0-alpha (2010-1-12)
+##v13.0.0-alpha (2020-1-12)
 - First Radium alpha build
 - Implemented Radium Chain
 
