@@ -259,7 +259,7 @@
     </message>
     <message>
         <source>Browse transaction history</source>
-        <translation>Blader door transactiegescheidenis</translation>
+        <translation>Blader door transactiegeschiedenis</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -487,7 +487,7 @@
     </message>
     <message>
         <source>Connecting to peers...</source>
-        <translation>Gelijke worden verbonden...</translation>
+        <translation>Gelijken worden verbonden...</translation>
     </message>
     <message>
         <source>Catching up...</source>
@@ -580,7 +580,7 @@
     </message>
     <message>
         <source>After Fee:</source>
-        <translation>Naheffing:</translation>
+        <translation>Na heffing:</translation>
     </message>
     <message>
         <source>Change:</source>
@@ -1224,7 +1224,7 @@
     </message>
     <message>
         <source>Mined balance that has not yet matured</source>
-        <translation>Gedolven saldo dat nog niet tot wasdom is gekomen</translation>
+        <translation>Gedolven saldo dat nog niet tot maturiteit is gekomen</translation>
     </message>
     <message>
         <source>Balances</source>
@@ -1256,7 +1256,7 @@
     </message>
     <message>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation>Ontgonnen saldo dat nog niet tot wasdom is gekomen</translation>
+        <translation>Ontgonnen saldo dat nog niet tot maturiteit is gekomen</translation>
     </message>
     <message>
         <source>Current total balance in watch-only addresses</source>
