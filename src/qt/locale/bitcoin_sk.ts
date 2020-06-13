@@ -1939,7 +1939,7 @@
     <name>SendCoinsDialog</name>
     <message>
         <source>Send Coins</source>
-        <translation>Poslať Radiums</translation>
+        <translation>Poslať Radium</translation>
     </message>
     <message>
         <source>Coin Control Features</source>

@@ -212,7 +212,7 @@
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR RadiumS&lt;/b&gt;!</translation>
+        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR Radium&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -228,7 +228,7 @@
     <message>
         <location line="-56"/>
         <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
-        <translation>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Radiums from being stolen by malware infecting your computer.</translation>
+        <translation>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your Radium from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1124,7 +1124,7 @@
     <message>
         <location line="+19"/>
         <source>Attempting to spend bitcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation>Attempting to spend Radiums that are affected by not-yet-displayed transactions will not be accepted by the network.</translation>
+        <translation>Attempting to spend Radium that are affected by not-yet-displayed transactions will not be accepted by the network.</translation>
     </message>
     <message>
         <location line="+63"/>
@@ -2933,7 +2933,7 @@
     <message>
         <location line="-1021"/>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>he fee will be deducted from the amount being sent. The recipient will receive less Radiums than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</translation>
+        <translation>he fee will be deducted from the amount being sent. The recipient will receive less Radium than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3020,7 +3020,7 @@
     <message>
         <location line="+6"/>
         <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>You can sign messages/agreements with your addresses to prove you can receive Radiums sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</translation>
+        <translation>You can sign messages/agreements with your addresses to prove you can receive Radium sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</translation>
     </message>
     <message>
         <location line="+18"/>

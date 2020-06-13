@@ -63,7 +63,7 @@
     </message>
     <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Detta är dina Radium adresser för att skicka betalningar. Kolla alltid summan och den mottagande adressen innan du skickar Radiums.</translation>
+        <translation>Detta är dina Radium adresser för att skicka betalningar. Kolla alltid summan och den mottagande adressen innan du skickar Radium.</translation>
     </message>
     <message>
         <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
@@ -340,7 +340,7 @@ Var vänlig och försök igen.</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Skicka Radiums till en Radium-adress</translation>
+        <translation>Skicka Radium till en Radium-adress</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -1898,7 +1898,7 @@ Var vänlig och försök igen.</translation>
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>Avgiften dras från beloppet som skickas. Mottagaren kommer att få mindre Radiums än du angivit i belopp-fältet. Om flera mottagare valts kommer avgiften delas jämt.</translation>
+        <translation>Avgiften dras från beloppet som skickas. Mottagaren kommer att få mindre Radium än du angivit i belopp-fältet. Om flera mottagare valts kommer avgiften delas jämt.</translation>
     </message>
     <message>
         <source>S&amp;ubtract fee from amount</source>
@@ -1963,7 +1963,7 @@ Var vänlig och försök igen.</translation>
     </message>
     <message>
         <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>Du kan underteckna meddelanden/avtal med dina adresser för att bevisa att du kan ta emot Radiums som skickats till dem. Var försiktig så du inte undertecknar något oklart eller konstigt, eftersom phishing-angrepp kan försöka få dig att underteckna din identitet till dem. Underteckna endast väldetaljerade meddelanden som du godkänner.</translation>
+        <translation>Du kan underteckna meddelanden/avtal med dina adresser för att bevisa att du kan ta emot Radium som skickats till dem. Var försiktig så du inte undertecknar något oklart eller konstigt, eftersom phishing-angrepp kan försöka få dig att underteckna din identitet till dem. Underteckna endast väldetaljerade meddelanden som du godkänner.</translation>
     </message>
     <message>
         <source>The Bitcoin address to sign the message with</source>
@@ -2940,7 +2940,7 @@ Var vänlig och försök igen.</translation>
     </message>
     <message>
         <source>Insufficient funds</source>
-        <translation>Otillräckligt med Radiums</translation>
+        <translation>Otillräckligt med Radium</translation>
     </message>
     <message>
         <source>Loading block index...</source>

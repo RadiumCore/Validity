@@ -169,7 +169,7 @@
     </message>
     <message>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation>Advertencia: Si encripta su monedero y pierde su frase clave &lt;b&gt;PERDERÁ TODOS SUS RadiumS&lt;/b&gt;!</translation>
+        <translation>Advertencia: Si encripta su monedero y pierde su frase clave &lt;b&gt;PERDERÁ TODOS SUS Radium&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -339,7 +339,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Enviar Radiums a una dirección Radium</translation>
+        <translation>Enviar Radium a una dirección Radium</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -1125,7 +1125,7 @@
     </message>
     <message>
         <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>Elegir la subdivisión predeterminada para mostrar cantidades en la interfaz y cuando se envían Radiums.</translation>
+        <translation>Elegir la subdivisión predeterminada para mostrar cantidades en la interfaz y cuando se envían Radium.</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
@@ -1874,7 +1874,7 @@
     <name>SendCoinsDialog</name>
     <message>
         <source>Send Coins</source>
-        <translation>Enviar Radiums</translation>
+        <translation>Enviar Radium</translation>
     </message>
     <message>
         <source>Coin Control Features</source>
@@ -2161,7 +2161,7 @@
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>La cuota será deducida de la cantidad que sea mandada. El destinatario recibirá menos Radiums de los que entres en el  </translation>
+        <translation>La cuota será deducida de la cantidad que sea mandada. El destinatario recibirá menos Radium de los que entres en el  </translation>
     </message>
     <message>
         <source>S&amp;ubtract fee from amount</source>
@@ -2503,7 +2503,7 @@
     </message>
     <message>
         <source>Generated coins must mature %1 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to "not accepted" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Los Radiums generados deben madurar %1 bloques antes de que puedan gastarse. Cuando generó este bloque, se transmitió a la red para que se añadiera a la cadena de bloques. Si no consigue entrar en la cadena, su estado cambiará a "no aceptado" y ya no se podrá gastar. Esto puede ocurrir ocasionalmente si otro nodo genera un bloque a pocos segundos del suyo.</translation>
+        <translation>Los Radium generados deben madurar %1 bloques antes de que puedan gastarse. Cuando generó este bloque, se transmitió a la red para que se añadiera a la cadena de bloques. Si no consigue entrar en la cadena, su estado cambiará a "no aceptado" y ya no se podrá gastar. Esto puede ocurrir ocasionalmente si otro nodo genera un bloque a pocos segundos del suyo.</translation>
     </message>
     <message>
         <source>Debug information</source>

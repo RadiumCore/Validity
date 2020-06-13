@@ -43,11 +43,11 @@
     </message>
     <message>
         <source>Choose the address to send coins to</source>
-        <translation>Vælg adresse at sende Radiums til</translation>
+        <translation>Vælg adresse at sende Radium til</translation>
     </message>
     <message>
         <source>Choose the address to receive coins with</source>
-        <translation>Vælg adresse at modtage Radiums med</translation>
+        <translation>Vælg adresse at modtage Radium med</translation>
     </message>
     <message>
         <source>C&amp;hoose</source>
@@ -63,7 +63,7 @@
     </message>
     <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Disse er dine Radium-adresser til afsendelse af betalinger. Tjek altid beløb og modtagelsesadresse, inden du sender Radiums.</translation>
+        <translation>Disse er dine Radium-adresser til afsendelse af betalinger. Tjek altid beløb og modtagelsesadresse, inden du sender Radium.</translation>
     </message>
     <message>
         <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
@@ -169,7 +169,7 @@
     </message>
     <message>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
-        <translation>Advarsel: Hvis du krypterer din tegnebog og mister din adgangskode, vil du &lt;b&gt;MISTE ALLE DINE RadiumS&lt;/b&gt;!</translation>
+        <translation>Advarsel: Hvis du krypterer din tegnebog og mister din adgangskode, vil du &lt;b&gt;MISTE ALLE DINE Radium&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -339,7 +339,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Send Radiums til en Radium-adresse</translation>
+        <translation>Send Radium til en Radium-adresse</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -1145,7 +1145,7 @@
     </message>
     <message>
         <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>Vælg standard for underopdeling af enhed, som skal vises i brugergrænsefladen og ved afsendelse af Radiums.</translation>
+        <translation>Vælg standard for underopdeling af enhed, som skal vises i brugergrænsefladen og ved afsendelse af Radium.</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
@@ -1958,7 +1958,7 @@
     <name>SendCoinsDialog</name>
     <message>
         <source>Send Coins</source>
-        <translation>Send Radiums</translation>
+        <translation>Send Radium</translation>
     </message>
     <message>
         <source>Coin Control Features</source>
@@ -2150,7 +2150,7 @@
     </message>
     <message>
         <source>Confirm send coins</source>
-        <translation>Bekræft afsendelse af Radiums</translation>
+        <translation>Bekræft afsendelse af Radium</translation>
     </message>
     <message>
         <source>The recipient address is not valid. Please recheck.</source>
@@ -2623,7 +2623,7 @@
     </message>
     <message>
         <source>Generated coins must mature %1 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to "not accepted" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Minede Radiums skal modne %1 blokke, før de kan bruges. Da du genererede denne blok, blev den transmitteret til netværket for at blive føjet til blokkæden. Hvis det ikke lykkes at få den i kæden, vil dens tilstand ændres til “ikke accepteret”, og den vil ikke kunne bruges. Dette kan ske nu og da, hvis en anden knude udvinder en blok inden for nogle få sekunder fra din.</translation>
+        <translation>Minede Radium skal modne %1 blokke, før de kan bruges. Da du genererede denne blok, blev den transmitteret til netværket for at blive føjet til blokkæden. Hvis det ikke lykkes at få den i kæden, vil dens tilstand ændres til “ikke accepteret”, og den vil ikke kunne bruges. Dette kan ske nu og da, hvis en anden knude udvinder en blok inden for nogle få sekunder fra din.</translation>
     </message>
     <message>
         <source>Debug information</source>
@@ -2949,7 +2949,7 @@
     <name>WalletModel</name>
     <message>
         <source>Send Coins</source>
-        <translation>Send Radiums</translation>
+        <translation>Send Radium</translation>
     </message>
 </context>
 <context>
