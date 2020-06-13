@@ -34,7 +34,7 @@ CAmount CFeeRate::GetFee(size_t nBytes_) const
         if (nSatoshisPerK < 0)
             nFee = CAmount(-1);
     }
-    LogPrintf("GetFee: Size: %d satperK:%d fee: %d \n", nBytes_, nSatoshisPerK, nFee);
+   
     return nFee;
 }
 
