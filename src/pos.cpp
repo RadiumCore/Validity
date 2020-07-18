@@ -206,7 +206,13 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTime, co
             return false;
         }
 
-        return CheckStakeKernelHash(pindexPrev, nBits, new CCoins(txPrev, pindexPrev->nHeight), prevout, nTime);
+        //hacky way to prevent memory leak. CheckStakeKernalHash requires a pointer
+        CCoins* coins = new CCoins(txPrev, pindexPrev->nHeight);
+        bool result = CheckStakeKernelHash(pindexPrev, nBits, coins, prevout, nTime);
+        delete coins;
+        return result;
+
+        
     } else {
         //found in cache
         const CStakeCache& stake = it->second;
@@ -216,7 +222,11 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t nTime, co
             return CheckKernel(pindexPrev, nBits, nTime, prevout);
         }
         */
-        return CheckStakeKernelHash(pindexPrev, nBits, new CCoins(stake.txPrev, pindexPrev->nHeight), prevout, nTime);
+        //hacky way to prevent memory leak. CheckStakeKernalHash requires a pointer
+        CCoins* coins = new CCoins(stake.txPrev, pindexPrev->nHeight);
+        bool result = CheckStakeKernelHash(pindexPrev, nBits, coins, prevout, nTime);
+        delete coins;
+        return result;
     }
 }
 
