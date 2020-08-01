@@ -152,6 +152,14 @@ UniValue ValueFromAmount(const CAmount& amount)
             strprintf("%s%d.%08d", sign ? "-" : "", quotient, remainder));
 }
 
+UniValue ValueFromUInt(unsigned int& amount)
+{
+   
+    return UniValue(UniValue::VNUM, std::to_string(amount)   );
+}
+
+ 
+
 uint256 ParseHashV(const UniValue& v, string strName)
 {
     string strHex;
