@@ -532,6 +532,67 @@ UniValue getblockhash(const UniValue& params, bool fHelp)
     return pblockindex->GetBlockHash().GetHex();
 }
 
+UniValue getblockbynumber(const UniValue& params, bool fHelp)
+{
+    
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "getblockbynumber index\n"
+            "\nReturns hash of block in best-block-chain at index provided.\n"
+            "\nArguments:\n"
+            "1. index         (numeric, required) The block index\n"
+            "\nResult:\n"
+            "\"index\"         (string) The block hash\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getblockbynumber", "1000") + HelpExampleRpc("getblockbynumber", "1000"));
+    
+    LOCK(cs_main);
+    
+    int nHeight = std::stoi(params[0].get_str());
+    if (nHeight < 0 || nHeight > chainActive.Height())
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
+
+    CBlock block;
+    CBlockIndex* pblockindex = chainActive[nHeight];
+
+    if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Block not available (pruned data)");
+
+    if (!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Can't read block from disk");   
+
+    return blockToJSON(block, pblockindex);
+   
+}
+
+UniValue getblocktxcountbynumber(const UniValue& params, bool fHelp)
+{
+   
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "getblocktxcountbynumber index\n"
+            "\nReturns number of tx's in the block.\n"
+            "\nArguments:\n"
+            "1. index         (numeric, required) The block index\n"
+            "\nResult:\n"
+            "\"index\"         (string) The block hash\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getblocktxcountbynumber", "1000") + HelpExampleRpc("getblocktxcountbynumber", "1000"));
+
+    LOCK(cs_main);
+    
+    int nHeight = std::stoi(params[0].get_str());
+    if (nHeight < 0 || nHeight > chainActive.Height())
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
+
+    
+    CBlockIndex* pblockindex = chainActive[nHeight];
+
+   return ValueFromUInt(pblockindex->nTx);
+
+    
+}
+
 UniValue getblockheader(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
@@ -1245,6 +1306,8 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getblockcount",          &getblockcount,          true  },
     { "blockchain",         "getblock",               &getblock,               true  },
     { "blockchain",         "getblockhash",           &getblockhash,           true  },
+    { "blockchain",         "getblockbynumber",       &getblockbynumber,       true  },
+    { "blockchain",         "getblocktxcountbynumber", &getblocktxcountbynumber, true  },    
     { "blockchain",         "getblockheader",         &getblockheader,         true  },
     { "blockchain",         "getchaintips",           &getchaintips,           true  },
     { "blockchain",         "getdifficulty",          &getdifficulty,          true  },
