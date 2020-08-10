@@ -14,6 +14,10 @@
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
+#include <main.h>
+#include <util.h>
+#include "wallet/wallet.h"
+#include "walletframe.h"
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
@@ -141,6 +145,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
+    updateStakeReportNow();
     connect(ui->labelWalletStatus, SIGNAL(clicked()), this, SLOT(handleOutOfSyncWarningClicks()));
     connect(ui->labelTransactionsStatus, SIGNAL(clicked()), this, SLOT(handleOutOfSyncWarningClicks()));
 }
@@ -159,6 +164,12 @@ void OverviewPage::handleOutOfSyncWarningClicks()
 OverviewPage::~OverviewPage()
 {
     delete ui;
+}
+
+
+void OverviewPage::setStakingStats(QString day, QString week, QString month, QString year, QString all)
+{
+    updateStakeReport(true);
 }
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake)
@@ -249,7 +260,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
         setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getStake(),
                            model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getWatchStake());
         connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
-
+        connect(model, SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)), this, SLOT(updateStakeReportbalanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
 
         updateWatchOnlyLabels(model->haveWatchOnly());
@@ -285,4 +296,90 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
     ui->labelWalletStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
+}
+using namespace boost;
+
+
+using namespace std;
+
+
+struct StakePeriodRange_T {
+    int64_t Start;
+    int64_t End;
+    int64_t Total;
+    int Count;
+    string Name;
+};
+
+typedef vector<StakePeriodRange_T> vStakePeriodRange_T;
+
+extern vStakePeriodRange_T PrepareRangeForStakeReport();
+extern int GetsStakeSubTotal(vStakePeriodRange_T& aRange);
+double GetPoSKernelPS();
+
+void OverviewPage::updateStakeReport(bool fImmediate = false)
+{
+    LOCK(cs_main);
+    if (!walletModel || !walletModel->getOptionsModel())
+        return;
+
+    static vStakePeriodRange_T aRange;
+    int nItemCounted = 0;
+
+
+    if (fImmediate)
+        nLastReportUpdate = 0;
+
+
+    // Skip report recalc if not immediate or before 5 minutes from last
+    if (GetTime() - nLastReportUpdate > 300) {
+        // Load the range
+        aRange = PrepareRangeForStakeReport();
+
+        // Get the subtotals
+        nItemCounted = GetsStakeSubTotal(aRange);
+
+        // Save the last update
+        nLastReportUpdate = GetTime();
+    }
+
+
+    int unit = walletModel->getOptionsModel()->getDisplayUnit();
+
+    CAmount amount24h = aRange[30].Total;
+    CAmount amount7d = aRange[31].Total;
+    CAmount amount30d = aRange[32].Total;
+    CAmount amount1y = aRange[33].Total;
+    CAmount amountAll = aRange[34].Total;
+
+    CCoinsViewCache view(pcoinsTip);
+
+    uint64_t nWeight = pwalletMain ? pwalletMain->GetStakeWeight() : 0;
+    uint64_t nNetworkWeight = GetPoSKernelPS();
+    bool staking = nLastCoinStakeSearchInterval && nWeight;
+    uint64_t nExpectedTime = staking ? (1.0455 * 64 * nNetworkWeight / nWeight) : 0;
+    CAmount nExpectedDailyReward = ((double)86400 / (nExpectedTime + 1)) * GetProofOfStakeSubsidy(chainActive.Tip()) ;
+
+    ui->label24hStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount24h, false, BitcoinUnits::separatorAlways));
+    ui->label7dStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount7d, false, BitcoinUnits::separatorAlways));
+    ui->label30dStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount30d, false, BitcoinUnits::separatorAlways));
+    ui->label1yStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount1y, false, BitcoinUnits::separatorAlways));
+    ui->labelallStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amountAll, false, BitcoinUnits::separatorAlways));
+    if (staking)
+        ui->labelExpectedStakingStats->setText(BitcoinUnits::formatWithUnit(unit, nExpectedDailyReward, false, BitcoinUnits::separatorAlways));
+    else
+        ui->labelExpectedStakingStats->setText("Wallet Not Staking");
+
+
+    uiInterface.SetStaked(amountAll, amount24h, amount7d);
+}
+
+void OverviewPage::updateStakeReportbalanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)
+{
+    OverviewPage::updateStakeReportNow();
+}
+
+void OverviewPage::updateStakeReportNow()
+{
+    updateStakeReport(true);
 }

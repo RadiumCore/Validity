@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <amount.h>
 
 #include <boost/signals2/last_value.hpp>
 #include <boost/signals2/signal.hpp>
@@ -105,6 +106,11 @@ public:
 
     /** Banlist did change. */
     boost::signals2::signal<void (void)> BannedListChanged;
+
+      /** Update the staked stats in the wallet header */
+
+
+    boost::signals2::signal<void(const CAmount& all, const CAmount& today, const CAmount& week)> SetStaked;
 };
 
 /** Show warning message **/
