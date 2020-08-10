@@ -2859,7 +2859,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				blockReward += GetDevSubsidy(pindex->pprev);
 
             if (nActualStakeReward > blockReward)
-                return state.DoS(100, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, blockReward), REJECT_INVALID, "bad-cs-amount");
+                return state.DoS(10, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, blockReward), REJECT_INVALID, "bad-cs-amount");
     }
 
     if (!control.Wait())
