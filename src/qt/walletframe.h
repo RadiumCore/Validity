@@ -80,6 +80,8 @@ public Q_SLOTS:
     /** Ask for passphrase to unlock wallet temporarily */
     void unlockWallet();
 
+    void setStakingStats(QString day, QString week, QString month, QString year, QString all);
+
     void lockWallet();
 
     /** Show used sending addresses */

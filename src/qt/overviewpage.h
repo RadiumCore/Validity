@@ -40,10 +40,14 @@ public:
 public Q_SLOTS:
 	void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake);
+    void setStakingStats(QString day, QString week, QString month, QString year, QString all);
+    void updateStakeReportNow();    
+    void updateStakeReportbalanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount);
 
 Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
-    void outOfSyncWarningClicked();
+    void outOfSyncWarningClicked();  
+
 
 private:
     Ui::OverviewPage *ui;
@@ -60,6 +64,9 @@ private:
 
     TxViewDelegate *txdelegate;
     std::unique_ptr<TransactionFilterProxy> filter;
+    qint64 nLastReportUpdate;
+    void updateStakeReport(bool fImmediate);
+
 
 private Q_SLOTS:
     void updateDisplayUnit();
