@@ -358,7 +358,7 @@ void OverviewPage::updateStakeReport(bool fImmediate = false)
     uint64_t nNetworkWeight = GetPoSKernelPS();
     bool staking = nLastCoinStakeSearchInterval && nWeight;
     uint64_t nExpectedTime = staking ? (1.0455 * 64 * nNetworkWeight / nWeight) : 0;
-    CAmount nExpectedDailyReward = ((double)86400 / (nExpectedTime + 1)) * GetProofOfStakeSubsidy(chainActive.Tip()) ;
+    CAmount nExpectedDailyReward = ((double)86400 / (nExpectedTime + 1)) * GetProofOfStakeSubsidy(chainActive.Tip(), 0) ;
 
     ui->label24hStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount24h, false, BitcoinUnits::separatorAlways));
     ui->label7dStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount7d, false, BitcoinUnits::separatorAlways));

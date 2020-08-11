@@ -827,7 +827,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Calculate reward
     {
-        int64_t nReward = nFees + GetProofOfStakeSubsidy(pindexPrev);
+        int64_t nReward = GetProofOfStakeSubsidy(pindexPrev, nFees);
+        // block block fees are included in getprofofstakesubsidy, when we are in running fees if not, add it back
+      
+
         if (nReward < 0)
            return false;
 
