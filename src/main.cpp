@@ -1778,7 +1778,7 @@ CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev)
     return nSubsidy;
 }
 
-CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev)
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, int nFees)
 {
     int nHeight = pindexPrev->nHeight + 1; 
     int64_t nSubsidy = 5 * COIN;
@@ -1887,17 +1887,17 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev)
     if (nHeight >= AVG_FEE_START_BLOCK_V2) {
         int64_t nRFee;
 
-        nRFee = GetRunningFee( pindexPrev);
+        nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
     } else if (nHeight >= AVG_FEE_START_BLOCK_REVERT) {
-        return nSubsidy ;
+        return nSubsidy + nFees;
     } else if (nHeight >= AVG_FEE_START_BLOCK) {
         int64_t nRFee;
 
-        nRFee = GetRunningFee( pindexPrev);
+        nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
     } else {
-        return nSubsidy ;
+        return nSubsidy + nFees ;
     }
 
 
@@ -1977,7 +1977,7 @@ CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
     return nSubsidy;
 }
 
-int64_t GetRunningFee(const CBlockIndex* pindexPrev)
+int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees)
 {
     int64_t nRFee = 0;
     int64_t nCumulatedFee = 0;   
@@ -1987,7 +1987,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
     const CBlockIndex* pblockindexTmp = pindexPrev;
     //LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
     //LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
-    //LogPrintf("---------------------->Loop start hash: %s\n", pblockindexTmp->phashBlock->ToString());
+    LogPrintf("---------------------->Loop start index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
     while (pblockindexTmp->nHeight > pindexPrev->nHeight - (AVG_FEE_SPAN - 1)) {
        
         
@@ -2001,14 +2001,15 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
        
         pblockindexTmp = pblockindexTmp->pprev;
     }
+    LogPrintf("---------------------->Loop stop index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
 
 	assert(MoneyRange(nCumulatedFee));
 
 
-    nRFee = (int64_t)((nCumulatedFee) / AVG_FEE_SPAN);
+    nRFee = (int64_t)((nCumulatedFee + nFees) / AVG_FEE_SPAN);
     if (!MoneyRange(nRFee))
         nRFee = 0;
-
+    LogPrintf("---------------------->Calculated Fee: %d\n", nRFee);
    // LogPrintf("---------------------->RFee:%d\n", (int)nRFee);
    // if (mapFeeCache.size() > 50000)
     //    mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
@@ -2016,6 +2017,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev)
 	// removal of above code will introduce slow memory leak. Must be fixed before release
     return nRFee;
 }
+
 
 bool IsInitialBlockDownload()
 {
@@ -2851,14 +2853,16 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	
 
     if (block.IsProofOfStake() && chainparams.GetConsensus().IsProtocolV3(block.GetBlockTime())) {
-            CAmount blockReward = nFees + GetProofOfStakeSubsidy(pindex->pprev);
+            CAmount blockReward = GetProofOfStakeSubsidy(pindex->pprev, nFees);
+        
+           
 			
 			//further checks to ensure correct amount is paid to the dev fund 
 			//occure in accept block
 			if (chainparams.GetConsensus().IsBlockDevFund(pindex->nHeight))
 				blockReward += GetDevSubsidy(pindex->pprev);
 
-            if (nActualStakeReward > blockReward)
+            if (nActualStakeReward != blockReward)
                 return state.DoS(10, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, blockReward), REJECT_INVALID, "bad-cs-amount");
     }
 
