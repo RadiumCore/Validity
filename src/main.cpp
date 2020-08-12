@@ -1987,7 +1987,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees)
     const CBlockIndex* pblockindexTmp = pindexPrev;
     //LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
     //LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
-    LogPrintf("---------------------->Loop start index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
+    //LogPrintf("---------------------->Loop start index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
     while (pblockindexTmp->nHeight > pindexPrev->nHeight - (AVG_FEE_SPAN - 1)) {
        
         
@@ -2001,7 +2001,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees)
        
         pblockindexTmp = pblockindexTmp->pprev;
     }
-    LogPrintf("---------------------->Loop stop index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
+    //LogPrintf("---------------------->Loop stop index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
 
 	assert(MoneyRange(nCumulatedFee));
 
@@ -2009,7 +2009,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees)
     nRFee = (int64_t)((nCumulatedFee + nFees) / AVG_FEE_SPAN);
     if (!MoneyRange(nRFee))
         nRFee = 0;
-    LogPrintf("---------------------->Calculated Fee: %d\n", nRFee);
+    //LogPrintf("---------------------->Calculated Fee: %d\n", nRFee);
    // LogPrintf("---------------------->RFee:%d\n", (int)nRFee);
    // if (mapFeeCache.size() > 50000)
     //    mapFeeCache.clear(); //clear cache if it gets too big to avoid memory bloating
