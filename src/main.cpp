@@ -2853,17 +2853,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	
 
     if (block.IsProofOfStake() && chainparams.GetConsensus().IsProtocolV3(block.GetBlockTime())) {
-            CAmount blockReward = GetProofOfStakeSubsidy(pindex->pprev, nFees);
+            CAmount ExpectedReward = GetProofOfStakeSubsidy(pindex->pprev, nFees);
         
            
 			
 			//further checks to ensure correct amount is paid to the dev fund 
 			//occure in accept block
 			if (chainparams.GetConsensus().IsBlockDevFund(pindex->nHeight))
-				blockReward += GetDevSubsidy(pindex->pprev);
+                ExpectedReward += GetDevSubsidy(pindex->pprev);
 
-            if (nActualStakeReward != blockReward)
-                return state.DoS(10, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, blockReward), REJECT_INVALID, "bad-cs-amount");
+            if (nActualStakeReward > ExpectedReward)
+                            return state.DoS(10, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, ExpectedReward), REJECT_INVALID, "bad-cs-amount");
     }
 
     if (!control.Wait())
