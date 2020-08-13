@@ -1778,12 +1778,12 @@ CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev)
     return nSubsidy;
 }
 
-CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, int nFees)
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
 {
     int nHeight = pindexPrev->nHeight + 1; 
-    int64_t nSubsidy = 5 * COIN;
+    CAmount nSubsidy = 5 * COIN;
     int DEV_FUND_BLOCK_HEIGHT = Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT;    
-    int64_t nYear = 525600; // ~ blocks per year
+    CAmount nYear = 525600; // ~ blocks per year
 
     if (nHeight >= 0 && nHeight <= 2779) {
         nSubsidy = 0 * COIN;
@@ -1885,14 +1885,14 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, int nFees)
 
 
     if (nHeight >= AVG_FEE_START_BLOCK_V2) {
-        int64_t nRFee;
+        CAmount nRFee;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
     } else if (nHeight >= AVG_FEE_START_BLOCK_REVERT) {
         return nSubsidy + nFees;
     } else if (nHeight >= AVG_FEE_START_BLOCK) {
-        int64_t nRFee;
+        CAmount nRFee;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
@@ -1905,8 +1905,8 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, int nFees)
 
 CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
 {
-    int64_t nSubsidy = 5 * COIN;
-    int64_t nYear = 525600; // ~ blocks per year
+    CAmount nSubsidy = 5 * COIN;
+    CAmount nYear = 525600; // ~ blocks per year
     int nHeight = pindexPrev->nHeight + 1; 
 	
 	// TODO this is dirty
@@ -1977,10 +1977,10 @@ CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
     return nSubsidy;
 }
 
-int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees)
+int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees)
 {
-    int64_t nRFee = 0;
-    int64_t nCumulatedFee = 0;   
+    CAmount nRFee = 0;
+    CAmount nCumulatedFee = 0;   
    
    
     
@@ -2006,7 +2006,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees)
 	assert(MoneyRange(nCumulatedFee));
 
 
-    nRFee = (int64_t)((nCumulatedFee + nFees) / AVG_FEE_SPAN);
+    nRFee = (CAmount)((nCumulatedFee + nFees) / AVG_FEE_SPAN);
     if (!MoneyRange(nRFee))
         nRFee = 0;
     //LogPrintf("---------------------->Calculated Fee: %d\n", nRFee);
@@ -2810,8 +2810,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         txdata.emplace_back(tx);
         if (!tx.IsCoinBase())
         {
-            if (tx.IsCoinStake())
-                nActualStakeReward = tx.GetValueOut()-view.GetValueIn(tx);
+            
+            if (tx.IsCoinStake()) {
+                
+                nActualStakeReward = tx.GetValueOut() - view.GetValueIn(tx);
+            }                
             else {
                 //TODO is this the fastest way to reduce ops?
                 CAmount tempFee = view.GetValueIn(tx) - tx.GetValueOut();
@@ -2853,7 +2856,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	
 
     if (block.IsProofOfStake() && chainparams.GetConsensus().IsProtocolV3(block.GetBlockTime())) {
-            CAmount ExpectedReward = GetProofOfStakeSubsidy(pindex->pprev, nFees);
+        CAmount ExpectedReward = GetProofOfStakeSubsidy(pindex->pprev, nFees);
         
            
 			
