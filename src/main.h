@@ -279,7 +279,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, const Consensus::Para
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState& state, const CChainParams& chainparams, const CBlock* pblock = NULL);
 CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev);
-CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, int nFees);
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees);
 CAmount GetDevSubsidy(const CBlockIndex* pindexPrev);
 CAmount GetTxDevSubsidy(const std::vector<CTxOut> vout);
 static const signed int AVG_FEE_START_BLOCK = 619480;
@@ -293,7 +293,7 @@ static const signed int AVG_FEE_START_BLOCK_TESTNET_V2 = 164750;
 
 
 static const signed int AVG_FEE_SPAN = 1440;
-int64_t GetRunningFee(const CBlockIndex* pindexPrev, int nFees);
+int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees);
 
 /**
  * Prune block and undo files (blk???.dat and undo???.dat) so that the disk space used is less than a user-defined target.

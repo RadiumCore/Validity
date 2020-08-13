@@ -172,7 +172,7 @@ public:
     int nHeight;
 
 	//! fees included in the block, used by averagefee protocol
-    int64_t nFees;
+    CAmount nFees;
 
     //! Which # file this block is stored in (blk?????.dat)
     int nFile;
