@@ -1870,7 +1870,7 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
     } else if (nHeight >= DEV_FUND_BLOCK_HEIGHT + nYear * 27 && nHeight < DEV_FUND_BLOCK_HEIGHT + nYear * 28) {
         nSubsidy = 0.22 * COIN; // Final reward drop 24 months from the dev subsidy fork.
     } else {
-        nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 RADS
+        nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 VAL
     }
 
     if (fDebug && GetBoolArg("-printcreation", false))
@@ -1970,7 +1970,7 @@ CAmount GetDevSubsidy(const CBlockIndex* pindexPrev)
     } else if (nHeight >= DEV_FUND_BLOCK_HEIGHT + nYear * 27 && nHeight < DEV_FUND_BLOCK_HEIGHT + nYear * 28) {
         nSubsidy = 264 * COIN; // Final reward drop 24 months from the dev subsidy fork.
     } else {
-        nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 RADS
+        nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 VAL
     }
 
     LogPrintf("GetDevSubsidy returned %d \n", nSubsidy);
