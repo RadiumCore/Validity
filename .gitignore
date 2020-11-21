@@ -123,4 +123,7 @@ contrib/devtools/split-debug.sh
 /src/radium13-cli
 /src/radium13d
 /src/radium13-tx
+/src/validity-cli
+/src/validityd
+/src/validity-tx
 /db-6.2.32*

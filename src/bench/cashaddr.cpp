@@ -14,17 +14,17 @@ static void CashAddrEncode(benchmark::State &state) {
                                    139, 2,  215, 100, 91,  38,  11,  141,
                                    253, 40, 117, 21,  16,  90,  200, 24};
     while (state.KeepRunning()) {
-        cashaddr::Encode("radium", buffer);
+        cashaddr::Encode("validity", buffer);
     }
 }
 
 static void CashAddrDecode(benchmark::State &state) {
     const char *addrWithPrefix =
-        "radium:qprnwmr02d7ky9m693qufj5mgkpf4wvssv0w86tkjd";
+        "validity:qprnwmr02d7ky9m693qufj5mgkpf4wvssv0w86tkjd";
     const char *addrNoPrefix = "qprnwmr02d7ky9m693qufj5mgkpf4wvssv0w86tkjd";
     while (state.KeepRunning()) {
-        cashaddr::Decode(addrWithPrefix, "radium");
-        cashaddr::Decode(addrNoPrefix, "radium");
+        cashaddr::Decode(addrWithPrefix, "validity");
+        cashaddr::Decode(addrNoPrefix, "validity");
     }
 }
 

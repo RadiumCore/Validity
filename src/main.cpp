@@ -67,7 +67,7 @@
 using namespace std;
 
 #if defined(NDEBUG)
-# error "Radium cannot be compiled without assertions."
+# error "Validity cannot be compiled without assertions."
 #endif
 
 /**

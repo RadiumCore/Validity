@@ -49,6 +49,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     QString copyrightTextBlackcoin   = QChar(0xA9)+QString(" %1-%2 ").arg(2014).arg(2018) + QString("The Blackcoin developers");
     QString copyrightTextBlackmore   = QChar(0xA9)+QString(" %1-%2 ").arg(2018).arg(2019) + QString("The Blackcoin More developers");
     QString copyrightTextRadiumcore = QChar(0xA9) + QString(" %1-%2 ").arg(2019).arg(COPYRIGHT_YEAR) + QString("The Radium Core developers");
+    QString copyrightTextValidity = QChar(0xA9) + QString(" %1-%2 ").arg(2020).arg(COPYRIGHT_YEAR) + QString("The Validity developers");
 
     // QString copyrightText   = QChar(0xA9)+QString(" %1-%2 ").arg(2009).arg(COPYRIGHT_YEAR) + QString::fromStdString(CopyrightHolders());
 
@@ -116,6 +117,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
         pixPaint.drawText(x,y+10,copyrightTextBlackcoin);
         pixPaint.drawText(x,y+20,copyrightTextBlackmore);
         pixPaint.drawText(x,y+30, copyrightTextRadiumcore);
+        pixPaint.drawText(x, y + 40, copyrightTextValidity);
     }
 
     // draw additional text if special network

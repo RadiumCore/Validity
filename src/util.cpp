@@ -98,8 +98,8 @@ const int64_t nStartupTime = GetTime();
 
 using namespace std;
 
-const char * const BITCOIN_CONF_FILENAME = "radium.conf";
-const char * const BITCOIN_PID_FILENAME = "radium13d.pid";
+const char * const BITCOIN_CONF_FILENAME = "validity.conf";
+const char * const BITCOIN_PID_FILENAME = "validityd.pid";
 
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
@@ -434,7 +434,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "radium13";
+    const char* pszModule = "validity";
 #endif
     if (pex)
         return strprintf(
@@ -454,13 +454,13 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Radium13
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Radium13
-    // Mac: ~/Library/Application Support/Radium13
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Validity
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Validity
+    // Mac: ~/Library/Application Support/Validity
     // Unix: ~/.radium13
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Radium13";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Validity";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -470,10 +470,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/Radium13";
+    return pathRet / "Library/Application Support/Validity";
 #else
     // Unix
-    return pathRet / ".radium13";
+    return pathRet / ".Validity";
 #endif
 #endif
 }
@@ -817,7 +817,8 @@ std::string CopyrightHolders(const std::string& strPrefix)
         strPrefix + "The Bitcoin Core developers" +
         "\n" + strPrefix + "The Blackcoin developers" +
         "\n" + strPrefix + "The Blackcoin More developers" +
-        "\n" + strPrefix + "The Radium Core developers";
+        "\n" + strPrefix + "The Radium Core developers" +
+        "\n" + strPrefix + "The Validity developers";
     
 
     return strCopyrightHolders;

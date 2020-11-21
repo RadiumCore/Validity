@@ -65,11 +65,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += radium13d
+  bin_PROGRAMS += validityd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += radium13-cli radium13-tx
+  bin_PROGRAMS += validity-cli validity-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -383,17 +383,17 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# radium13d binary #
-radium13d_SOURCES = bitcoind.cpp
-radium13d_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-radium13d_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-radium13d_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# validityd binary #
+validityd_SOURCES = bitcoind.cpp
+validityd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+validityd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+validityd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-radium13d_SOURCES += bitcoind-res.rc
+validityd_SOURCES += bitcoind-res.rc
 endif
 
-radium13d_LDADD = \
+validityd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -406,37 +406,37 @@ radium13d_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
   
-radium13d_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+validityd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
-# radium13-cli binary #
-radium13_cli_SOURCES = bitcoin-cli.cpp
-radium13_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-radium13_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-radium13_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# validity-cli binary #
+validity_cli_SOURCES = bitcoin-cli.cpp
+validity_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+validity_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+validity_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-radium13_cli_SOURCES += bitcoin-cli-res.rc
+validity_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-radium13_cli_LDADD = \
+validity_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-radium13_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+validity_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 
-# radium13-tx binary #
-radium13_tx_SOURCES = bitcoin-tx.cpp
-radium13_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-radium13_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-radium13_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# validity-tx binary #
+validity_tx_SOURCES = bitcoin-tx.cpp
+validity_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+validity_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+validity_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-radium13_tx_SOURCES += bitcoin-tx-res.rc
+validity_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-radium13_tx_LDADD = \
+validity_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -444,7 +444,7 @@ radium13_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-radium13_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+validity_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
 # bitcoinconsensus library #

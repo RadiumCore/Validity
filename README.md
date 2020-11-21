@@ -1,28 +1,28 @@
-Radium Core More
+Validity More
 =====================================
 
 https://radiumcore.org
 
-What is Radium Core?
+What is Validity?
 ----------------
 
-Radium Core is a decentralised digital currency with near-instant transaction speeds and negligible transaction fees built upon Proof of Stake 3.0 (PoSV3, BPoS) as
-introduced by the Radium Core development team.
+Validity is a decentralised digital currency with near-instant transaction speeds and negligible transaction fees built upon Proof of Stake 3.0 (PoSV3, BPoS) as
+introduced by the Validity development team.
 
-For more information about Radium Core itself, see https://radiumcore.org.
+For more information about Validity itself, see https://radiumcore.org.
 
-What is Radium Core?
+What is Validity?
 ----------------
 
-Radium Core is the name of open source software which enables the use of this currency. It takes Radium Core to the next level by building upon
+Validity is the name of open source software which enables the use of this currency. It takes Validity to the next level by building upon
 Bitcoin Core 0.13.2 with some patches from newer Bitcoin Core versions to offer performance enhancements, wider compatibility with third party services and a more advanced base.
 
-For more information, as well as an immediately useable, binary version of the Radium Core More software, see https://radiumcore.org.
+For more information, as well as an immediately useable, binary version of the Validity More software, see https://radiumcore.org.
 
 License
 -------
 
-Radium Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
+Validity is released under the terms of the MIT license. See [COPYING](COPYING) for more
 information or see https://opensource.org/licenses/MIT.
 
 Development Process
@@ -30,7 +30,7 @@ Development Process
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
 completely stable. [Tags](<>) are created
-regularly to indicate new official, stable release versions of Radium Core.
+regularly to indicate new official, stable release versions of Validity.
 
 Change log can be found in [CHANGELOG.md](CHANGELOG.md).
 
