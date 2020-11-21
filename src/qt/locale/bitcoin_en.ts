@@ -86,7 +86,7 @@
     <message>
         <location line="+4"/>
         <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-    < translation > These are your Validity addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
+    <translation> These are your Validity addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
     </message>
     <message>
         <location line="+6"/>
