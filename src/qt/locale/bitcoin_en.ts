@@ -228,7 +228,7 @@
     <message>
         <location line="-56"/>
         <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
-    < translation >% 1 will close now to finish the encryption process.Remember that encrypting your wallet cannot fully protect your Validity from being stolen by malware infecting your computer.</translation>
+    <translation>% 1 will close now to finish the encryption process.Remember that encrypting your wallet cannot fully protect your Validity from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <location line="+4"/>
