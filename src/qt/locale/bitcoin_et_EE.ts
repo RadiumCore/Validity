@@ -131,7 +131,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Radium</translation>
+        <translation>Validity</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -761,7 +761,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Radium Core</translation>
+        <translation>Validity Core</translation>
     </message>
     <message>
         <source>Information</source>

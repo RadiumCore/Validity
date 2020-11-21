@@ -139,7 +139,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Испрати блэккоини на Radium адреса</translation>
+        <translation>Испрати блэккоини на Validity адреса</translation>
     </message>
     <message>
         <source>&amp;Verify message...</source>
@@ -147,7 +147,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Radium</translation>
+        <translation>Validity</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -579,7 +579,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Radium Core</translation>
+        <translation>Validity Core</translation>
     </message>
     <message>
         <source>Warning</source>
