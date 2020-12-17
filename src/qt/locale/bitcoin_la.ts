@@ -115,7 +115,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Mitte nummos ad inscriptionem Radium</translation>
+        <translation>Mitte nummos ad inscriptionem Validity</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -139,7 +139,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Radium</translation>
+        <translation>Validity</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -167,11 +167,11 @@
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>Signa nuntios cum tuis inscriptionibus Radium ut demonstres te eas possidere</translation>
+        <translation>Signa nuntios cum tuis inscriptionibus Validity ut demonstres te eas possidere</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation>Verifica nuntios ut certus sis eos signatos esse cum specificatis inscriptionibus Radium</translation>
+        <translation>Verifica nuntios ut certus sis eos signatos esse cum specificatis inscriptionibus Validity</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -347,7 +347,7 @@
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Aperi per se portam clientis Radium in itineratore.  Hoc tantum effectivum est si itineratrum tuum supportat UPnP et id activum est.</translation>
+        <translation>Aperi per se portam clientis Validity in itineratore.  Hoc tantum effectivum est si itineratrum tuum supportat UPnP et id activum est.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -426,7 +426,7 @@
     </message>
     <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>Monstrata informatio fortasse non recentissima est.  Tuum cassidile per se synchronizat cum rete Radium postquam conexio constabilita est, sed hoc actio nondum perfecta est.</translation>
+        <translation>Monstrata informatio fortasse non recentissima est.  Tuum cassidile per se synchronizat cum rete Validity postquam conexio constabilita est, sed hoc actio nondum perfecta est.</translation>
     </message>
     <message>
         <source>Immature:</source>
@@ -672,7 +672,7 @@
     </message>
     <message>
         <source>Sign the message to prove you own this Bitcoin address</source>
-        <translation>Signa nuntium ut demonstres hanc inscriptionem Radium a te possessa esse</translation>
+        <translation>Signa nuntium ut demonstres hanc inscriptionem Validity a te possessa esse</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -692,7 +692,7 @@
     </message>
     <message>
         <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
-        <translation>Verifica nuntium ut cures signatum esse cum specifica inscriptione Radium</translation>
+        <translation>Verifica nuntium ut cures signatum esse cum specifica inscriptione Validity</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -769,7 +769,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Radium Core</translation>
+        <translation>Validity Core</translation>
     </message>
     <message>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>

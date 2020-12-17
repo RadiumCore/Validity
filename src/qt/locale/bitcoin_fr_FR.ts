@@ -219,7 +219,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Envoyer des pièces à une adresse Radium</translation>
+        <translation>Envoyer des pièces à une adresse Validity</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -243,7 +243,7 @@
     </message>
     <message>
         <source>Bitcoin</source>
-        <translation>Radium</translation>
+        <translation>Validity</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -271,7 +271,7 @@
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation>Signer vos messages avec vos adresses Radium pour prouver que vous les détenez</translation>
+        <translation>Signer vos messages avec vos adresses Validity pour prouver que vous les détenez</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -291,7 +291,7 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Demander des paiements (générer QR codes et Radium: URIs)</translation>
+        <translation>Demander des paiements (générer QR codes et Validity: URIs)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -299,7 +299,7 @@
     </message>
     <message>
         <source>Open a bitcoin: URI or payment request</source>
-        <translation>Ouvrir un Radium: URI ou demande de paiement</translation>
+        <translation>Ouvrir un Validity: URI ou demande de paiement</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -307,7 +307,7 @@
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network</source>
-        <translation><numerusform>%n connexion active au réseau Radium</numerusform><numerusform>%n connexions actives au réseau Radium</numerusform></translation>
+        <translation><numerusform>%n connexion active au réseau Validity</numerusform><numerusform>%n connexions actives au réseau Validity</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -685,7 +685,7 @@
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Ouvrir le port du client Radium automatiquement sur le routeur. Cela ne fonctionne que si votre routeur supporte l'UPnP et si la fonctionnalité est activée.</translation>
+        <translation>Ouvrir le port du client Validity automatiquement sur le routeur. Cela ne fonctionne que si votre routeur supporte l'UPnP et si la fonctionnalité est activée.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -845,7 +845,7 @@
     </message>
     <message>
         <source>Enter a Bitcoin address (e.g. %1)</source>
-        <translation>Entrer une adresse Radium (e.g. %1)</translation>
+        <translation>Entrer une adresse Validity (e.g. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -1663,7 +1663,7 @@
     </message>
     <message>
         <source>Bitcoin Core</source>
-        <translation>Radium Core</translation>
+        <translation>Validity Core</translation>
     </message>
     <message>
         <source>&lt;category&gt; can be:</source>

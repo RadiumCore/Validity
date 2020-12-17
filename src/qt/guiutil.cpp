@@ -167,7 +167,7 @@ QString bitcoinURIScheme(const CChainParams &params, bool useCashAddr)
 {
     if (!useCashAddr)
     {
-        return "radium";
+        return "validity";
     }
     return QString::fromStdString(params.CashAddrPrefix());
 }

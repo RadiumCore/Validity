@@ -276,11 +276,11 @@ UniValue stop(const UniValue& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
-            "\nStop Radium13 server.");
+            "\nStop Validity server.");
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
     StartShutdown();
-    return "Radium13 server stopping";
+    return "Validity server stopping";
 }
 
 UniValue uptime(const UniValue& params, bool fHelp)
@@ -498,7 +498,7 @@ std::vector<std::string> CRPCTable::listCommands() const
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
-    return "> radium13-cli " + methodname + " " + args + "\n";
+    return "> validity-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(const std::string& methodname, const std::string& args)

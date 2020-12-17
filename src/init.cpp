@@ -503,7 +503,9 @@ std::string LicenseInfo()
            "\n" +
            FormatParagraph(strprintf("Copyright (C) %i-%i The Radium Core Developers", 2019, COPYRIGHT_YEAR)) + "\n" +
            "\n" +
-           FormatParagraph(strprintf(_("Please contribute if you find Radium Core useful. "
+           FormatParagraph(strprintf("Copyright (C) %i-%i The Validity Developers", 2020, COPYRIGHT_YEAR)) + "\n" +
+           "\n" +
+           FormatParagraph(strprintf(_("Please contribute if you find Validity useful. "
                        "Visit %s for further information about the software."),
                URL_WEBSITE)) +
            "\n" +
@@ -756,7 +758,7 @@ void InitParameterInteraction()
     }
 
     // -zapwallettx implies a rescan
-    if (GetBoolArg("-zapwallettxes", false)) {
+    if (GetBoolArg("-zapwallettxes", 2)) {
         if (SoftSetBoolArg("-rescan", true))
             LogPrintf("%s: parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n", __func__);
     }

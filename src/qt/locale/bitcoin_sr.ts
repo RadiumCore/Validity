@@ -131,7 +131,7 @@
     </message>
     <message>
         <source>Send coins to a Bitcoin address</source>
-        <translation>Пошаљите новац на Radium адресу</translation>
+        <translation>Пошаљите новац на Validity адресу</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>

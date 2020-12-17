@@ -3,21 +3,21 @@ AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 13)
 define(_CLIENT_VERSION_MINOR, 1)
 define(_CLIENT_VERSION_REVISION, 5)
-define(_CLIENT_VERSION_BUILD, 0)
+define(_CLIENT_VERSION_BUILD, 1)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2020)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
-define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Radium XT]])
-AC_INIT([Radium XT],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/RadiumCore/radium13],[radium13])
+define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Validity]])
+AC_INIT([Validity],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/RadiumCore/radium13],[validity])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-BITCOIN_DAEMON_NAME=radiumXTd
-BITCOIN_GUI_NAME=radium13-qt
-BITCOIN_CLI_NAME=radium13-cli
-BITCOIN_TX_NAME=radium13-tx
+BITCOIN_DAEMON_NAME=validityd
+BITCOIN_GUI_NAME=validity-qt
+BITCOIN_CLI_NAME=validity-cli
+BITCOIN_TX_NAME=validity-tx
 
 AC_CANONICAL_HOST
 
