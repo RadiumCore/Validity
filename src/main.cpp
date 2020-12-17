@@ -1176,8 +1176,15 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
 
     // Check for negative or overflow output values
     CAmount nValueOut = 0;
+    int dust_count = 0
     BOOST_FOREACH(const CTxOut& txout, tx.vout)
     {
+        CAmount min_dust = 0.001;
+        if (txout.nValue < min_dust)
+            dust_count += 1;
+        if (dust_count > 5)
+            return state.DoS(0, error("CheckTransaction(): Tx with greater than 5 dust transactions!"));
+           
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
             return state.DoS(100, error("CheckTransaction(): txout empty for user transaction"));
         if (txout.nValue < 0)
