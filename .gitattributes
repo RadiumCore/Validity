@@ -1,1 +1,4 @@
 src/clientversion.cpp export-subst
+*.sh -crlf
+*.ac -crlf
+*.am -crlf
