@@ -1176,7 +1176,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
 
     // Check for negative or overflow output values
     CAmount nValueOut = 0;
-    int dust_count = 0
+    int dust_count = 0;
     BOOST_FOREACH(const CTxOut& txout, tx.vout)
     {
         CAmount min_dust = 0.001;
