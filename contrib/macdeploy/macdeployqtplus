@@ -605,7 +605,7 @@ else:
 
 # ------------------------------------------------
 
-target = os.path.join("dist", "Radium13-Qt.app")
+target = os.path.join("dist", "Validity.app")
 
 if verbose >= 2:
     print("+ Copying source bundle +")
