@@ -99,6 +99,7 @@ $(package)_config_opts_darwin += -device-option MAC_SDK_VERSION=$(OSX_SDK_VERSIO
 $(package)_config_opts_darwin += -device-option CROSS_COMPILE="$(host)-"
 $(package)_config_opts_darwin += -device-option MAC_MIN_VERSION=$(OSX_MIN_VERSION)
 $(package)_config_opts_darwin += -device-option MAC_TARGET=$(host)
+$(package)_config_opts_darwin += -device-option XCODE_VERSION=$(XCODE_VERSION)
 endif
 
 $(package)_config_opts_linux  = -qt-xkbcommon-x11
@@ -145,6 +146,28 @@ define $(package)_extract_cmds
   tar --no-same-owner --strip-components=1 -xf $($(package)_source_dir)/$($(package)_qttools_file_name) -C qttools
 endef
 
+# Preprocessing steps work as follows:
+#
+# 1. Apply our patches to the extracted source. See each patch for more info.
+#
+# 2. Point to lrelease in qttools/bin/lrelease; otherwise Qt will look for it in
+# $(host)/native/bin/lrelease and not find it.
+#
+# 3. Create a macOS-Clang-Linux mkspec using our mac-qmake.conf.
+#
+# 4. After making a copy of the mkspec for the linux-arm-gnueabi host, named
+# bitcoin-linux-g++, replace instances of linux-arm-gnueabi with $(host). This
+# way we can generically support hosts like riscv64-linux-gnu, which Qt doesn't
+# ship a mkspec for. See it's usage in config_opts_* above.
+#
+# 5. Put our C, CXX and LD FLAGS into gcc-base.conf. Only used for non-host builds.
+#
+# 6. Do similar for the win32-g++ mkspec.
+#
+# 7. In clang.conf, swap out clang & clang++, for our compiler + flags. See #17466.
+#
+# 8. Adjust a regex in toolchain.prf, to accommodate Guix's usage of
+# CROSS_LIBRARY_PATH. See #15277.
 define $(package)_preprocess_cmds
   patch -p1 -i $($(package)_patch_dir)/freetype_back_compat.patch && \
   sed -i.old "s|updateqm.commands = \$$$$\$$$$LRELEASE|updateqm.commands = $($(package)_extract_dir)/qttools/bin/lrelease|" qttranslations/translations/translations.pro && \
