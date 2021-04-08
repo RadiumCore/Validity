@@ -148,8 +148,8 @@ class FrameworkInfo(object):
 class ApplicationBundleInfo(object):
     def __init__(self, path: str):
         self.path = path
-        # for backwards compatibility reasons, this must remain as Blackmore-Qt
-        self.binaryPath = os.path.join(path, "Contents", "MacOS", "Blackmore-Qt")
+        # for backwards compatibility reasons, this must remain as Validity-Qt
+        self.binaryPath = os.path.join(path, "Contents", "MacOS", "Validity-Qt")
         if not os.path.exists(self.binaryPath):
             raise RuntimeError(f"Could not find bundle binary for {path}")
         self.resourcesPath = os.path.join(path, "Contents", "Resources")
@@ -637,7 +637,7 @@ ds['.']['icvp'] = icvp
 ds['.']['vSrn'] = ('long', 1)
 
 ds['Applications']['Iloc'] = (370, 156)
-ds['Blackmore-Qt.app']['Iloc'] = (128, 156)
+ds['Validity-Qt.app']['Iloc'] = (128, 156)
 
 ds.flush()
 ds.close()
