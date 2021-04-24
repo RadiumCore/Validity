@@ -32,7 +32,7 @@
   <string>Validity-Qt</string>
   
   <key>CFBundleName</key>
-  <stringValidity-Qt</string>
+  <string>Validity-Qt</string>
 
   <key>LSHasLocalizedDisplayName</key>
   <true/>
