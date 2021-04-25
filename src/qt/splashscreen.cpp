@@ -116,8 +116,8 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
         pixPaint.drawText(x,y,copyrightTextBitcoin);
         pixPaint.drawText(x,y+10,copyrightTextBlackcoin);
         pixPaint.drawText(x,y+20,copyrightTextBlackmore);
-        pixPaint.drawText(x,y+30, copyrightTextRadiumcore);
-        pixPaint.drawText(x, y + 40, copyrightTextValidity);
+        pixPaint.drawText(x,y+30,copyrightTextRadiumcore);
+        pixPaint.drawText(x,y+40,copyrightTextValidity);
     }
 
     // draw additional text if special network
