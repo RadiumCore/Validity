@@ -30,10 +30,10 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     QWidget(0, f), curAlignment(0)
 {
     // set reference point, paddings
-    int paddingRight            = 15;
-    int paddingTop              = 50;
-    int titleVersionVSpace      = 17;
-    int titleCopyrightVSpace    = 40;
+    int paddingRight            = 120;
+    int paddingTop              = 100;
+    int titleVersionVSpace      = 25;
+    int titleCopyrightVSpace    = 37;
 
     float fontFactor            = 1.0;
     float devicePixelRatio      = 1.0;
@@ -48,8 +48,8 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     QString copyrightTextBitcoin     = QChar(0xA9)+QString(" %1-%2 ").arg(2009).arg(2019) + QString("The Bitcoin Core developers");
     QString copyrightTextBlackcoin   = QChar(0xA9)+QString(" %1-%2 ").arg(2014).arg(2018) + QString("The Blackcoin developers");
     QString copyrightTextBlackmore   = QChar(0xA9)+QString(" %1-%2 ").arg(2018).arg(2019) + QString("The Blackcoin More developers");
-    QString copyrightTextRadiumcore = QChar(0xA9) + QString(" %1-%2 ").arg(2019).arg(COPYRIGHT_YEAR) + QString("The Radium Core developers");
-    QString copyrightTextValidity = QChar(0xA9) + QString(" %1-%2 ").arg(2020).arg(COPYRIGHT_YEAR) + QString("The Validity developers");
+    QString copyrightTextRadiumcore  = QChar(0xA9)+QString(" %1-%2 ").arg(2019).arg(COPYRIGHT_YEAR)+QString("The Radium Core developers");
+    QString copyrightTextValidity    = QChar(0xA9)+QString(" %1-%2 ").arg(2020).arg(COPYRIGHT_YEAR)+QString("The Validity developers");
 
     // QString copyrightText   = QChar(0xA9)+QString(" %1-%2 ").arg(2009).arg(COPYRIGHT_YEAR) + QString::fromStdString(CopyrightHolders());
 
@@ -77,7 +77,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     pixPaint.fillRect(rGradient, gradient);
 
     // draw the bitcoin icon, expected size of PNG: 1024x1024
-    QRect rectIcon(QPoint(-130,-102), QSize(430,430));
+    QRect rectIcon(QPoint(-70,-65), QSize(320,320));
 
     const QSize requiredSize(1024,1024);
     QPixmap icon(networkStyle->getAppIcon().pixmap(requiredSize));
