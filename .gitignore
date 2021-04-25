@@ -153,3 +153,5 @@ src/validity-tx
 src/test/test_validity
 src/qt/test/test_validity-qt
 /db-6.2.38*
+
+configure~
