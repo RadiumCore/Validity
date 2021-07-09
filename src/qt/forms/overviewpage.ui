@@ -538,7 +538,7 @@
                <cursorShape>IBeamCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>Total RADS staked in the past 24 Hours</string>
+               <string>Total VAL staked in the past 24 Hours</string>
               </property>
               <property name="text">
                <string notr="true">0.000 000 00 BTC</string>
