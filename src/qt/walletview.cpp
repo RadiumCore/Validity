@@ -172,7 +172,7 @@ void WalletView::processNewTransaction(const QModelIndex& parent, int start, int
 void WalletView::gotoOverviewPage()
 {
     setCurrentWidget(overviewPage);
-    overviewPage->updateStakeReportNow();
+    //overviewPage->NewBlock(true);
 }
 
 void WalletView::gotoHistoryPage()
@@ -270,9 +270,9 @@ void WalletView::changePassphrase()
 }
 
 
-void WalletView::setStakingStats(QString day, QString week, QString month, QString year, QString all)
+void WalletView::NewBlock(bool fImmediate)
 {
-    overviewPage->setStakingStats(day, week, month, year, all);
+    overviewPage->NewBlock(fImmediate);
 }
 
 void WalletView::unlockWallet(bool fromMenu)
