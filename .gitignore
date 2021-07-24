@@ -67,6 +67,10 @@ src/qt/test/moc*.cpp
 *.json.h
 *.raw.h
 
+# Only ignore unexpected patches
+*.patch
+!depends/patches/**/*.patch
+
 #libtool object files
 *.lo
 *.la
@@ -74,6 +78,7 @@ src/qt/test/moc*.cpp
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
+!depends/Makefile
 bitcoin-qt
 Bitcoin-Qt.app
 
@@ -88,6 +93,9 @@ qrc_*.cpp
 # Mac specific
 .DS_Store
 build
+
+# Previous releases
+releases
 
 #lcov
 *.gcno
@@ -116,7 +124,16 @@ share/BitcoindComparisonTool.jar
 libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh
 
+# clang-check
+*.plist
+
+osx_volname
+dist/
+*.background.tiff
+
+#validity
 /.vs/*
+/.vscode/*
 /Debug/*
 /radium-more.sln
 *.vcxproj*
@@ -126,7 +143,7 @@ contrib/devtools/split-debug.sh
 /src/validity-cli
 /src/validityd
 /src/validity-tx
-/db-6.2.32*
+/db-6.2.38*
 
 src/qt/validity-qt
 
