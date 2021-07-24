@@ -32,8 +32,11 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // set reference point, paddings
     int paddingRight            = 15;
     int paddingTop              = 50;
-    int titleVersionVSpace      = 17;
-    int titleCopyrightVSpace    = 40;
+    int titleVersionVSpace      = 30;
+    int titleVersionHSpace      = -5;
+    int titleCopyrightVSpace    = 50;
+    int titleHSpace            = -35;
+    int titleCopyrightHSpace    = -40;
 
     float fontFactor            = 1.0;
     float devicePixelRatio      = 1.0;
@@ -43,13 +46,13 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 
     // define text to place
     QString titleText       = tr(PACKAGE_NAME);
-    QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
+    QString versionText     = QString(" %1").arg(QString::fromStdString(FormatFullVersion()));
 
-    QString copyrightTextBitcoin     = QChar(0xA9)+QString(" %1-%2 ").arg(2009).arg(2019) + QString("The Bitcoin Core developers");
-    QString copyrightTextBlackcoin   = QChar(0xA9)+QString(" %1-%2 ").arg(2014).arg(2018) + QString("The Blackcoin developers");
-    QString copyrightTextBlackmore   = QChar(0xA9)+QString(" %1-%2 ").arg(2018).arg(2019) + QString("The Blackcoin More developers");
-    QString copyrightTextRadiumcore = QChar(0xA9) + QString(" %1-%2 ").arg(2019).arg(COPYRIGHT_YEAR) + QString("The Radium Core developers");
-    QString copyrightTextValidity = QChar(0xA9) + QString(" %1-%2 ").arg(2020).arg(COPYRIGHT_YEAR) + QString("The Validity developers");
+    QString copyrightTextBitcoin     = QChar(0xA9)+QString(" %1 ").arg(2009) + QString("The Bitcoin Core developers");
+    QString copyrightTextBlackcoin   = QChar(0xA9)+QString(" %1 ").arg(2014) + QString("The Blackcoin developers");
+    QString copyrightTextBlackmore   = QChar(0xA9)+QString(" %1 ").arg(2018) + QString("The Blackcoin More developers");
+    QString copyrightTextRadiumcore = QChar(0xA9) + QString(" %1 ").arg(2019) + QString("The Radium Core developers");
+    QString copyrightTextValidity = QChar(0xA9) + QString(" %1 ").arg(COPYRIGHT_YEAR) + QString("The Validity developers");
 
     // QString copyrightText   = QChar(0xA9)+QString(" %1-%2 ").arg(2009).arg(COPYRIGHT_YEAR) + QString::fromStdString(CopyrightHolders());
 
@@ -77,7 +80,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     pixPaint.fillRect(rGradient, gradient);
 
     // draw the bitcoin icon, expected size of PNG: 1024x1024
-    QRect rectIcon(QPoint(-130,-102), QSize(430,430));
+    QRect rectIcon(QPoint(-95,-65), QSize(345,345));
 
     const QSize requiredSize(1024,1024);
     QPixmap icon(networkStyle->getAppIcon().pixmap(requiredSize));
@@ -95,7 +98,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     pixPaint.setFont(QFont(font, 33*fontFactor));
     fm = pixPaint.fontMetrics();
     titleTextWidth  = fm.width(titleText);
-    pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight,paddingTop,titleText);
+    pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight + titleHSpace,paddingTop,titleText);
 
     pixPaint.setFont(QFont(font, 15*fontFactor));
 
@@ -106,18 +109,18 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
         pixPaint.setFont(QFont(font, 10*fontFactor));
         titleVersionVSpace -= 5;
     }
-    pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight+2,paddingTop+titleVersionVSpace,versionText);
+    pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight+titleVersionHSpace,paddingTop+titleVersionVSpace,versionText);
 
     // draw copyright stuff
     {
-        pixPaint.setFont(QFont(font, 10*fontFactor));
-        const int x = pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight;
+        pixPaint.setFont(QFont(font, 8*fontFactor));
+        const int x = pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight+titleCopyrightHSpace;
         const int y = paddingTop+titleCopyrightVSpace;
         pixPaint.drawText(x,y,copyrightTextBitcoin);
-        pixPaint.drawText(x,y+10,copyrightTextBlackcoin);
-        pixPaint.drawText(x,y+20,copyrightTextBlackmore);
-        pixPaint.drawText(x,y+30, copyrightTextRadiumcore);
-        pixPaint.drawText(x, y + 40, copyrightTextValidity);
+        pixPaint.drawText(x,y+12,copyrightTextBlackcoin);
+        pixPaint.drawText(x,y+24,copyrightTextBlackmore);
+        pixPaint.drawText(x,y+36, copyrightTextRadiumcore);
+        pixPaint.drawText(x, y + 48, copyrightTextValidity);
     }
 
     // draw additional text if special network
