@@ -146,5 +146,7 @@ dist/
 /db-6.2.38*
 
 src/qt/validity-qt
+validity-Qt.app
+background.tiff*
 
 *.sln
