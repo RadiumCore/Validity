@@ -24,7 +24,7 @@ make
 make install # optional
 ```
 
-This will build radium13-qt as well if the dependencies are met.
+This will build validity-qt as well if the dependencies are met.
 
 Dependencies
 ---------------------
@@ -99,7 +99,7 @@ ZMQ dependencies:
 Dependencies for the GUI: Ubuntu & Debian
 -----------------------------------------
 
-If you want to build Radium13-Qt, make sure that the required packages for Qt development
+If you want to build Validity-Qt, make sure that the required packages for Qt development
 are installed. Either Qt 5 or Qt 4 are necessary to build the GUI.
 If both Qt 4 and Qt 5 are installed, Qt 5 will be used. Pass `--with-gui=qt4` to configure to choose Qt4.
 To build without GUI pass `--without-gui`.
@@ -116,7 +116,7 @@ libqrencode (optional) can be installed with:
 
     sudo apt-get install libqrencode-dev
 
-Once these are installed, they will be found by configure and a radium13-qt executable will be
+Once these are installed, they will be found by configure and a validity-qt executable will be
 built by default.
 
 Dependency Build Instructions: Fedora

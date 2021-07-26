@@ -5,8 +5,8 @@ dnl file COPYING or http://www.opensource.org/licenses/mit-license.php.
 dnl Helper for cases where a qt dependency is not met.
 dnl Output: If qt version is auto, set bitcoin_enable_qt to false. Else, exit.
 AC_DEFUN([BITCOIN_QT_FAIL],[
-  if test "x$bitcoin_qt_want_version" = "xauto" && test x$bitcoin_qt_force != xyes; then
-    if test x$bitcoin_enable_qt != xno; then
+  if test "x$bitcoin_qt_want_version" = xauto && test "x$bitcoin_qt_force" != xyes; then
+    if test "x$bitcoin_enable_qt" != xno; then
       AC_MSG_WARN([$1; bitcoin-qt frontend will not be built])
     fi
     bitcoin_enable_qt=no
@@ -17,7 +17,7 @@ AC_DEFUN([BITCOIN_QT_FAIL],[
 ])
 
 AC_DEFUN([BITCOIN_QT_CHECK],[
-  if test "x$bitcoin_enable_qt" != "xno" && test x$bitcoin_qt_want_version != xno; then
+  if test "x$bitcoin_enable_qt" != xno && test "x$bitcoin_qt_want_version" != xno; then
     true
     $1
   else
@@ -35,12 +35,12 @@ dnl Inputs: $4: If "yes", don't fail if $2 is not found.
 dnl Output: $1 is set to the path of $2 if found. $2 are searched in order.
 AC_DEFUN([BITCOIN_QT_PATH_PROGS],[
   BITCOIN_QT_CHECK([
-    if test "x$3" != "x"; then
+    if test "x$3" != x; then
       AC_PATH_PROGS($1,$2,,$3)
     else
       AC_PATH_PROGS($1,$2)
     fi
-    if test "x$$1" = "x" && test "x$4" != "xyes"; then
+    if test "x$$1" = x && test "x$4" != xyes; then
       BITCOIN_QT_FAIL([$1 not found])
     fi
   ])
@@ -57,7 +57,7 @@ AC_DEFUN([BITCOIN_QT_INIT],[
     [build bitcoin-qt GUI (default=auto, qt5 tried first)])],
     [
      bitcoin_qt_want_version=$withval
-     if test x$bitcoin_qt_want_version = xyes; then
+     if test "x$bitcoin_qt_want_version" = xyes; then
        bitcoin_qt_force=yes
        bitcoin_qt_want_version=auto
      fi
@@ -166,7 +166,7 @@ AC_DEFUN([BITCOIN_QT_CONFIGURE],[
     fi
   fi
 
-  if test x$use_hardening != xno; then
+  if test "x$use_hardening" != xno; then
     BITCOIN_QT_CHECK([
     AC_MSG_CHECKING(whether -fPIE can be used with this Qt config)
     TEMP_CPPFLAGS=$CPPFLAGS
@@ -192,9 +192,9 @@ AC_DEFUN([BITCOIN_QT_CONFIGURE],[
     CPPFLAGS="$QT_INCLUDES $CPPFLAGS"
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <QtCore/qconfig.h>]],
       [[
-          #if defined(QT_REDUCE_RELOCATIONS)
-              choke;
-          #endif
+        #if defined(QT_REDUCE_RELOCATIONS)
+        choke
+        #endif
       ]])],
       [ AC_MSG_RESULT(no)],
       [ AC_MSG_RESULT(yes); QT_PIE_FLAGS=$PIC_FLAGS]
@@ -214,7 +214,7 @@ AC_DEFUN([BITCOIN_QT_CONFIGURE],[
     *darwin*)
      BITCOIN_QT_CHECK([
        MOC_DEFS="${MOC_DEFS} -DQ_OS_MAC"
-       base_frameworks="-framework Foundation -framework ApplicationServices -framework AppKit"
+       base_frameworks="-framework Foundation -framework AppKit"
        AX_CHECK_LINK_FLAG([[$base_frameworks]],[QT_LIBS="$QT_LIBS $base_frameworks"],[AC_MSG_ERROR(could not find base frameworks)])
      ])
     ;;
@@ -226,22 +226,22 @@ AC_DEFUN([BITCOIN_QT_CONFIGURE],[
 
 
   dnl enable qt support
-  AC_MSG_CHECKING(whether to build [AC_PACKAGE_NAME] GUI)
+  AC_MSG_CHECKING([whether to build ]AC_PACKAGE_NAME[ GUI])
   BITCOIN_QT_CHECK([
     bitcoin_enable_qt=yes
     bitcoin_enable_qt_test=yes
-    if test x$have_qt_test = xno; then
+    if test "x$have_qt_test" = xno; then
       bitcoin_enable_qt_test=no
     fi
     bitcoin_enable_qt_dbus=no
-    if test x$use_dbus != xno && test x$have_qt_dbus = xyes; then
+    if test "x$use_dbus" != xno && test "x$have_qt_dbus" = xyes; then
       bitcoin_enable_qt_dbus=yes
     fi
-    if test x$use_dbus = xyes && test x$have_qt_dbus = xno; then
-      AC_MSG_ERROR("libQtDBus not found. Install libQtDBus or remove --with-qtdbus.")
+    if test "x$use_dbus" = xyes && test "x$have_qt_dbus" = xno; then
+      AC_MSG_ERROR([libQtDBus not found. Install libQtDBus or remove --with-qtdbus.])
     fi
-    if test x$LUPDATE = x; then
-      AC_MSG_WARN("lupdate is required to update qt translations")
+    if test "x$LUPDATE" = x; then
+      AC_MSG_WARN([lupdate is required to update qt translations])
     fi
   ],[
     bitcoin_enable_qt=no
