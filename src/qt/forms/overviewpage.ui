@@ -538,7 +538,7 @@
                <cursorShape>IBeamCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>Total RADS staked in the past Week</string>
+               <string>Total VAL staked in the past Week</string>
               </property>
               <property name="text">
                <string notr="true">0.000 000 00 BTC</string>
@@ -563,7 +563,7 @@
                <cursorShape>IBeamCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>Total RADS staked in the history of this wallet</string>
+               <string>Total VAL staked in the history of this wallet</string>
               </property>
               <property name="text">
                <string notr="true">0.000 000 00 BTC</string>
@@ -620,7 +620,7 @@
                <cursorShape>IBeamCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>Total RADS staked in the past Year</string>
+               <string>Total VAL staked in the past Year</string>
               </property>
               <property name="text">
                <string notr="true">0.000 000 00 BTC</string>
@@ -652,7 +652,7 @@
                <cursorShape>IBeamCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>Total RADS staked in the past 30 days</string>
+               <string>Total VAL staked in the past 30 days</string>
               </property>
               <property name="text">
                <string notr="true">0.000 000 00 BTC</string>
@@ -948,7 +948,7 @@
             <cursorShape>IBeamCursor</cursorShape>
            </property>
            <property name="toolTip">
-            <string>Total RADS staked in the past 30 days</string>
+            <string>Total VAL staked in the past 30 days</string>
            </property>
            <property name="text">
             <string notr="true">Your Network Stake</string>
