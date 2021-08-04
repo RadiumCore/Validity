@@ -457,7 +457,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Validity
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Validity
     // Mac: ~/Library/Application Support/Validity
-    // Unix: ~/.radium13
+    // Unix: ~/.validity
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Validity";

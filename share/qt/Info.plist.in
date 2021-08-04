@@ -29,16 +29,16 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>Radium13-Qt</string>
+  <string>Validity-Qt</string>
   
   <key>CFBundleName</key>
-  <string>Radium13-Qt</string>
+  <string>Validity-Qt</string>
 
   <key>LSHasLocalizedDisplayName</key>
   <true/>
 
   <key>CFBundleIdentifier</key>
-  <string>org.radium.Radium13-Qt</string>
+  <string>org.validity.Validity-Qt</string>
 
   <key>CFBundleURLTypes</key>
   <array>
