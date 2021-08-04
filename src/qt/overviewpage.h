@@ -36,13 +36,14 @@ public:
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
     void showOutOfSyncWarning(bool fShow);
+    void NewBlock(bool fImmediate);
 
 public Q_SLOTS:
 	void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake);
-    void setStakingStats(QString day, QString week, QString month, QString year, QString all);
-    void updateStakeReportNow();    
-    void updateStakeReportbalanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount);
+   
+     
+    
 
 Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
@@ -65,13 +66,16 @@ private:
     TxViewDelegate *txdelegate;
     std::unique_ptr<TransactionFilterProxy> filter;
     qint64 nLastReportUpdate;
-    void updateStakeReport(bool fImmediate);
+    bool lastStaking;
+    
+    
 
 
 private Q_SLOTS:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);
+    void BlockCountChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header);
     void updateWatchOnlyLabels(bool showWatchOnly);
     void handleOutOfSyncWarningClicks();
 };

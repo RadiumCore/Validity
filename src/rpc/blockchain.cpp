@@ -63,6 +63,8 @@ double GetDifficulty(const CBlockIndex* blockindex)
     return dDiff;
 }
 
+
+
 double GetPoSKernelPS()
 {
     int nPoSInterval = 72;
@@ -775,6 +777,18 @@ static bool GetUTXOStats(CCoinsView *view, CCoinsStats &stats)
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;
     return true;
+}
+
+
+double GetSupply()
+{
+    CCoinsStats stats;
+    int64_t result = 0;
+
+    if (GetUTXOStats(pcoinsTip, stats)) {
+        result = stats.nTotalAmount;
+    }
+    return result;
 }
 
 UniValue gettxoutsetinfo(const UniValue& params, bool fHelp)

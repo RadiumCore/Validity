@@ -127,3 +127,7 @@ contrib/devtools/split-debug.sh
 /src/validityd
 /src/validity-tx
 /db-6.2.32*
+
+src/qt/validity-qt
+
+*.sln
