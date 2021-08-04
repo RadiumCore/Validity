@@ -116,7 +116,7 @@ public Q_SLOTS:
     /** User has requested more information about the out of sync state */
     void requestedSyncWarningInfo();
 
-    void setStakingStats(QString day, QString week, QString month, QString year, QString all);
+    void NewBlock(bool fImmediate);
 
 
 
