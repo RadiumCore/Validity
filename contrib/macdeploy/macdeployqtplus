@@ -529,7 +529,7 @@ if os.path.exists(appname + ".dmg"):
 
 # ------------------------------------------------
 
-target = os.path.join("dist", "Validity-QT.app")
+target = os.path.join("dist", "Validity-Qt.app")
 
 print("+ Copying source bundle +")
 if verbose:
