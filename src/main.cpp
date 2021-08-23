@@ -1891,14 +1891,14 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
         
 
 
-    if (nHeight >= Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT) {
+    if (nHeight >= Params().GetConsensus().AVG_FEE_START_BLOCK_V2) {
         CAmount nRFee;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
-    } else if (nHeight >= Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT) {
+    } else if (nHeight >= Params().GetConsensus().AVG_FEE_START_BLOCK_REVERT) {
         return nSubsidy + nFees;
-    } else if (nHeight >= Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT) {
+    } else if (nHeight >= Params().GetConsensus().AVG_FEE_START_BLOCK) {
         CAmount nRFee;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
