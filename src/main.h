@@ -286,7 +286,7 @@ CAmount GetTxDevSubsidy(const std::vector<CTxOut> vout);
 
 
 
-static const signed int AVG_FEE_SPAN = 1440;
+
 int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees);
 
 /**

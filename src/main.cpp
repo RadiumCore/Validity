@@ -1891,14 +1891,14 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
         
 
 
-    if (nHeight >= AVG_FEE_START_BLOCK_V2) {
+    if (nHeight >= Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT) {
         CAmount nRFee;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
-    } else if (nHeight >= AVG_FEE_START_BLOCK_REVERT) {
+    } else if (nHeight >= Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT) {
         return nSubsidy + nFees;
-    } else if (nHeight >= AVG_FEE_START_BLOCK) {
+    } else if (nHeight >= Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT) {
         CAmount nRFee;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
@@ -1989,13 +1989,13 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees)
     CAmount nRFee = 0;
     CAmount nCumulatedFee = 0;   
    
-   
+   int span = Params().GetConsensus().AVG_FEE_SPAN;
     
     const CBlockIndex* pblockindexTmp = pindexPrev;
     //LogPrintf("---------------------->Getting fee for block :%d Current best %d\n", pindexPrev->nHeight + 1, pblockindexTmp->nHeight);
     //LogPrintf("---------------------->Loop start block: %d\n hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
     //LogPrintf("---------------------->Loop start index: %s hash: %s\n", pblockindexTmp->nHeight, pblockindexTmp->phashBlock->ToString());
-    while (pblockindexTmp->nHeight > pindexPrev->nHeight - (AVG_FEE_SPAN - 1)) {
+    while (pblockindexTmp->nHeight > pindexPrev->nHeight - (span - 1)) {
        
         
         nCumulatedFee += pblockindexTmp->nFees;
@@ -2013,7 +2013,7 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees)
 	assert(MoneyRange(nCumulatedFee));
 
 
-    nRFee = (CAmount)((nCumulatedFee + nFees) / AVG_FEE_SPAN);
+    nRFee = (CAmount)((nCumulatedFee + nFees) / span);
     if (!MoneyRange(nRFee))
         nRFee = 0;
     //LogPrintf("---------------------->Calculated Fee: %d\n", nRFee);
