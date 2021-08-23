@@ -282,13 +282,7 @@ CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev);
 CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees);
 CAmount GetDevSubsidy(const CBlockIndex* pindexPrev);
 CAmount GetTxDevSubsidy(const std::vector<CTxOut> vout);
-static const signed int AVG_FEE_START_BLOCK = 619480;
-static const signed int AVG_FEE_START_BLOCK_REVERT = 626550;
-static const signed int AVG_FEE_START_BLOCK_V2 = 682240;
 
-static const signed int AVG_FEE_START_BLOCK_TESTNET = 123000;
-static const signed int AVG_FEE_START_BLOCK_TESTNET_REVERT = 160250;
-static const signed int AVG_FEE_START_BLOCK_TESTNET_V2 = 164750;
 
 
 

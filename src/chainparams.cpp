@@ -113,9 +113,20 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 0; // out of time
         */
 
+        consensus.nGenesisBlockTime = 1431857735;
         consensus.nProtocolV1RetargetingFixedTime = 1395631999;
         consensus.nProtocolV2Time = 1407053625;
         consensus.nProtocolV3Time = 1461851161;
+        consensus.AvgFeeProtocolTime = 1470919889;
+        consensus.AVG_FEE_START_BLOCK = 619480;
+        consensus.AVG_FEE_START_BLOCK_REVERT = 626550;
+        consensus.AVG_FEE_START_BLOCK_V2 = 682240;
+        consensus.AVG_FEE_SPAN = 1440;
+
+
+        consensus.DEV_FUND_BLOCK_HEIGHT = 1655000;
+        consensus.DEV_FUND_TIME = 1535581967;
+        consensus.DEV_FUND_SCRIPT = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
         consensus.nLastPOWBlock = 20160;
         consensus.nStakeTimestampMask = 0xf; // 15
         consensus.nCoinbaseMaturity = 60;

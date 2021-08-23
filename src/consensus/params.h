@@ -66,13 +66,17 @@ struct Params {
     int64_t nTargetTimespanNEW; // 15 min
     int64_t DifficultyAdjustmentInterval() const { return nTargetTimespan / nTargetSpacing; }
     int64_t nProtocolV1RetargetingFixedTime;
-    int64_t nGenesisBlockTime = 1431857735;
+    int64_t nGenesisBlockTime;
     int64_t nProtocolV2Time;
-    int64_t nProtocolV3Time = 1461851161;
-    int64_t AvgFeeProtocolTime = 1470919889;
-    static const int DEV_FUND_BLOCK_HEIGHT = 1655000; // Developers Fund block height
-    static const int64_t DEV_FUND_TIME = 1535581967;
-    std::string DEV_FUND_SCRIPT = "a914622b2274e97ebce0b25a5316ceca0af02120395087";
+    int64_t nProtocolV3Time;
+    int64_t AvgFeeProtocolTime;
+    int DEV_FUND_BLOCK_HEIGHT ; // Developers Fund block height
+    int64_t DEV_FUND_TIME ;
+    std::string DEV_FUND_SCRIPT ;
+    int AVG_FEE_START_BLOCK;
+    int AVG_FEE_START_BLOCK_REVERT;
+    int AVG_FEE_START_BLOCK_V2;
+    int AVG_FEE_SPAN;
     //const char* DEV_FUND_SCRIPT = x.c_str(); // This is a 5-of-12 multisig address for radium development fund address: QVZ419DruuEQYxbCgvF6vNwYTJizbhC9qw
 
 
