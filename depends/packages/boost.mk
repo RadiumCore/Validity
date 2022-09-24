@@ -1,6 +1,6 @@
 package=boost
 $(package)_version=1_70_0
-$(package)_download_path=https://dl.bintray.com/boostorg/release/1.70.0/source/
+$(package)_download_path=https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/
 $(package)_file_name=boost_$($(package)_version).tar.bz2
 $(package)_sha256_hash=430ae8354789de4fd19ee52f3b1f739e1fba576f0aded0897c3c2bc00fb38778
 $(package)_patches=unused_var_in_process.patch
@@ -19,7 +19,9 @@ $(package)_config_opts_i686_linux=address-model=32 architecture=x86
 $(package)_toolset_$(host_os)=gcc
 $(package)_toolset_darwin=clang
 ifneq (,$(findstring clang,$($(package)_cxx)))
-   $(package)_toolset_$(host_os)=clang
+$(package)_toolset_$(host_os)=clang
+else
+$(package)_toolset_$(host_os)=gcc
 endif
 $(package)_archiver_$(host_os)=$($(package)_ar)
 $(package)_config_libraries=chrono,filesystem,program_options,system,thread,test
@@ -37,9 +39,9 @@ define $(package)_config_cmds
 endef
 
 define $(package)_build_cmds
-  ./b2 -d2 -j2 -d1 --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) toolset=$($(package)_toolset_$(host_os)) stage
+  b2 -d2 -j2 -d1 --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) toolset=$($(package)_toolset_$(host_os)) stage
 endef
 
 define $(package)_stage_cmds
-  ./b2 -d0 -j4 --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) toolset=$($(package)_toolset_$(host_os)) install
+  b2 -d0 -j4 --prefix=$($(package)_staging_prefix_dir) $($(package)_config_opts) toolset=$($(package)_toolset_$(host_os)) install
 endef
