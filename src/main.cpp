@@ -2873,7 +2873,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 ExpectedReward += GetDevSubsidy(pindex->pprev);
 
             if (nActualStakeReward > ExpectedReward)
-                            return state.DoS(10, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, ExpectedReward), REJECT_INVALID, "bad-cs-amount");
+                            return state.DoS(1, error("ConnectBlock(): coinstake pays too much (actual=%d vs limit=%d)", nActualStakeReward, ExpectedReward), REJECT_INVALID, "bad-cs-amount");
     }
 
     if (!control.Wait())
@@ -4117,7 +4117,7 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
             return state.DoS(10, error("%s: prev block not found", __func__), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
-            return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
+            return state.DoS(5, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
 
         assert(pindexPrev);
         if (fCheckpointsEnabled && !CheckIndexAgainstCheckpoint(pindexPrev, state, chainparams))
