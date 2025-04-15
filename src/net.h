@@ -78,7 +78,7 @@ static const size_t DEFAULT_MAXSENDBUFFER    = 1 * 1000;
 static const ServiceFlags REQUIRED_SERVICES = NODE_NETWORK;
 
 // NOTE: When adjusting this, update rpcnet:setban's help ("24h")
-static const unsigned int DEFAULT_MISBEHAVING_BANTIME = 60 * 60 * 24;  // Default 24-hour ban
+static const unsigned int DEFAULT_MISBEHAVING_BANTIME = 60 * 60 * 6;  // Default 6-hour ban
 
 unsigned int ReceiveFloodSize();
 unsigned int SendBufferSize();
