@@ -365,7 +365,11 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
 
 void OverviewPage::NewBlock(bool fImmediate)
 {
-    //dont fire if doing initial download
+    
+    
+    if ((GetTime() - nLastReportUpdate) < 5)
+        return;
+    
     if(IsInitialBlockDownload())
         return;
      ui->labelSupplyText->setVisible(true);
@@ -400,7 +404,7 @@ void OverviewPage::NewBlock(bool fImmediate)
 
 
     // Skip report recalc if not immediate or before 5 minutes from last
-    if (GetTime() - nLastReportUpdate > 300) {
+    if ((GetTime() - nLastReportUpdate) > 300) {
         // Load the range
         aRange = PrepareRangeForStakeReport();
 
