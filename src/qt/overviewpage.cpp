@@ -169,8 +169,20 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->progressBar_Supply->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
     ui->progressBar_TotalStaking->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
 
+    ui->labelSupplyText->setVisible(true);
+     ui->progressBar_Supply->setVisible(true); 
+     ui->labelTotalStakingText->setVisible(true);
+     ui->progressBar_TotalStaking->setVisible(true);
 
+    ui->progressBar_MyWeight->setAlignment(Qt::AlignCenter);
+    ui->progressBar_Supply->setAlignment(Qt::AlignCenter);
+    ui->progressBar_TotalStaking->setAlignment(Qt::AlignCenter);
+    ui->progressBar_AnnualGeneration->setAlignment(Qt::AlignCenter);
 
+    ui->progressBar_Supply->setMaximum(100);
+    ui->progressBar_TotalStaking->setMaximum(100);
+    ui->progressBar_MyWeight->setMaximum(100);
+    ui->progressBar_AnnualGeneration->setMaximum(100);
 
 
 }
