@@ -1785,9 +1785,9 @@ CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev)
     return nSubsidy;
 }
 
-CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
-{
-    int nHeight = pindexPrev->nHeight + 1; 
+
+CAmount getFixedStakeSubsidy(int nHeight){
+    
     CAmount nSubsidy = 5 * COIN;
     int DEV_FUND_BLOCK_HEIGHT = Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT;    
     CAmount nYear = 525600; // ~ blocks per year
@@ -1880,33 +1880,40 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
         nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 VAL
     }
 
-    if (fDebug && GetBoolArg("-printcreation", false))
-        LogPrint("creation", "GetProofOfStakeReward(): create=%s ", FormatMoney(nSubsidy));
+    return nSubsidy;
 
+
+}
+
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
+{
+    int nHeight = pindexPrev->nHeight + 1; 
+    CAmount nSubsidy = getFixedStakeSubsidy(nHeight);
+     
+   
 
     
 
-      
-      
-        
+    if (fDebug && GetBoolArg("-printcreation", false))
+        LogPrint("creation", "GetProofOfStakeReward(): create=%s ", FormatMoney(nSubsidy));
 
+        
+    CAmount nRFee;    
 
     if (nHeight >= AVG_FEE_START_BLOCK_V2) {
-        CAmount nRFee;
-
-        nRFee = GetRunningFee( pindexPrev, nFees);
+        if(nHeight> 5312140 && nHeight <5313580 ){
+            nRFee = 70; 
+        } 
+        nRFee += GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
     } else if (nHeight >= AVG_FEE_START_BLOCK_REVERT) {
         return nSubsidy + nFees;
-    } else if (nHeight >= AVG_FEE_START_BLOCK) {
-        CAmount nRFee;
-
+    } else if (nHeight >= AVG_FEE_START_BLOCK) { 
         nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
     } else {
         return nSubsidy + nFees ;
     }
-
 
 }
 
@@ -2023,6 +2030,65 @@ int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees)
 
 	// removal of above code will introduce slow memory leak. Must be fixed before release
     return nRFee;
+}
+
+CAmount CalculateBlockFeeFromDisk(const CBlockIndex* pindexPrev){
+    //LogPrintStr("Calculating block fee from disk: " + std::to_string(pindexPrev->nHeight) + "\n");
+
+        const Consensus::Params& consensusParams = Params().GetConsensus();
+        CBlock block;
+        CAmount blockFee = 0;
+        CAmount blockReward = 0;
+        CAmount coinstakeInput = 0;
+        CAmount coinstakeOutput = 0;
+        //CAmount calculatedRunningFee = GetRunningFee(pindexPrev->pprev,pindexPrev->nFees,false );
+        //CAmount fixedSubsidy = GetProofOfStakeSubsidy(pindexPrev->pprev,pindexPrev->nFees,false );
+
+        if (ReadBlockFromDisk(block, pindexPrev, consensusParams)) {
+            //LogPrintStr("++++++++++++++++++++Calculating Block From Disk: " + std::to_string(pindexPrev->nHeight) + 
+            //" Tx Count " + std::to_string(block.vtx.size()) +
+            //" Indexed Fees " + FormatMoney(pindexPrev->nFees) + "\n");
+
+            for (int i = 1; i < block.vtx.size(); ++i){
+
+                CTransaction tx = block.vtx[i]; 
+                    CAmount input = 0;                    
+                    CAmount output = 0;
+
+                    if(i == 1){
+                         coinstakeOutput = tx.GetValueOut();
+                    } else {
+                        output = tx.GetValueOut();
+                    }
+                        
+                    BOOST_FOREACH(const CTxIn &txin, tx.vin) {
+                        CTransaction prevTx;
+                        uint256 hashBlock;
+                        
+                        if (GetTransaction(txin.prevout.hash, prevTx, consensusParams, hashBlock, true)) {                             
+                            if (txin.prevout.n < prevTx.vout.size()) {                                 
+                                if(i == 1){
+                                    coinstakeInput += prevTx.vout[txin.prevout.n].nValue;
+                                }else{
+                                    input += prevTx.vout[txin.prevout.n].nValue;
+                                } 
+                            } else {
+                                //LogPrintStr("WARNING: prevout.n out of range! Block: " + std::to_string(pindexPrev->nHeight)+ "\n");
+                            }
+                        } else {
+                            //LogPrintStr("WARNING: GetTransaction failed for input. Block: " + std::to_string(pindexPrev->nHeight)+ "\n");
+                        }
+                    }
+                    // LogPrintf("+++++++++++++++++++++++++Tx: %s value in %d value out %d fees %d \n", tx.GetHash().ToString(), input, output, input - output);
+                                         
+                     blockFee += (input - output);
+            }
+            blockReward = coinstakeOutput - coinstakeInput;
+            //LogPrintStr("++++++++++++++++++++Calculated block Fees: " + FormatMoney(blockFee) + "\n");
+        } else {
+            //LogPrintStr("Failed to read block from disk: " + std::to_string(pindexPrev->nHeight)= "\n");
+        }
+    return blockFee;
 }
 
 
@@ -2781,6 +2847,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
     std::vector<PrecomputedTransactionData> txdata;
     txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
+    pindex->ClearFee(); //Reqired in case of reorg that reconsiders the block so fees do not get incremented.  
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = block.vtx[i];

@@ -238,6 +238,10 @@ public:
             nFees += fee;
 	}
 
+    void ClearFee() {
+            nFees =0;
+	}
+
     CBlockIndex()
     {
         SetNull();

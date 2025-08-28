@@ -702,6 +702,7 @@ public:
     void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(std::vector<COutPoint>& vOutpts);
+    bool IsStaking();
 
     /*
      * Rescan abort properties
