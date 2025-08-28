@@ -172,7 +172,7 @@ wget https://github.com/RadiumCore/BDB6.2.38/releases/download/6.2.38/db-6.2.38.
 tar -xzvf db-6.2.38.NC.tar.gz
 
 # Build the library and install to our prefix
-cd db-6.2.38/build_unix/
+cd db-6.2.38.NC/build_unix/
 #  Note: Do a static build so that it can be embedded into the executable, instead of having to find a .so at runtime
 ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
 make install
