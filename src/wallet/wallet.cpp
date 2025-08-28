@@ -3772,7 +3772,7 @@ bool CWallet::InitLoadWallet()
     // needed to restore wallet transaction meta data after -zapwallettxes
     std::vector<CWalletTx> vWtx;
 
-    if (GetBoolArg("-zapwallettxes", true)) {
+    if (GetBoolArg("-zapwallettxes", false)) {
         uiInterface.InitMessage(_("Zapping all transactions from wallet..."));
 
         CWallet *tempWallet = new CWallet(walletFile);
