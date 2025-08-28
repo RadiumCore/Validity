@@ -36,6 +36,26 @@
 #endif
 #endif
 
+
+static std::string FormatHttpDate(int64_t now_secs) {
+    // RFC 7231 / RFC 1123: "Wed, 21 Oct 2015 07:28:00 GMT"
+    struct tm tm_;
+#ifdef _WIN32
+    __time64_t t = static_cast<__time64_t>(now_secs);
+    if (_gmtime64_s(&tm_, &t) != 0) return {};
+#else
+    time_t t = static_cast<time_t>(now_secs);
+    if (!gmtime_r(&t, &tm_)) return {};
+#endif
+    static const char* W[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+    static const char* M[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+    char buf[64];
+    int n = snprintf(buf, sizeof(buf), "%s, %02d %s %04d %02d:%02d:%02d GMT",
+                     W[tm_.tm_wday], tm_.tm_mday, M[tm_.tm_mon], tm_.tm_year + 1900,
+                     tm_.tm_hour, tm_.tm_min, tm_.tm_sec);
+    return (n > 0) ? std::string(buf, n) : std::string();
+}
+
 /** Maximum size of http request (request line + headers) */
 static const size_t MAX_HEADERS_SIZE = 8192;
 
@@ -607,6 +627,15 @@ void HTTPRequest::WriteHeader(const std::string& hdr, const std::string& value)
 void HTTPRequest::WriteReply(int nStatus, const std::string& strReply)
 {
     assert(!replySent && req);
+
+
+    // Ensure a valid Date header so libevent doesn't try to create its own.
+    const std::string http_date = FormatHttpDate(GetTime());
+    if (!http_date.empty()) {
+        WriteHeader("Date", http_date);
+    }
+
+
     // Send event to main http thread to send reply message
     struct evbuffer* evb = evhttp_request_get_output_buffer(req);
     assert(evb);
