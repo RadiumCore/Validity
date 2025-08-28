@@ -272,7 +272,7 @@ void WalletView::changePassphrase()
 
 void WalletView::NewBlock(bool fImmediate)
 {
-    overviewPage->NewBlock(fImmediate);
+    //overviewPage->NewBlock(fImmediate);
 }
 
 void WalletView::unlockWallet(bool fromMenu)

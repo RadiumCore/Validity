@@ -36,7 +36,10 @@ public:
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
     void showOutOfSyncWarning(bool fShow);
-    void NewBlock(bool fImmediate);
+    void NewBlock(bool fImmediate, int nHeight);
+    void UpdateHistoricalStakingStats(int unit);
+    void UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, int64_t nNetworkWeight, int unit, int nHeight);
+    void UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit);
 
 public Q_SLOTS:
 	void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
@@ -65,7 +68,7 @@ private:
 
     TxViewDelegate *txdelegate;
     std::unique_ptr<TransactionFilterProxy> filter;
-    qint64 nLastReportUpdate;
+    qint64 nLastReportUpdate = 0;
     bool lastStaking;
     
     

@@ -295,6 +295,7 @@ static const signed int AVG_FEE_START_BLOCK_TESTNET_V2 = 164750;
 static const signed int AVG_FEE_SPAN = 1440;
 int64_t GetRunningFee(const CBlockIndex* pindexPrev, CAmount nFees);
 CAmount CalculateBlockFeeFromDisk(const CBlockIndex* pindexPrev);
+CAmount getFixedStakeSubsidy(int nHeight);
 
 /**
  * Prune block and undo files (blk???.dat and undo???.dat) so that the disk space used is less than a user-defined target.
