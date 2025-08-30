@@ -144,9 +144,13 @@ dist/
 /src/validityd
 /src/validity-tx
 /db-6.2.38*
+/db-6.2.32*
 
 src/qt/validity-qt
 Validity-Qt.app
 background.tiff*
 
 *.sln
+
+
+blockchain/
