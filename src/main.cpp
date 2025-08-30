@@ -1891,7 +1891,7 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
     CAmount nSubsidy = getFixedStakeSubsidy(nHeight); 
 
     if (nHeight >= AVG_FEE_START_BLOCK_V2) {
-        CAmount nRFee;
+        CAmount nRFee = 0;
         if(nHeight> 5312140 && nHeight <5313580 ){
             nRFee = 70; 
         } 
@@ -1900,7 +1900,7 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
     } else if (nHeight >= AVG_FEE_START_BLOCK_REVERT) {
         return nSubsidy + nFees;
     } else if (nHeight >= AVG_FEE_START_BLOCK) {
-        CAmount nRFee;
+        CAmount nRFee = 0;
 
         nRFee = GetRunningFee( pindexPrev, nFees);
         return nSubsidy + nRFee;
@@ -2841,6 +2841,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
     std::vector<PrecomputedTransactionData> txdata;
     txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
+    pindex->ClearFee(); //Reqired in case of reorg that reconsiders the block so fees do not get incremented.  
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = block.vtx[i];
