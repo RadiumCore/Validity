@@ -1785,9 +1785,9 @@ CAmount GetProofOfWorkSubsidy(const CBlockIndex* pindexPrev)
     return nSubsidy;
 }
 
-CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
-{
-    int nHeight = pindexPrev->nHeight + 1; 
+
+CAmount getFixedStakeSubsidy(int nHeight){
+    
     CAmount nSubsidy = 5 * COIN;
     int DEV_FUND_BLOCK_HEIGHT = Params().GetConsensus().DEV_FUND_BLOCK_HEIGHT;    
     CAmount nYear = 525600; // ~ blocks per year
@@ -1880,21 +1880,18 @@ CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
         nSubsidy = 0 * COIN; // Hard cap supply at 9,000,000 VAL
     }
 
-    if (fDebug && GetBoolArg("-printcreation", false))
-        LogPrint("creation", "GetProofOfStakeReward(): create=%s ", FormatMoney(nSubsidy));
+    return nSubsidy;
 
 
-    
+}
 
-      
-      
-        
-
+CAmount GetProofOfStakeSubsidy(const CBlockIndex* pindexPrev, CAmount nFees)
+{
+    int nHeight = pindexPrev->nHeight + 1; 
+    CAmount nSubsidy = getFixedStakeSubsidy(nHeight); 
 
     if (nHeight >= AVG_FEE_START_BLOCK_V2) {
         CAmount nRFee;
-
-    if (nHeight >= AVG_FEE_START_BLOCK_V2) {
         if(nHeight> 5312140 && nHeight <5313580 ){
             nRFee = 70; 
         } 
