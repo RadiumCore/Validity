@@ -206,11 +206,25 @@ public:
 			(2600000, uint256S("0x3f9e88853f237ecaad98b4f117cdae00e111ecc7aae2191a7a8ae4b4e2b43001"))
 			(2700000, uint256S("0xc9167aa8f71e3344f7e5829dda96311996b6527c5b76b0147f534f199b9e9727"))
 			(2800000, uint256S("0x0c565de4d82c333d827cb1058193dd8d4027d390deeb575b471783191a219122"))
-			(2893756, uint256S("0xf14befb066eb08792fd480fa52243654f47b19d5894e198f951eacd819e46a85"))
+			(2900000, uint256S("0x9e2c12635c97ecbf7b8b66ad6756c11b5d5399e2d8c512dcbdb8f3519c74527a"))
+            (3000001, uint256S("0x2102410c9753aaef958d22ff18042128850054126b2f99875cfa3221528521de"))
+            (3200000, uint256S("0x16577739ce6854c0a4a7fa0149d7d60950930dcfd043d01053fcad5d4ea0b7b2"))
+            (3400000, uint256S("0xbd87a172e303b2255e406137684235e0b65b213ed7f48821a4fd9bbade6b6c96"))
+            (3600000, uint256S("0x81c8b14a19ca87782a0f732573ff37fb32ec1ac880b0d7f5f1f6f1679c822149"))
+            (3800000, uint256S("0xfb2761af1d3a70088a7e08dff88388ef6cc6be6ba2746d1e7746e415f3da28a3"))
+            (4000000, uint256S("0xfece0003fa9af506cb22c898baefd54368f43f00daa56447f65b9c0951655acb"))
+            (4200000, uint256S("0x614e90dcffd12d948bc3bc495491189b5a27bb852892da058cdc0766dfa4efea"))
+            (4400000, uint256S("0x74fa0a981c659a95d676050e22440a4cd3fd893765c5397b6de47de0919b2b61"))
+            (4600000, uint256S("0xa7939b576222bfb97abeb553b1de5b42a8fe4eb91f3a5fef479aed3132d4c0a1"))
+            (4800000, uint256S("0xc7961cc4fa6a1cf29dc5f71d2dee0d88f700181909a99c057b4250307d284562"))
+            (5000000, uint256S("0x617100dea34c04572c84bb860e40c75360a805ecaeee169a424fe45de3cd714e"))
+            (5200000, uint256S("0x2e422e728c29ff37d0d29c78236eb229ca2c9d9dd239e85c86b0be8872afed06"))
+            (5312130, uint256S("0xa0b032dcfd8e2315f3bbf207f5d4843210920a5a0444684c7ec4c4c6b948a6ef"))
+            (5313600, uint256S("0xc1b0258f6209ecd4dcdfc4f9d8b35a3fe0a80de02a320929432f038c973cf78f"))
 			    ,
 		
-			1609206848, // * UNIX timestamp of last checkpoint block
-			5871254,    // * total number of transactions between genesis and last checkpoint
+			1753586032, // * UNIX timestamp of last checkpoint block
+			10736810,    // * total number of transactions between genesis and last checkpoint
 								//   (the tx=... number in the SetBestChain debug.log lines)
 			10.0      // * estimated number of transactions per day after checkpoint			
         };
