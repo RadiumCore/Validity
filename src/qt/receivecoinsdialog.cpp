@@ -70,6 +70,7 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(const PlatformStyle *platformStyle, const
 
 void ReceiveCoinsDialog::setModel(WalletModel *model)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->model = model;
 
     if(model && model->getOptionsModel())
@@ -105,6 +106,7 @@ ReceiveCoinsDialog::~ReceiveCoinsDialog()
 
 void ReceiveCoinsDialog::clear()
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->reqAmount->clear();
     ui->reqLabel->setText("");
     ui->reqMessage->setText("");
@@ -124,6 +126,7 @@ void ReceiveCoinsDialog::accept()
 
 void ReceiveCoinsDialog::updateDisplayUnit()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(model && model->getOptionsModel())
     {
         ui->reqAmount->setDisplayUnit(model->getOptionsModel()->getDisplayUnit());
@@ -132,6 +135,7 @@ void ReceiveCoinsDialog::updateDisplayUnit()
 
 void ReceiveCoinsDialog::on_receiveButton_clicked()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!model || !model->getOptionsModel() || !model->getAddressTableModel() || !model->getRecentRequestsTableModel())
         return;
 
@@ -171,6 +175,7 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
 
 void ReceiveCoinsDialog::on_recentRequestsView_doubleClicked(const QModelIndex &index)
 {
+    ScopedTimer timer(__FUNCTION__);
     const RecentRequestsTableModel *submodel = model->getRecentRequestsTableModel();
     ReceiveRequestDialog *dialog = new ReceiveRequestDialog(cfg, this);
     dialog->setModel(model->getOptionsModel());
@@ -181,6 +186,7 @@ void ReceiveCoinsDialog::on_recentRequestsView_doubleClicked(const QModelIndex &
 
 void ReceiveCoinsDialog::recentRequestsView_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    ScopedTimer timer(__FUNCTION__);
     // Enable Show/Remove buttons only if anything is selected.
     bool enable = !ui->recentRequestsView->selectionModel()->selectedRows().isEmpty();
     ui->showRequestButton->setEnabled(enable);
@@ -189,6 +195,7 @@ void ReceiveCoinsDialog::recentRequestsView_selectionChanged(const QItemSelectio
 
 void ReceiveCoinsDialog::on_showRequestButton_clicked()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!model || !model->getRecentRequestsTableModel() || !ui->recentRequestsView->selectionModel())
         return;
     QModelIndexList selection = ui->recentRequestsView->selectionModel()->selectedRows();
@@ -200,6 +207,7 @@ void ReceiveCoinsDialog::on_showRequestButton_clicked()
 
 void ReceiveCoinsDialog::on_removeRequestButton_clicked()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!model || !model->getRecentRequestsTableModel() || !ui->recentRequestsView->selectionModel())
         return;
     QModelIndexList selection = ui->recentRequestsView->selectionModel()->selectedRows();
@@ -214,12 +222,14 @@ void ReceiveCoinsDialog::on_removeRequestButton_clicked()
 // sizes as the tables width is proportional to the dialogs width.
 void ReceiveCoinsDialog::resizeEvent(QResizeEvent *event)
 {
+    ScopedTimer timer(__FUNCTION__);
     QWidget::resizeEvent(event);
     columnResizingFixer->stretchColumnWidth(RecentRequestsTableModel::Message);
 }
 
 void ReceiveCoinsDialog::keyPressEvent(QKeyEvent *event)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (event->key() == Qt::Key_Return)
     {
         // press return -> submit form
@@ -236,6 +246,7 @@ void ReceiveCoinsDialog::keyPressEvent(QKeyEvent *event)
 
 QModelIndex ReceiveCoinsDialog::selectedRow()
 {
+    ScopedTimer timer(__FUNCTION__);
     if (!model || !model->getRecentRequestsTableModel() || !ui->recentRequestsView->selectionModel())
         return QModelIndex();
     QModelIndexList selection = ui->recentRequestsView->selectionModel()->selectedRows();
@@ -249,6 +260,7 @@ QModelIndex ReceiveCoinsDialog::selectedRow()
 // copy column of selected row to clipboard
 void ReceiveCoinsDialog::copyColumnToClipboard(int column)
 {
+    ScopedTimer timer(__FUNCTION__);
     QModelIndex firstIndex = selectedRow();
     if (!firstIndex.isValid())
     {
@@ -262,6 +274,7 @@ void ReceiveCoinsDialog::copyColumnToClipboard(int column)
 // context menu
 void ReceiveCoinsDialog::showMenu(const QPoint &point)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (!selectedRow().isValid())
     {
         return;
@@ -272,6 +285,7 @@ void ReceiveCoinsDialog::showMenu(const QPoint &point)
 // context menu action: copy URI
 void ReceiveCoinsDialog::copyURI()
 {
+    ScopedTimer timer(__FUNCTION__);
     QModelIndex sel = selectedRow();
     if (!sel.isValid())
     {

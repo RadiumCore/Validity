@@ -115,6 +115,7 @@ void WalletView::setClientModel(ClientModel *clientModel)
 
 void WalletView::setWalletModel(WalletModel *walletModel)
 {
+     ScopedTimer timer(__FUNCTION__);
     this->walletModel = walletModel;
 
     // Put transaction list in tabs
@@ -151,6 +152,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {
+     ScopedTimer timer(__FUNCTION__);
     // Prevent balloon-spam when initial block download is in progress
     if (!walletModel || !clientModel || clientModel->inInitialBlockDownload())
         return;
@@ -171,6 +173,7 @@ void WalletView::processNewTransaction(const QModelIndex& parent, int start, int
 
 void WalletView::gotoOverviewPage()
 {
+     ScopedTimer timer(__FUNCTION__);
     setCurrentWidget(overviewPage);
     //overviewPage->NewBlock(true);
 }
@@ -219,6 +222,7 @@ void WalletView::gotoVerifyMessageTab(QString addr)
 
 bool WalletView::handlePaymentRequest(const SendCoinsRecipient& recipient)
 {
+     ScopedTimer timer(__FUNCTION__);
     return sendCoinsPage->handlePaymentRequest(recipient);
 }
 
@@ -234,6 +238,7 @@ void WalletView::updateEncryptionStatus()
 
 void WalletView::encryptWallet(bool status)
 {
+     ScopedTimer timer(__FUNCTION__);
     if(!walletModel)
         return;
     AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt : AskPassphraseDialog::Decrypt, this);
@@ -245,6 +250,7 @@ void WalletView::encryptWallet(bool status)
 
 void WalletView::backupWallet()
 {
+     ScopedTimer timer(__FUNCTION__);
     QString filename = GUIUtil::getSaveFileName(this,
         tr("Backup Wallet"), QString(),
         tr("Wallet Data (*.dat)"), NULL);
@@ -320,6 +326,7 @@ void WalletView::usedReceivingAddresses()
 
 void WalletView::showProgress(const QString &title, int nProgress)
 {
+     ScopedTimer timer(__FUNCTION__);
     if (nProgress == 0)
     {
         progressDialog = new QProgressDialog(title, "", 0, 100);

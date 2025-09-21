@@ -40,6 +40,7 @@ public:
     inline void paint(QPainter *painter, const QStyleOptionViewItem &option,
                       const QModelIndex &index ) const
     {
+        ScopedTimer timer(__FUNCTION__);
         painter->save();
 
         QIcon icon = qvariant_cast<QIcon>(index.data(TransactionTableModel::RawDecorationRole));
@@ -128,6 +129,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchOnlyStake(-1),
     txdelegate(new TxViewDelegate(platformStyle, this))
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->setupUi(this);
 
     // use a SingleColorIcon for the "out of sync warning" icon
@@ -214,6 +216,7 @@ OverviewPage::~OverviewPage()
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake)
 {
+    ScopedTimer timer(__FUNCTION__);
     int unit = walletModel->getOptionsModel()->getDisplayUnit();
     currentBalance = balance;
     currentUnconfirmedBalance = unconfirmedBalance;
@@ -254,6 +257,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
 // show/hide watch-only labels
 void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->labelSpendable->setVisible(showWatchOnly);      // show spendable label (only when watch-only is active)
     ui->labelWatchonly->setVisible(showWatchOnly);      // show watch-only label
     ui->lineWatchBalance->setVisible(showWatchOnly);    // show watch-only balance separator line
@@ -270,6 +274,7 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
 
 void OverviewPage::setClientModel(ClientModel *model)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->clientModel = model;
     if(model)
     {
@@ -283,6 +288,7 @@ void OverviewPage::setClientModel(ClientModel *model)
 
 void OverviewPage::setWalletModel(WalletModel *model)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->walletModel = model;
     if(model && model->getOptionsModel())
     {
@@ -314,6 +320,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
 
 void OverviewPage::updateDisplayUnit()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(walletModel && walletModel->getOptionsModel())
     {
         if(currentBalance != -1)
@@ -329,12 +336,14 @@ void OverviewPage::updateDisplayUnit()
 
 void OverviewPage::updateAlerts(const QString &warnings)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->ui->labelAlerts->setVisible(!warnings.isEmpty());
     this->ui->labelAlerts->setText(warnings);
 }
 
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->labelWalletStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
@@ -363,8 +372,9 @@ double round(double value){
 }
 
 
-void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header){
-
+void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header)
+{
+    ScopedTimer timer(__FUNCTION__);
     //if flast update time was less than 5 seconds ago, do nothing
 	 if ((GetTime() - nLastReportUpdate) < 5)       
         return;
@@ -443,7 +453,7 @@ void OverviewPage::UpdateHistoricalStakingStats(int unit){
 }
 
 void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, int64_t nNetworkWeight, int unit, int nHeight){
-
+ScopedTimer timer(__FUNCTION__);
 
     // set visability 
     ui->labelMyWeightText->setVisible(staking);
@@ -475,7 +485,7 @@ void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, in
 }
 
 void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit){
-
+ScopedTimer timer(__FUNCTION__);
     double pCoinSupply = (((double)nCoinSupply/100000000)/(double)9000000) *100  ;
     double pStakingCoins = ((double)nNetworkWeight/(double)nCoinSupply) *100;
     //update total staking coins bar

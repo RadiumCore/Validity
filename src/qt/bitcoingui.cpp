@@ -473,6 +473,7 @@ void BitcoinGUI::createToolBars()
 
 void BitcoinGUI::setClientModel(ClientModel *clientModel)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->clientModel = clientModel;
     if(clientModel)
     {
@@ -631,6 +632,7 @@ void BitcoinGUI::createTrayIconMenu()
 #ifndef Q_OS_MAC
 void BitcoinGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
+     ScopedTimer timer(__FUNCTION__);
     if(reason == QSystemTrayIcon::Trigger)
     {
         // Click on system tray icon triggers show/hide of the main window
@@ -707,12 +709,14 @@ void BitcoinGUI::gotoHistoryPage()
 
 void BitcoinGUI::gotoReceiveCoinsPage()
 {
+     ScopedTimer timer(__FUNCTION__);
     receiveCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoReceiveCoinsPage();
 }
 
 void BitcoinGUI::gotoSendCoinsPage(QString addr)
 {
+     ScopedTimer timer(__FUNCTION__);
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
 }
@@ -730,6 +734,7 @@ void BitcoinGUI::gotoVerifyMessageTab(QString addr)
 
 void BitcoinGUI::setNumConnections(int count)
 {
+    ScopedTimer timer(__FUNCTION__);
     QString icon;
     switch(count)
     {
@@ -745,6 +750,7 @@ void BitcoinGUI::setNumConnections(int count)
 
 void BitcoinGUI::updateHeadersSyncProgressLabel()
 {
+    ScopedTimer timer(__FUNCTION__);
     int64_t headersTipTime = clientModel->getHeaderTipTime();
     int headersTipHeight = clientModel->getHeaderTipHeight();
     int estHeadersLeft = (GetTime() - headersTipTime)/600;
@@ -754,6 +760,7 @@ void BitcoinGUI::updateHeadersSyncProgressLabel()
 
 void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool header)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (modalOverlay)
     {
         if (header)
@@ -864,6 +871,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
 void BitcoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
 {
+    ScopedTimer timer(__FUNCTION__);
     QString strTitle = tr("Bitcoin"); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
@@ -923,6 +931,7 @@ void BitcoinGUI::message(const QString &title, const QString &message, unsigned 
 
 void BitcoinGUI::changeEvent(QEvent *e)
 {
+    ScopedTimer timer(__FUNCTION__);
     QMainWindow::changeEvent(e);
 #ifndef Q_OS_MAC // Ignored on Mac
     if(e->type() == QEvent::WindowStateChange)
@@ -942,6 +951,7 @@ void BitcoinGUI::changeEvent(QEvent *e)
 
 void BitcoinGUI::closeEvent(QCloseEvent *event)
 {
+    ScopedTimer timer(__FUNCTION__);
 #ifndef Q_OS_MAC // Ignored on Mac
     if(clientModel && clientModel->getOptionsModel())
     {
@@ -965,6 +975,7 @@ void BitcoinGUI::closeEvent(QCloseEvent *event)
 
 void BitcoinGUI::showEvent(QShowEvent *event)
 {
+    ScopedTimer timer(__FUNCTION__);
     // enable the debug window when the main window shows up
     openRPCConsoleAction->setEnabled(true);
     aboutAction->setEnabled(true);
@@ -974,6 +985,7 @@ void BitcoinGUI::showEvent(QShowEvent *event)
 #ifdef ENABLE_WALLET
 void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address, const QString& label)
 {
+    ScopedTimer timer(__FUNCTION__);
     // On new transaction, make an info balloon
     QString msg = tr("Date: %1\n").arg(date) +
                   tr("Amount: %1\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
@@ -1008,6 +1020,7 @@ void BitcoinGUI::dropEvent(QDropEvent *event)
 
 bool BitcoinGUI::eventFilter(QObject *object, QEvent *event)
 {
+    ScopedTimer timer(__FUNCTION__);
     // Catch status tip events
     if (event->type() == QEvent::StatusTip)
     {
@@ -1021,6 +1034,7 @@ bool BitcoinGUI::eventFilter(QObject *object, QEvent *event)
 #ifdef ENABLE_WALLET
 bool BitcoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
 {
+    ScopedTimer timer(__FUNCTION__);
     // URI has to be valid
     if (walletFrame && walletFrame->handlePaymentRequest(recipient))
     {
@@ -1042,6 +1056,7 @@ void BitcoinGUI::setHDStatus(int hdEnabled)
 
 void BitcoinGUI::setEncryptionStatus(int status)
 {
+    ScopedTimer timer(__FUNCTION__);
     switch(status)
     {
     case WalletModel::Unencrypted:
@@ -1078,6 +1093,7 @@ void BitcoinGUI::setEncryptionStatus(int status)
 
 void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!clientModel)
         return;
 
@@ -1103,6 +1119,7 @@ void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden)
 
 void BitcoinGUI::toggleHidden()
 {
+    ScopedTimer timer(__FUNCTION__);
     showNormalIfMinimized(true);
 }
 
@@ -1177,6 +1194,7 @@ void BitcoinGUI::updateStakingIcon()
 
 void BitcoinGUI::detectShutdown()
 {
+     ScopedTimer timer(__FUNCTION__);
     if (ShutdownRequested())
     {
         if(rpcConsole)
@@ -1187,6 +1205,7 @@ void BitcoinGUI::detectShutdown()
 
 void BitcoinGUI::showProgress(const QString &title, int nProgress)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (nProgress == 0)
     {
         progressDialog = new QProgressDialog(title, "", 0, 100);
@@ -1210,6 +1229,7 @@ void BitcoinGUI::showProgress(const QString &title, int nProgress)
 
 void BitcoinGUI::setTrayIconVisible(bool fHideTrayIcon)
 {
+     ScopedTimer timer(__FUNCTION__);
     if (trayIcon)
     {
         trayIcon->setVisible(!fHideTrayIcon);
@@ -1218,12 +1238,14 @@ void BitcoinGUI::setTrayIconVisible(bool fHideTrayIcon)
 
 void BitcoinGUI::showModalOverlay()
 {
+     ScopedTimer timer(__FUNCTION__);
     if (modalOverlay)
         modalOverlay->showHide(false, true);
 }
 
 static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
+    ScopedTimer timer(__FUNCTION__);
     bool modal = (style & CClientUIInterface::MODAL);
     // The SECURE flag has no effect in the Qt GUI.
     // bool secure = (style & CClientUIInterface::SECURE);
@@ -1308,6 +1330,7 @@ void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *optionsModel)
 /** When Display Units are changed on OptionsModel it will refresh the display text of the control on the status bar */
 void UnitDisplayStatusBarControl::updateDisplayUnit(int newUnits)
 {
+     ScopedTimer timer(__FUNCTION__);
     setText(BitcoinUnits::name(newUnits));
 }
 
@@ -1321,6 +1344,7 @@ void UnitDisplayStatusBarControl::onDisplayUnitsClicked(const QPoint& point)
 /** Tells underlying optionsModel to update its current display unit. */
 void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
 {
+     ScopedTimer timer(__FUNCTION__);
     if (action)
     {
         optionsModel->setDisplayUnit(action->data());

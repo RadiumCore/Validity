@@ -14,7 +14,9 @@
 #include <QProgressBar>
 #include <QString>
 #include <QTableView>
-
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
 #include <boost/filesystem.hpp>
 
 class QValidatedLineEdit;
@@ -30,6 +32,39 @@ class QLineEdit;
 class QUrl;
 class QWidget;
 QT_END_NAMESPACE
+
+
+
+#include <QElapsedTimer>
+#include <QDebug>
+
+class ScopedTimer {
+public:
+    ScopedTimer(const char* name, int thresholdMs = 200)
+        : m_name(name), m_threshold(thresholdMs) {
+        m_timer.start();
+        
+    }
+
+    ~ScopedTimer() {
+        qint64 elapsed = m_timer.elapsed();
+        if (elapsed > m_threshold) {
+            if (elapsed > m_threshold) {
+            QFile f("timings.log");
+            if (f.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&f);
+                ts << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss ")
+                   << m_name << " took " << elapsed << " ms\n";
+                }
+            }
+        }
+    }
+
+private:
+    const char* m_name;
+    int m_threshold;
+    QElapsedTimer m_timer;
+};
 
 /** Utility functions used by the Bitcoin Qt UI.
  */

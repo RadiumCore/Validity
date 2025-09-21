@@ -78,6 +78,8 @@ public:
      */
     void refreshWallet()
     {
+        
+         ScopedTimer timer(__FUNCTION__);
         qDebug() << "TransactionTablePriv::refreshWallet";
         cachedWallet.clear();
         {
@@ -97,6 +99,7 @@ public:
      */
     void updateWallet(const uint256 &hash, int status, bool showTransaction)
     {
+        ScopedTimer timer(__FUNCTION__);
         qDebug() << "TransactionTablePriv::updateWallet: " + QString::fromStdString(hash.ToString()) + " " + QString::number(status);
 
         // Find bounds of this transaction in model

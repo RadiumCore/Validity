@@ -186,6 +186,7 @@ TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *pa
 
 void TransactionView::setModel(WalletModel *model)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->model = model;
     if(model)
     {
@@ -243,6 +244,7 @@ void TransactionView::setModel(WalletModel *model)
 
 void TransactionView::chooseDate(int idx)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     QDate current = QDate::currentDate();
@@ -291,6 +293,7 @@ void TransactionView::chooseDate(int idx)
 
 void TransactionView::chooseType(int idx)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     transactionProxyModel->setTypeFilter(
@@ -299,6 +302,7 @@ void TransactionView::chooseType(int idx)
 
 void TransactionView::chooseWatchonly(int idx)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     transactionProxyModel->setWatchOnlyFilter(
@@ -307,6 +311,7 @@ void TransactionView::chooseWatchonly(int idx)
 
 void TransactionView::changedPrefix(const QString &prefix)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     transactionProxyModel->setAddressPrefix(prefix);
@@ -314,6 +319,7 @@ void TransactionView::changedPrefix(const QString &prefix)
 
 void TransactionView::changedAmount(const QString &amount)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     CAmount amount_parsed = 0;
@@ -329,6 +335,7 @@ void TransactionView::changedAmount(const QString &amount)
 
 void TransactionView::exportClicked()
 {
+    ScopedTimer timer(__FUNCTION__);
     // CSV is currently the only supported format
     QString filename = GUIUtil::getSaveFileName(this,
         tr("Export Transaction History"), QString(),
@@ -363,6 +370,7 @@ void TransactionView::exportClicked()
 
 void TransactionView::contextualMenu(const QPoint &point)
 {
+    ScopedTimer timer(__FUNCTION__);
     QModelIndex index = transactionView->indexAt(point);
     QModelIndexList selection = transactionView->selectionModel()->selectedRows(0);
     if (selection.empty())
@@ -381,6 +389,7 @@ void TransactionView::contextualMenu(const QPoint &point)
 
 void TransactionView::abandonTx()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionView || !transactionView->selectionModel())
         return;
     QModelIndexList selection = transactionView->selectionModel()->selectedRows(0);
@@ -429,6 +438,7 @@ void TransactionView::copyTxPlainText()
 
 void TransactionView::editLabel()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionView->selectionModel() ||!model)
         return;
     QModelIndexList selection = transactionView->selectionModel()->selectedRows();
@@ -475,6 +485,7 @@ void TransactionView::editLabel()
 
 void TransactionView::showDetails()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionView->selectionModel())
         return;
     QModelIndexList selection = transactionView->selectionModel()->selectedRows();
@@ -488,6 +499,7 @@ void TransactionView::showDetails()
 
 void TransactionView::openThirdPartyTxUrl(QString url)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionView || !transactionView->selectionModel())
         return;
     QModelIndexList selection = transactionView->selectionModel()->selectedRows(0);
@@ -497,6 +509,7 @@ void TransactionView::openThirdPartyTxUrl(QString url)
 
 QWidget *TransactionView::createDateRangeWidget()
 {
+    ScopedTimer timer(__FUNCTION__);
     dateRangeWidget = new QFrame();
     dateRangeWidget->setFrameStyle(QFrame::Panel | QFrame::Raised);
     dateRangeWidget->setContentsMargins(1,1,1,1);
@@ -533,6 +546,7 @@ QWidget *TransactionView::createDateRangeWidget()
 
 void TransactionView::dateRangeChanged()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     transactionProxyModel->setDateRange(
@@ -542,6 +556,7 @@ void TransactionView::dateRangeChanged()
 
 void TransactionView::focusTransaction(const QModelIndex &idx)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!transactionProxyModel)
         return;
     QModelIndex targetIdx = transactionProxyModel->mapFromSource(idx);
@@ -554,6 +569,7 @@ void TransactionView::focusTransaction(const QModelIndex &idx)
 // sizes as the tables width is proportional to the dialogs width.
 void TransactionView::resizeEvent(QResizeEvent* event)
 {
+    ScopedTimer timer(__FUNCTION__);
     QWidget::resizeEvent(event);
     columnResizingFixer->stretchColumnWidth(TransactionTableModel::ToAddress);
 }
@@ -561,6 +577,7 @@ void TransactionView::resizeEvent(QResizeEvent* event)
 // Need to override default Ctrl+C action for amount as default behaviour is just to copy DisplayRole text
 bool TransactionView::eventFilter(QObject *obj, QEvent *event)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent *ke = static_cast<QKeyEvent *>(event);
@@ -576,6 +593,7 @@ bool TransactionView::eventFilter(QObject *obj, QEvent *event)
 // show/hide column Watch-only
 void TransactionView::updateWatchOnlyColumn(bool fHaveWatchOnly)
 {
+    ScopedTimer timer(__FUNCTION__);
     watchOnlyWidget->setVisible(fHaveWatchOnly);
     transactionView->setColumnHidden(TransactionTableModel::Watchonly, !fHaveWatchOnly);
 }

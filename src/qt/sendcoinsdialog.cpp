@@ -39,6 +39,7 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *platformStyle, QWidget *pa
     fFeeMinimized(true),
     platformStyle(platformStyle)
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->setupUi(this);
 
     if (!platformStyle->getImagesOnButtons()) {
@@ -118,6 +119,7 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *platformStyle, QWidget *pa
 
 void SendCoinsDialog::setClientModel(ClientModel *clientModel)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->clientModel = clientModel;
 
     if (clientModel) {
@@ -127,6 +129,7 @@ void SendCoinsDialog::setClientModel(ClientModel *clientModel)
 
 void SendCoinsDialog::setModel(WalletModel *model)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->model = model;
 
     if(model && model->getOptionsModel())
@@ -177,6 +180,7 @@ void SendCoinsDialog::setModel(WalletModel *model)
 
 SendCoinsDialog::~SendCoinsDialog()
 {
+    ScopedTimer timer(__FUNCTION__);
     QSettings settings;
     settings.setValue("fFeeSectionMinimized", fFeeMinimized);
     settings.setValue("nFeeRadio", ui->groupFee->checkedId());
@@ -190,6 +194,7 @@ SendCoinsDialog::~SendCoinsDialog()
 
 void SendCoinsDialog::on_sendButton_clicked()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!model || !model->getOptionsModel())
         return;
 
@@ -338,6 +343,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 
 void SendCoinsDialog::clear()
 {
+    ScopedTimer timer(__FUNCTION__);
     // Remove entries until only one left
     while(ui->entries->count())
     {
@@ -360,6 +366,7 @@ void SendCoinsDialog::accept()
 
 SendCoinsEntry *SendCoinsDialog::addEntry()
 {
+    ScopedTimer timer(__FUNCTION__);
     SendCoinsEntry *entry = new SendCoinsEntry(platformStyle, this);
     entry->setModel(model);
     ui->entries->addWidget(entry);
@@ -383,12 +390,14 @@ SendCoinsEntry *SendCoinsDialog::addEntry()
 
 void SendCoinsDialog::updateTabsAndLabels()
 {
+    ScopedTimer timer(__FUNCTION__);
     setupTabChain(0);
     coinControlUpdateLabels();
 }
 
 void SendCoinsDialog::removeEntry(SendCoinsEntry* entry)
 {
+    ScopedTimer timer(__FUNCTION__);
     entry->hide();
 
     // If the last entry is about to be removed add an empty one
@@ -402,6 +411,7 @@ void SendCoinsDialog::removeEntry(SendCoinsEntry* entry)
 
 QWidget *SendCoinsDialog::setupTabChain(QWidget *prev)
 {
+    ScopedTimer timer(__FUNCTION__);
     for(int i = 0; i < ui->entries->count(); ++i)
     {
         SendCoinsEntry *entry = qobject_cast<SendCoinsEntry*>(ui->entries->itemAt(i)->widget());
@@ -418,6 +428,7 @@ QWidget *SendCoinsDialog::setupTabChain(QWidget *prev)
 
 void SendCoinsDialog::setAddress(const QString &address)
 {
+    ScopedTimer timer(__FUNCTION__);
     SendCoinsEntry *entry = 0;
     // Replace the first entry if it is still unused
     if(ui->entries->count() == 1)
@@ -438,6 +449,7 @@ void SendCoinsDialog::setAddress(const QString &address)
 
 void SendCoinsDialog::pasteEntry(const SendCoinsRecipient &rv)
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!fNewRecipientAllowed)
         return;
 
@@ -462,6 +474,7 @@ void SendCoinsDialog::pasteEntry(const SendCoinsRecipient &rv)
 
 bool SendCoinsDialog::handlePaymentRequest(const SendCoinsRecipient &rv)
 {
+    ScopedTimer timer(__FUNCTION__);
     // Just paste the entry, all pre-checks
     // are done in paymentserver.cpp.
     pasteEntry(rv);
@@ -471,6 +484,7 @@ bool SendCoinsDialog::handlePaymentRequest(const SendCoinsRecipient &rv)
 void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
                                  const CAmount& watchBalance, const CAmount& watchUnconfirmedBalance, const CAmount& watchImmatureBalance, const CAmount& watchStake)
 {
+    ScopedTimer timer(__FUNCTION__);
     Q_UNUSED(unconfirmedBalance);
     Q_UNUSED(immatureBalance);
     Q_UNUSED(watchBalance);
@@ -487,6 +501,7 @@ void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfir
 
 void SendCoinsDialog::updateDisplayUnit()
 {
+    ScopedTimer timer(__FUNCTION__);
     setBalance(model->getBalance(), 0, 0, 0, 0, 0, 0, 0);
     ui->customFee->setDisplayUnit(model->getOptionsModel()->getDisplayUnit());
     updateMinFeeLabel();
@@ -495,6 +510,7 @@ void SendCoinsDialog::updateDisplayUnit()
 
 void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn &sendCoinsReturn, const QString &msgArg)
 {
+    ScopedTimer timer(__FUNCTION__);
     QPair<QString, CClientUIInterface::MessageBoxFlags> msgParams;
     // Default to a warning message, override if error message is needed
     msgParams.second = CClientUIInterface::MSG_WARNING;
@@ -545,6 +561,7 @@ void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn 
 
 void SendCoinsDialog::minimizeFeeSection(bool fMinimize)
 {
+    ScopedTimer timer(__FUNCTION__);
     //ui->labelFeeMinimized->setVisible(fMinimize);
     //ui->buttonChooseFee  ->setVisible(fMinimize);
     ui->buttonMinimizeFee->setVisible(!fMinimize);
@@ -555,6 +572,7 @@ void SendCoinsDialog::minimizeFeeSection(bool fMinimize)
 
 void SendCoinsDialog::useAvailableBalance(SendCoinsEntry* entry)
 {
+    ScopedTimer timer(__FUNCTION__);
     // Get CCoinControl instance if CoinControl is enabled or create a new one.
     CCoinControl coin_control;
     if (model->getOptionsModel()->getCoinControlFeatures()) {
@@ -580,12 +598,14 @@ void SendCoinsDialog::useAvailableBalance(SendCoinsEntry* entry)
 
 void SendCoinsDialog::setMinimumFee()
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->radioCustomPerKilobyte->setChecked(true);
     ui->customFee->setValue(CWallet::GetRequiredFee(1000));
 }
 
 void SendCoinsDialog::updateFeeSectionControls()
 {
+    ScopedTimer timer(__FUNCTION__);
     ui->sliderSmartFee          ->setEnabled(ui->radioSmartFee->isChecked());
     ui->labelSmartFee           ->setEnabled(ui->radioSmartFee->isChecked());
     ui->labelSmartFee2          ->setEnabled(ui->radioSmartFee->isChecked());
@@ -602,6 +622,7 @@ void SendCoinsDialog::updateFeeSectionControls()
 
 void SendCoinsDialog::updateGlobalFeeVariables()
 {
+    ScopedTimer timer(__FUNCTION__);
     if (ui->radioSmartFee->isChecked())
     {
         nTxConfirmTarget = defaultConfirmTarget - ui->sliderSmartFee->value();
@@ -623,6 +644,7 @@ void SendCoinsDialog::updateGlobalFeeVariables()
 
 void SendCoinsDialog::updateFeeMinimizedLabel()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!model || !model->getOptionsModel())
         return;
 
@@ -636,6 +658,7 @@ void SendCoinsDialog::updateFeeMinimizedLabel()
 
 void SendCoinsDialog::updateMinFeeLabel()
 {
+    ScopedTimer timer(__FUNCTION__);
     if (model && model->getOptionsModel())
         ui->checkBoxMinimumFee->setText(tr("Pay only the required fee of %1").arg(
             BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), CWallet::GetRequiredFee(1000)) + "/kB")
@@ -644,6 +667,7 @@ void SendCoinsDialog::updateMinFeeLabel()
 
 void SendCoinsDialog::updateSmartFeeLabel()
 {
+    ScopedTimer timer(__FUNCTION__);
     if(!model || !model->getOptionsModel())
         return;
 
@@ -733,6 +757,7 @@ void SendCoinsDialog::coinControlButtonClicked()
 // Coin Control: checkbox custom change address
 void SendCoinsDialog::coinControlChangeChecked(int state)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (state == Qt::Unchecked)
     {
         CoinControlDialog::coinControl->destChange = CNoDestination();
@@ -748,6 +773,7 @@ void SendCoinsDialog::coinControlChangeChecked(int state)
 // Coin Control: custom change address changed
 void SendCoinsDialog::coinControlChangeEdited(const QString& text)
 {
+    ScopedTimer timer(__FUNCTION__);
     if (model && model->getAddressTableModel())
     {
         // Default to no change address until verified
@@ -809,6 +835,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
 // Coin Control: update labels
 void SendCoinsDialog::coinControlUpdateLabels()
 {
+    ScopedTimer timer(__FUNCTION__);
     if (!model || !model->getOptionsModel())
         return;
 

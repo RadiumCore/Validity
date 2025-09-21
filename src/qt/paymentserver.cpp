@@ -441,6 +441,7 @@ void PaymentServer::initNetManager()
 
 void PaymentServer::uiReady()
 {
+     ScopedTimer timer(__FUNCTION__);
     initNetManager();
 
     saveURIs = false;
@@ -696,6 +697,7 @@ void PaymentServer::fetchRequest(const QUrl& url)
 
 void PaymentServer::fetchPaymentACK(CWallet* wallet, SendCoinsRecipient recipient, QByteArray transaction)
 {
+     ScopedTimer timer(__FUNCTION__);
     const payments::PaymentDetails& details = recipient.paymentRequest.getDetails();
     if (!details.has_payment_url())
         return;

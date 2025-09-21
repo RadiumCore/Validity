@@ -129,6 +129,7 @@ void WalletModel::updateStatus()
 
 void WalletModel::pollBalanceChanged()
 {
+     ScopedTimer timer(__FUNCTION__);
     // Get required locks upfront. This avoids the GUI from getting stuck on
     // periodical polls if the core is holding the locks for a longer time -
     // for example, during a wallet rescan.
@@ -138,15 +139,19 @@ void WalletModel::pollBalanceChanged()
     TRY_LOCK(wallet->cs_wallet, lockWallet);
     if(!lockWallet)
         return;
-
+    ScopedTimer timer2("pollBalanceChanged Pos2");
     if(fForceCheckBalanceChanged || chainActive.Height() != cachedNumBlocks)
     {
+        ScopedTimer timer3("pollBalanceChanged Pos3");
         fForceCheckBalanceChanged = false;
+        ScopedTimer timer4("pollBalanceChanged Pos4");
 
         // Balance and number of transactions might have changed
         cachedNumBlocks = chainActive.Height();
+        ScopedTimer timer5("pollBalanceChanged Pos5");
 
         checkBalanceChanged();
+        ScopedTimer timer6("pollBalanceChanged Pos6");
         if(transactionTableModel)
             transactionTableModel->updateConfirmations();
     }

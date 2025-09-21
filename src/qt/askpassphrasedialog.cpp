@@ -8,7 +8,7 @@
 
 #include "askpassphrasedialog.h"
 #include "ui_askpassphrasedialog.h"
-
+#include"guiutil.h"
 #include "guiconstants.h"
 #include "walletmodel.h"
 
@@ -99,6 +99,7 @@ void AskPassphraseDialog::setModel(WalletModel *model)
 
 void AskPassphraseDialog::accept()
 {
+     ScopedTimer timer(__FUNCTION__);
     SecureString oldpass, newpass1, newpass2;
     if(!model)
         return;

@@ -109,6 +109,7 @@ AddressBookPage::~AddressBookPage()
 
 void AddressBookPage::setModel(AddressTableModel *model)
 {
+    ScopedTimer timer(__FUNCTION__);
     this->model = model;
     if(!model)
         return;

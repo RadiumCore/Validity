@@ -678,6 +678,7 @@ void RPCConsole::message(int category, const QString &message, bool html)
 
 void RPCConsole::setNumConnections(int count)
 {
+     ScopedTimer timer(__FUNCTION__);
     if (!clientModel)
         return;
 
@@ -690,6 +691,7 @@ void RPCConsole::setNumConnections(int count)
 
 void RPCConsole::setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers)
 {
+     ScopedTimer timer(__FUNCTION__);
     if (!headers) {
         ui->numberOfBlocks->setText(QString::number(count));
         ui->lastBlockTime->setText(blockDate.toString());
@@ -698,6 +700,7 @@ void RPCConsole::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
 void RPCConsole::setMempoolSize(long numberOfTxs, size_t dynUsage)
 {
+     ScopedTimer timer(__FUNCTION__);
     ui->mempoolNumberTxs->setText(QString::number(numberOfTxs));
 
     if (dynUsage < 1000000)
@@ -708,6 +711,7 @@ void RPCConsole::setMempoolSize(long numberOfTxs, size_t dynUsage)
 
 void RPCConsole::on_lineEdit_returnPressed()
 {
+     ScopedTimer timer(__FUNCTION__);
     QString cmd = ui->lineEdit->text();
     ui->lineEdit->clear();
 
@@ -803,18 +807,21 @@ QString RPCConsole::FormatBytes(quint64 bytes)
 
 void RPCConsole::setTrafficGraphRange(int mins)
 {
+     ScopedTimer timer(__FUNCTION__);
     ui->trafficGraph->setGraphRangeMins(mins);
     ui->lblGraphRange->setText(GUIUtil::formatDurationStr(mins * 60));
 }
 
 void RPCConsole::updateTrafficStats(quint64 totalBytesIn, quint64 totalBytesOut)
 {
+     ScopedTimer timer(__FUNCTION__);
     ui->lblBytesIn->setText(FormatBytes(totalBytesIn));
     ui->lblBytesOut->setText(FormatBytes(totalBytesOut));
 }
 
 void RPCConsole::peerSelected(const QItemSelection &selected, const QItemSelection &deselected)
 {
+     ScopedTimer timer(__FUNCTION__);
     Q_UNUSED(deselected);
 
     if (!clientModel || !clientModel->getPeerTableModel() || selected.indexes().isEmpty())
