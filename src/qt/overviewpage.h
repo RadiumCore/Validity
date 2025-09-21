@@ -16,6 +16,24 @@ class TxViewDelegate;
 class PlatformStyle;
 class WalletModel;
 
+
+
+using namespace std;
+
+
+struct StakePeriodRange_T {
+    int64_t Start;
+    int64_t End;
+    int64_t Total;
+    int Count;
+    string Name;
+};
+
+typedef vector<StakePeriodRange_T> vStakePeriodRange_T;
+
+extern vStakePeriodRange_T PrepareRangeForStakeReport();
+extern int GetsStakeSubTotal(vStakePeriodRange_T& aRange);
+
 namespace Ui {
     class OverviewPage;
 }
@@ -37,7 +55,7 @@ public:
     void setWalletModel(WalletModel *walletModel);
     void showOutOfSyncWarning(bool fShow);
     void NewBlock(bool fImmediate, int nHeight);
-    void UpdateHistoricalStakingStats(int unit);
+    void UpdateHistoricalStakingStats(vStakePeriodRange_T arange, int unit);
     void UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, int64_t nNetworkWeight, int unit, int nHeight);
     void UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit);
 

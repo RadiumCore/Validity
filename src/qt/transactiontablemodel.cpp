@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactiontablemodel.h"
-
+#include <QtConcurrent/QtConcurrent>
 #include "addresstablemodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -283,12 +283,38 @@ void TransactionTableModel::updateTransaction(const QString &hash, int status, b
 
 void TransactionTableModel::updateConfirmations()
 {
+    ScopedTimer timer(__FUNCTION__);
     // Blocks came in since last poll.
     // Invalidate status (number of confirmations) and (possibly) description
     //  for all rows. Qt is smart enough to only actually request the data for the
     //  visible rows.
-    Q_EMIT dataChanged(index(0, Status), index(priv->size()-1, Status));
-    Q_EMIT dataChanged(index(0, ToAddress), index(priv->size()-1, ToAddress));
+
+    QtConcurrent::run([=]() {                       
+    
+        int count = 0;
+        for (const TransactionRecord &item : priv->cachedWallet) {
+            if (item.status.depth < 250000) 
+            count ++;  
+        }       
+
+        QMetaObject::invokeMethod(this, [=]() {
+            ScopedTimer timer("UpdateConfirmsStatus");
+
+            Q_EMIT dataChanged(index(0, Status), index(count, Status));
+            
+            
+        }, Qt::QueuedConnection);
+
+        QMetaObject::invokeMethod(this, [=]() {
+            ScopedTimer timer("UpdateConfirmsAddress");
+
+          
+            Q_EMIT dataChanged(index(0, ToAddress), index(count, ToAddress));
+            
+        }, Qt::QueuedConnection);
+    });
+
+    
 }
 
 int TransactionTableModel::rowCount(const QModelIndex &parent) const

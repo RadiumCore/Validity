@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletmodel.h"
-
+#include <QtConcurrent/QtConcurrent>
 #include "addresstablemodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -159,36 +159,47 @@ void WalletModel::pollBalanceChanged()
 
 void WalletModel::checkBalanceChanged()
 {
-    CAmount newBalance = getBalance();
-    CAmount newUnconfirmedBalance = getUnconfirmedBalance();
-    CAmount newImmatureBalance = getImmatureBalance();
-    CAmount newStake = getStake();
-    CAmount newWatchOnlyBalance = 0;
-    CAmount newWatchUnconfBalance = 0;
-    CAmount newWatchImmatureBalance = 0;
-    CAmount newWatchOnlyStake = 0;
-    if (haveWatchOnly())
-    {
-        newWatchOnlyBalance = getWatchBalance();
-        newWatchUnconfBalance = getWatchUnconfirmedBalance();
-        newWatchImmatureBalance = getWatchImmatureBalance();
-        newWatchOnlyStake = getWatchStake();
-    }
+    ScopedTimer timer(__FUNCTION__);
 
-    if(cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance || cachedImmatureBalance != newImmatureBalance ||
+    QtConcurrent::run([=]() {
+            
+
+        CAmount newBalance = getBalance();
+        CAmount newUnconfirmedBalance = getUnconfirmedBalance();
+        CAmount newImmatureBalance = getImmatureBalance();
+        CAmount newStake = getStake();
+        CAmount newWatchOnlyBalance = 0;
+        CAmount newWatchUnconfBalance = 0;
+        CAmount newWatchImmatureBalance = 0;
+        CAmount newWatchOnlyStake = 0;
+        if (haveWatchOnly())
+        {
+            newWatchOnlyBalance = getWatchBalance();
+            newWatchUnconfBalance = getWatchUnconfirmedBalance();
+            newWatchImmatureBalance = getWatchImmatureBalance();
+            newWatchOnlyStake = getWatchStake();
+        }         
+           
+
+        QMetaObject::invokeMethod(this, [=]() {
+            ScopedTimer timer(__FUNCTION__);
+            if(cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance || cachedImmatureBalance != newImmatureBalance ||
     		cachedWatchOnlyBalance != newWatchOnlyBalance || cachedWatchUnconfBalance != newWatchUnconfBalance || cachedWatchImmatureBalance != newWatchImmatureBalance || cachedStake != newStake || cachedWatchOnlyStake != newWatchOnlyStake)
-    {
-        cachedBalance = newBalance;
-        cachedUnconfirmedBalance = newUnconfirmedBalance;
-        cachedImmatureBalance = newImmatureBalance;
-        cachedStake = newStake;
-        cachedWatchOnlyBalance = newWatchOnlyBalance;
-        cachedWatchUnconfBalance = newWatchUnconfBalance;
-        cachedWatchImmatureBalance = newWatchImmatureBalance;
-        cachedWatchOnlyStake = newWatchOnlyStake;
+            {
+                cachedBalance = newBalance;
+                cachedUnconfirmedBalance = newUnconfirmedBalance;
+                cachedImmatureBalance = newImmatureBalance;
+                cachedStake = newStake;
+                cachedWatchOnlyBalance = newWatchOnlyBalance;
+                cachedWatchUnconfBalance = newWatchUnconfBalance;
+                cachedWatchImmatureBalance = newWatchImmatureBalance;
+                cachedWatchOnlyStake = newWatchOnlyStake;
                 Q_EMIT balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance, newStake,
                                     newWatchOnlyBalance, newWatchUnconfBalance, newWatchImmatureBalance, newWatchOnlyStake);
-    }
+            }
+        }, Qt::QueuedConnection);
+    });
+
 }
 
 void WalletModel::updateTransaction()

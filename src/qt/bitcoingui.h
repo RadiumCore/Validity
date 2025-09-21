@@ -241,7 +241,7 @@ private Q_SLOTS:
     /** Simply calls showNormalIfMinimized(true) for use in SLOT() macro */
     void toggleHidden();
 	
-	void updateWeight();
+	
 
     void updateStakingIcon();
 

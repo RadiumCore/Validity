@@ -19,9 +19,13 @@
 #include <util.h>
 #include "wallet/wallet.h"
 #include "walletframe.h"
-
+#include <QtConcurrent/QtConcurrent>
 #include <QAbstractItemDelegate>
 #include <QPainter>
+#include <QElapsedTimer>
+#include <QDebug>
+
+
 
 #define DECORATION_SIZE 54
 #define NUM_ITEMS 5
@@ -347,24 +351,8 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
     ui->labelWalletStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
-using namespace boost;
 
 
-using namespace std;
-
-
-struct StakePeriodRange_T {
-    int64_t Start;
-    int64_t End;
-    int64_t Total;
-    int Count;
-    string Name;
-};
-
-typedef vector<StakePeriodRange_T> vStakePeriodRange_T;
-
-extern vStakePeriodRange_T PrepareRangeForStakeReport();
-extern int GetsStakeSubTotal(vStakePeriodRange_T& aRange);
 
 double round(double value){
      int64_t pre_round = value * 100;;
@@ -387,51 +375,64 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
         return;
 
     
-    bool staking = pwalletMain->IsStaking();
+    
     
    
 
 // if staking status has changed, force update
-    if(lastStaking != staking)
-        nLastReportUpdate = 0;
-    lastStaking = staking;
    
+   
+   bool staking = pwalletMain->IsStaking();
+
+            if(lastStaking != staking)
+                nLastReportUpdate = 0;
+            lastStaking = staking;
 
 
     if ((GetTime() - nLastReportUpdate) > 300) {
-        int64_t nMyWeight = pwalletMain ? pwalletMain->GetStakeWeight() : 0;
-        int64_t nNetworkWeight;
-        int64_t nCoinSupply ;
+        
 
-        {
+        
+
+         QtConcurrent::run([=]() {
+            
+
+            
+                
+
+
+            vStakePeriodRange_T aRange = PrepareRangeForStakeReport();
+            GetsStakeSubTotal(aRange); // heavy
+            int64_t nMyWeight = pwalletMain ? pwalletMain->GetStakeWeight() : 0;
+            int64_t nNetworkWeight;
+            int64_t nCoinSupply ;
+
+
+            {
             LOCK(cs_main);
             nNetworkWeight = GetPoSKernelPS();    
             nCoinSupply = GetSupply(); 
         
-        }
-       
+            }
 
+            QMetaObject::invokeMethod(this, [=]() {
+                int unit = walletModel->getOptionsModel()->getDisplayUnit();
+                UpdateHistoricalStakingStats(aRange, unit);
+                UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
+                UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, count);
 
-       int unit = walletModel->getOptionsModel()->getDisplayUnit();
+            nLastReportUpdate = GetTime();
+            }, Qt::QueuedConnection);
+        });
        
-       UpdateHistoricalStakingStats(unit);
-       UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
-        
-       UpdateCurrentStakingStats(staking, nMyWeight,nNetworkWeight, unit, count);
-       
-
-       // Save the last update
-       nLastReportUpdate = GetTime();
+      
     }
 }
 
-void OverviewPage::UpdateHistoricalStakingStats(int unit){
+void OverviewPage::UpdateHistoricalStakingStats(vStakePeriodRange_T aRange, int unit){
     // Get data for staking report
-    vStakePeriodRange_T aRange = PrepareRangeForStakeReport();
-    GetsStakeSubTotal(aRange);
+    ScopedTimer timer(__FUNCTION__);
     
-
-
     
     // Prepair the subtotals
     CAmount amount24h = round(aRange[30].Total);

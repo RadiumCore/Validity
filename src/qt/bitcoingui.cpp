@@ -7,7 +7,7 @@
 #endif
 
 #include "bitcoingui.h"
-
+#include <QtConcurrent/QtConcurrent>
 #include "bitcoinunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -1123,73 +1123,85 @@ void BitcoinGUI::toggleHidden()
     showNormalIfMinimized(true);
 }
 
-void BitcoinGUI::updateWeight()
-{
-    if(!pwalletMain)
-        return;
-
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain)
-        return;
-
-    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
-    if (!lockWallet)
-        return;
-
-#ifdef ENABLE_WALLET
-    if (pwalletMain)
-    nWeight = pwalletMain->GetStakeWeight();
-#endif
-}
-
-
 void BitcoinGUI::updateStakingIcon()
 {
-	updateWeight();
 
-    if (nLastCoinStakeSearchInterval && nWeight)
-    {
-    	uint64_t nWeight = this->nWeight;
-    	uint64_t nNetworkWeight = GetPoSKernelPS();
-    	unsigned nEstimateTime = 1.0455 * 64 * nNetworkWeight / nWeight;
+    QtConcurrent::run([=]() {   
 
-        QString text;
-        if (nEstimateTime < 60)
-        {
-            text = tr("%n second(s)", "", nEstimateTime);
-        }
-        else if (nEstimateTime < 60*60)
-        {
-            text = tr("%n minute(s)", "", nEstimateTime/60);
-        }
-        else if (nEstimateTime < 24*60*60)
-        {
-            text = tr("%n hour(s)", "", nEstimateTime/(60*60));
+      
+        if(!pwalletMain)
+            return;
+
+        TRY_LOCK(cs_main, lockMain);
+        if (!lockMain)
+            return;
+
+        TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+        if (!lockWallet)
+            return;
+
+        #ifdef ENABLE_WALLET
+            if (pwalletMain)
+            nWeight = pwalletMain->GetStakeWeight();
+        #endif                      
+    
+       if (nLastCoinStakeSearchInterval && nWeight)
+       {                        
+            uint64_t nWeight = this->nWeight;
+            int64_t nNetworkWeight = 0;
+            {
+                LOCK(cs_main);
+                nNetworkWeight = GetPoSKernelPS();
+            }
+            unsigned nEstimateTime = 1.0455 * 64 * nNetworkWeight / nWeight;
+            QString text;
+            if (nEstimateTime < 60)
+            {
+                text = tr("%n second(s)", "", nEstimateTime);
+            }
+            else if (nEstimateTime < 60*60)
+            {
+                text = tr("%n minute(s)", "", nEstimateTime/60);
+            }
+            else if (nEstimateTime < 24*60*60)
+            {
+                text = tr("%n hour(s)", "", nEstimateTime/(60*60));
+            }
+            else
+            {
+                text = tr("%n day(s)", "", nEstimateTime/(60*60*24));
+            }
+
+            nWeight /= COIN;
+            nNetworkWeight /= COIN;       
+
+           QMetaObject::invokeMethod(this, [=]() {
+              ScopedTimer timer(__FUNCTION__);
+                labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+                labelStakingIcon->setToolTip(tr("Staking.<br>Your weight is %1<br>Network weight is %2<br>Expected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+           }, Qt::QueuedConnection);            
+           
         }
         else
         {
-            text = tr("%n day(s)", "", nEstimateTime/(60*60*24));
-        }
-
-        nWeight /= COIN;
-        nNetworkWeight /= COIN;
-        labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        labelStakingIcon->setToolTip(tr("Staking.<br>Your weight is %1<br>Network weight is %2<br>Expected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+            QMetaObject::invokeMethod(this, [=]() {
+                ScopedTimer timer(__FUNCTION__);
+                labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+            if (vNodes.empty())
+                labelStakingIcon->setToolTip(tr("Not staking because wallet is offline"));
+            else if (IsInitialBlockDownload())
+                labelStakingIcon->setToolTip(tr("Not staking because wallet is syncing"));
+            else if (!nWeight)
+                labelStakingIcon->setToolTip(tr("Not staking because you don't have mature coins"));
+		    else if (pwalletMain && pwalletMain->IsLocked())
+                labelStakingIcon->setToolTip(tr("Not staking because wallet is locked"));
+            else
+                labelStakingIcon->setToolTip(tr("Not staking"));            
+        }, Qt::QueuedConnection);
     }
-    else
-    {
-        labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        if (vNodes.empty())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is offline"));
-        else if (IsInitialBlockDownload())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is syncing"));
-        else if (!nWeight)
-            labelStakingIcon->setToolTip(tr("Not staking because you don't have mature coins"));
-		else if (pwalletMain && pwalletMain->IsLocked())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is locked"));
-        else
-            labelStakingIcon->setToolTip(tr("Not staking"));
-    }
+        
+    });   
+    
 }
 
 void BitcoinGUI::detectShutdown()
