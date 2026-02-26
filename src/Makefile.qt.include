@@ -162,7 +162,8 @@ QT_MOC_CPP = \
   qt/moc_thememanager.cpp \
   qt/moc_stakingchartwidget.cpp \
   qt/moc_backupwizard.cpp \
-  qt/moc_peermapwidget.cpp
+  qt/moc_peermapwidget.cpp \
+  qt/moc_carddragdrop.cpp
 
 BITCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -228,6 +229,7 @@ BITCOIN_QT_H = \
   qt/thememanager.h \
   qt/backupwizard.h \
   qt/peermapwidget.h \
+  qt/carddragdrop.h \
   qt/geoip.h \
   qt/trafficgraphwidget.h \
   qt/transactiondesc.h \
@@ -341,6 +343,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/overviewpage.cpp \
   qt/stakingchartwidget.cpp \
   qt/backupwizard.cpp \
+  qt/carddragdrop.cpp \
   qt/paymentrequestplus.cpp \
   qt/paymentserver.cpp \
   qt/receivecoinsdialog.cpp \

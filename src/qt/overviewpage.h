@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <memory>
 
+class CardDragDropManager;
 class ClientModel;
 class TransactionFilterProxy;
 class TxViewDelegate;
@@ -69,6 +70,7 @@ private:
     bool lastStaking;
 
     StakingChartWidget *stakingChart;
+    CardDragDropManager *cardDragDrop;
 
 private Q_SLOTS:
     void updateDisplayUnit();

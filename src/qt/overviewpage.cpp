@@ -7,6 +7,7 @@
 #include "rpc/blockchain.cpp"
 
 #include "bitcoinunits.h"
+#include "carddragdrop.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -129,7 +130,8 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchImmatureBalance(-1),
     currentWatchOnlyStake(-1),
     txdelegate(new TxViewDelegate(platformStyle, this)),
-    stakingChart(0)
+    stakingChart(0),
+    cardDragDrop(0)
 {
     ui->setupUi(this);
 
@@ -181,6 +183,14 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     stakingChart = new StakingChartWidget(this);
     ui->chartPlaceholder->addWidget(stakingChart);
     stakingChart->setMinimumHeight(140);
+
+    // Set up drag-and-drop reordering for dashboard cards
+    cardDragDrop = new CardDragDropManager(this, this);
+    ui->transactionsCard->setObjectName("transactionsCard");
+    ui->networkCard->setObjectName("networkCard");
+    cardDragDrop->registerCard(ui->transactionsCard);
+    cardDragDrop->registerCard(ui->networkCard);
+    cardDragDrop->restoreOrder();
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
