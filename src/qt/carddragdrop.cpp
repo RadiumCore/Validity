@@ -1,4 +1,5 @@
-// Copyright (c) 2026 The Validity developers
+// Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,446 +8,426 @@
 #include <QApplication>
 #include <QEvent>
 #include <QMouseEvent>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QWidget>
+#include <QKeyEvent>
 #include <QSettings>
-#include <QPainter>
 #include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QAbstractScrollArea>
+#include <QScrollBar>
+#include <QProgressBar>
+#include <climits>
 
-static const int DRAG_THRESHOLD = 20;
-static const char* SETTINGS_KEY = "OverviewCardOrder";
-static const char* SIZES_KEY = "OverviewCardSizes";
-
-CardDragDropManager::CardDragDropManager(QWidget *container, QObject *parent)
-    : QObject(parent), container(container),
-      dragging(false), dragSource(0), dropIndicator(0),
-      resizing(false), resizeSource(0), resizeStartHeight(0)
+DashboardGridManager::DashboardGridManager(QWidget *parent)
+    : QObject(parent),
+      dashboard(parent),
+      hSplitter(0), leftColumn(0), rightColumn(0),
+      isDragging(false), dragCard(0),
+      dragPreview(0), dropLine(0),
+      targetCol(0), targetIdx(-1)
 {
 }
 
-void CardDragDropManager::registerCard(QWidget *card)
+DashboardGridManager::~DashboardGridManager()
 {
-    if (!card || cards.contains(card))
-        return;
-    cards.append(card);
-    card->installEventFilter(this);
-    card->setCursor(Qt::OpenHandCursor);
-    card->setMouseTracking(true);
+    saveLayout();
+    if (isDragging) abortDrag();
 }
 
-bool CardDragDropManager::isNearBottomEdge(QWidget *card, const QPoint &localPos) const
+// ---------------------------------------------------------------------------
+//  Setup
+// ---------------------------------------------------------------------------
+
+void DashboardGridManager::installFilters(QWidget *w)
 {
-    return localPos.y() >= (card->height() - RESIZE_EDGE_MARGIN) &&
-           localPos.y() <= card->height() &&
-           localPos.x() >= 0 && localPos.x() <= card->width();
+    w->installEventFilter(this);
+    Q_FOREACH(QObject *child, w->children()) {
+        QWidget *cw = qobject_cast<QWidget*>(child);
+        if (cw) installFilters(cw);
+    }
 }
 
-bool CardDragDropManager::eventFilter(QObject *obj, QEvent *event)
+QWidget* DashboardGridManager::cardForWidget(QWidget *w)
 {
-    QWidget *card = qobject_cast<QWidget*>(obj);
-    if (!card || !cards.contains(card))
-        return QObject::eventFilter(obj, event);
+    while (w) {
+        if (allCards.contains(w)) return w;
+        w = w->parentWidget();
+    }
+    return 0;
+}
+
+bool DashboardGridManager::isInteractive(QWidget *w)
+{
+    // Walk from the event source up to the card; if any ancestor (before
+    // the card itself) is an interactive control, suppress drag initiation.
+    while (w && !allCards.contains(w)) {
+        if (qobject_cast<QPushButton*>(w) ||
+            qobject_cast<QLineEdit*>(w) ||
+            qobject_cast<QComboBox*>(w) ||
+            qobject_cast<QAbstractScrollArea*>(w) ||
+            qobject_cast<QScrollBar*>(w) ||
+            qobject_cast<QProgressBar*>(w))
+            return true;
+
+        // Viewports of scroll areas are plain QWidgets — catch them too
+        QWidget *par = w->parentWidget();
+        if (par) {
+            QAbstractScrollArea *sa = qobject_cast<QAbstractScrollArea*>(par);
+            if (sa && sa->viewport() == w)
+                return true;
+        }
+        w = w->parentWidget();
+    }
+    return false;
+}
+
+QSplitter* DashboardGridManager::setupGrid(QList<QWidget*> cards)
+{
+    allCards = cards;
+
+    leftColumn = new QSplitter(Qt::Vertical, dashboard);
+    leftColumn->setChildrenCollapsible(false);
+    leftColumn->setMinimumWidth(180);
+
+    rightColumn = new QSplitter(Qt::Vertical, dashboard);
+    rightColumn->setChildrenCollapsible(false);
+    rightColumn->setMinimumWidth(180);
+
+    hSplitter = new QSplitter(Qt::Horizontal, dashboard);
+    hSplitter->setChildrenCollapsible(false);
+    hSplitter->addWidget(leftColumn);
+    hSplitter->addWidget(rightColumn);
+    hSplitter->setStretchFactor(0, 1);
+    hSplitter->setStretchFactor(1, 1);
+
+    // Try to restore a saved arrangement; fall back to defaults.
+    if (!restoreFromSettings()) {
+        // Default: first 3 cards left, last card (transactions) right
+        for (int i = 0; i < cards.size(); i++) {
+            if (i < cards.size() - 1)
+                leftColumn->addWidget(cards[i]);
+            else
+                rightColumn->addWidget(cards[i]);
+        }
+    }
+
+    // Install event filters on every widget inside every card
+    Q_FOREACH(QWidget *card, cards) {
+        installFilters(card);
+    }
+
+    // Green drop indicator (hidden until a drag is active)
+    dropLine = new QWidget(dashboard);
+    dropLine->setFixedHeight(4);
+    dropLine->setStyleSheet("background-color: #43b581; border-radius: 2px;");
+    dropLine->hide();
+
+    // Persist splitter sizes when the user resizes
+    connect(hSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(saveLayout()));
+    connect(leftColumn, SIGNAL(splitterMoved(int,int)), this, SLOT(saveLayout()));
+    connect(rightColumn, SIGNAL(splitterMoved(int,int)), this, SLOT(saveLayout()));
+
+    return hSplitter;
+}
+
+// ---------------------------------------------------------------------------
+//  Event filter
+// ---------------------------------------------------------------------------
+
+bool DashboardGridManager::eventFilter(QObject *obj, QEvent *event)
+{
+    // ---- Global capture while dragging (installed on qApp) ----
+    if (isDragging) {
+        switch (event->type()) {
+        case QEvent::MouseMove: {
+            QMouseEvent *me = static_cast<QMouseEvent*>(event);
+            moveDrag(me->globalPos());
+            return true;
+        }
+        case QEvent::MouseButtonRelease:
+            endDrag();
+            return true;
+        case QEvent::KeyPress: {
+            QKeyEvent *ke = static_cast<QKeyEvent*>(event);
+            if (ke->key() == Qt::Key_Escape) {
+                abortDrag();
+                return true;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+        return false;
+    }
+
+    // ---- Normal mode: detect drag start on card children ----
+    QWidget *w = qobject_cast<QWidget*>(obj);
+    if (!w) return false;
 
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
         QMouseEvent *me = static_cast<QMouseEvent*>(event);
-        if (me->button() == Qt::LeftButton) {
-            QPoint localPos = card->mapFromGlobal(me->globalPos());
-            if (isNearBottomEdge(card, localPos)) {
-                startResize(card, me->globalPos());
-                return true;
+        if (me->button() == Qt::LeftButton && !isInteractive(w)) {
+            QWidget *card = cardForWidget(w);
+            if (card) {
+                dragCard = card;
+                dragStartPos = me->globalPos();
             }
-            dragStartPos = me->globalPos();
-            dragSource = card;
         }
         break;
     }
     case QEvent::MouseMove: {
-        QMouseEvent *me = static_cast<QMouseEvent*>(event);
-
-        // Handle active resize
-        if (resizing && resizeSource == card) {
-            updateResize(me->globalPos());
-            return true;
-        }
-
-        // Handle active drag
-        if (dragging && dragSource == card) {
-            updateDropIndicator(me->globalPos());
-            return true;
-        }
-
-        // Update cursor based on position
-        if (!dragging && !resizing) {
-            QPoint localPos = card->mapFromGlobal(me->globalPos());
-            if (isNearBottomEdge(card, localPos)) {
-                card->setCursor(Qt::SizeVerCursor);
-            } else {
-                card->setCursor(Qt::OpenHandCursor);
-            }
-        }
-
-        // Start drag if threshold exceeded
-        if (dragSource == card && !dragging && !resizing && (me->buttons() & Qt::LeftButton)) {
-            if ((me->globalPos() - dragStartPos).manhattanLength() >= DRAG_THRESHOLD) {
-                startDrag(card, me->globalPos());
-            }
-        }
-        break;
-    }
-    case QEvent::MouseButtonRelease: {
-        if (resizing && resizeSource == card) {
-            finishResize();
-            return true;
-        }
-        if (dragging && dragSource == card) {
+        if (dragCard) {
             QMouseEvent *me = static_cast<QMouseEvent*>(event);
-            finishDrop(me->globalPos());
-            return true;
-        }
-        dragSource = 0;
-        break;
-    }
-    case QEvent::Leave: {
-        // Reset cursor when mouse leaves card (unless actively dragging/resizing)
-        if (!dragging && !resizing) {
-            card->setCursor(Qt::OpenHandCursor);
+            if ((me->globalPos() - dragStartPos).manhattanLength() >= DRAG_DIST) {
+                beginDrag(dragCard, me->globalPos());
+                return true;
+            }
         }
         break;
     }
+    case QEvent::MouseButtonRelease:
+        dragCard = 0;
+        break;
     default:
         break;
     }
 
-    return QObject::eventFilter(obj, event);
+    return false;
 }
 
-// --- Resize ---
+// ---------------------------------------------------------------------------
+//  Drag lifecycle
+// ---------------------------------------------------------------------------
 
-void CardDragDropManager::startResize(QWidget *card, const QPoint &globalPos)
+void DashboardGridManager::beginDrag(QWidget *card, const QPoint &globalPos)
 {
-    resizing = true;
-    resizeSource = card;
-    resizeStartPos = globalPos;
-    resizeStartHeight = card->height();
-    card->setCursor(Qt::SizeVerCursor);
+    isDragging = true;
+
+    // Capture all mouse events globally
+    qApp->installEventFilter(this);
+
+    // Floating thumbnail preview
+    QPixmap pix = card->grab();
+    dragPreview = new QLabel(0);
+    dragPreview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    dragPreview->setAttribute(Qt::WA_TransparentForMouseEvents);
+    dragPreview->setPixmap(pix.scaled(pix.width() * 6 / 10,
+                                       pix.height() * 6 / 10,
+                                       Qt::KeepAspectRatio,
+                                       Qt::SmoothTransformation));
+    dragPreview->setWindowOpacity(0.65);
+    dragPreview->adjustSize();
+    dragPreview->move(globalPos - QPoint(dragPreview->width() / 2, 20));
+    dragPreview->show();
+
+    moveDrag(globalPos);
 }
 
-void CardDragDropManager::updateResize(const QPoint &globalPos)
+void DashboardGridManager::moveDrag(const QPoint &globalPos)
 {
-    if (!resizing || !resizeSource)
-        return;
+    if (dragPreview)
+        dragPreview->move(globalPos - QPoint(dragPreview->width() / 2, 20));
 
-    int delta = globalPos.y() - resizeStartPos.y();
-    int newHeight = qMax(MIN_CARD_HEIGHT, resizeStartHeight + delta);
-    resizeSource->setMinimumHeight(newHeight);
-    resizeSource->setMaximumHeight(newHeight);
+    QPair<QSplitter*, int> target = findTarget(globalPos);
+    targetCol = target.first;
+    targetIdx = target.second;
+
+    if (targetCol)
+        positionDropLine(targetCol, targetIdx);
+    else
+        hideDropLine();
 }
 
-void CardDragDropManager::finishResize()
+void DashboardGridManager::endDrag()
 {
-    if (!resizeSource)
-        return;
+    qApp->removeEventFilter(this);
+    isDragging = false;
 
-    resizeSource->setCursor(Qt::OpenHandCursor);
-
-    // Allow the card to grow beyond the set size if content needs it,
-    // but keep the minimum at the user-chosen height
-    int finalHeight = resizeSource->height();
-    resizeSource->setMaximumHeight(16777215); // QWIDGETSIZE_MAX
-    resizeSource->setMinimumHeight(finalHeight);
-
-    resizing = false;
-    resizeSource = 0;
-
-    saveOrder(); // saves both order and sizes
-}
-
-// --- Drag and Drop ---
-
-void CardDragDropManager::startDrag(QWidget *card, const QPoint &pos)
-{
-    Q_UNUSED(pos);
-    dragging = true;
-    card->setCursor(Qt::ClosedHandCursor);
-
-    // Create drop indicator line
-    if (!dropIndicator) {
-        dropIndicator = new QWidget(container);
-        dropIndicator->setFixedHeight(3);
-        dropIndicator->setStyleSheet("background-color: #43b581; border-radius: 1px;");
+    if (dragPreview) {
+        dragPreview->hide();
+        dragPreview->deleteLater();
+        dragPreview = 0;
     }
-    dropIndicator->hide();
+    hideDropLine();
 
-    // Dim the dragged card slightly
-    card->setStyleSheet(card->styleSheet() + "\n* { opacity: 0.6; }");
-}
+    if (dragCard && targetCol && targetIdx >= 0) {
+        QSplitter *fromCol = qobject_cast<QSplitter*>(dragCard->parentWidget());
+        if (fromCol) {
+            int fromIdx = fromCol->indexOf(dragCard);
+            int adj = targetIdx;
+            if (fromCol == targetCol && fromIdx < adj)
+                adj--;
 
-void CardDragDropManager::updateDropIndicator(const QPoint &globalPos)
-{
-    if (!dropIndicator || !container)
-        return;
-
-    int insertIdx = findInsertIndex(globalPos);
-    if (insertIdx < 0) {
-        dropIndicator->hide();
-        return;
-    }
-
-    // Position the indicator between cards
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(container->layout());
-    if (!layout)
-        return;
-
-    // Find the y position for the indicator
-    int y = 0;
-    if (insertIdx == 0) {
-        // Before the first visible card
-        for (int i = 0; i < layout->count(); i++) {
-            QWidget *w = layout->itemAt(i)->widget();
-            if (w && cards.contains(w)) {
-                y = w->geometry().top() - 2;
-                break;
+            if (fromCol != targetCol || fromIdx != adj) {
+                targetCol->insertWidget(adj, dragCard);
+                saveLayout();
             }
         }
+    }
+
+    dragCard = 0;
+    targetCol = 0;
+    targetIdx = -1;
+}
+
+void DashboardGridManager::abortDrag()
+{
+    qApp->removeEventFilter(this);
+    isDragging = false;
+
+    if (dragPreview) {
+        dragPreview->hide();
+        dragPreview->deleteLater();
+        dragPreview = 0;
+    }
+    hideDropLine();
+
+    dragCard = 0;
+    targetCol = 0;
+    targetIdx = -1;
+}
+
+// ---------------------------------------------------------------------------
+//  Hit testing & visual feedback
+// ---------------------------------------------------------------------------
+
+QPair<QSplitter*, int> DashboardGridManager::findTarget(const QPoint &globalPos)
+{
+    if (!leftColumn || !rightColumn)
+        return qMakePair((QSplitter*)0, -1);
+
+    // Determine which column the cursor is over
+    QRect leftGeo = QRect(leftColumn->mapToGlobal(QPoint(0, 0)), leftColumn->size());
+    QRect rightGeo = QRect(rightColumn->mapToGlobal(QPoint(0, 0)), rightColumn->size());
+
+    QSplitter *col = 0;
+    if (leftGeo.contains(globalPos))
+        col = leftColumn;
+    else if (rightGeo.contains(globalPos))
+        col = rightColumn;
+    else {
+        int dL = qAbs(globalPos.x() - leftGeo.center().x());
+        int dR = qAbs(globalPos.x() - rightGeo.center().x());
+        col = (dL <= dR) ? leftColumn : rightColumn;
+    }
+
+    // Find the insertion index closest to the cursor Y
+    int count = col->count();
+    if (count == 0)
+        return qMakePair(col, 0);
+
+    int bestIdx = count;
+    int bestDist = INT_MAX;
+
+    for (int i = 0; i <= count; i++) {
+        int y;
+        if (i == 0) {
+            y = col->widget(0)->mapToGlobal(QPoint(0, 0)).y();
+        } else {
+            QWidget *prev = col->widget(i - 1);
+            y = prev->mapToGlobal(QPoint(0, prev->height())).y();
+        }
+
+        int dist = qAbs(globalPos.y() - y);
+        if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+        }
+    }
+
+    return qMakePair(col, bestIdx);
+}
+
+void DashboardGridManager::positionDropLine(QSplitter *col, int idx)
+{
+    if (!dropLine || !col) return;
+
+    int y;
+    if (col->count() == 0) {
+        y = col->mapTo(dashboard, QPoint(0, col->height() / 2)).y();
+    } else if (idx <= 0) {
+        QWidget *first = col->widget(0);
+        y = first->mapTo(dashboard, QPoint(0, 0)).y();
+    } else if (idx >= col->count()) {
+        QWidget *last = col->widget(col->count() - 1);
+        y = last->mapTo(dashboard, QPoint(0, last->height())).y();
     } else {
-        // After the Nth visible card
-        int cardsSeen = 0;
-        for (int i = 0; i < layout->count(); i++) {
-            QWidget *w = layout->itemAt(i)->widget();
-            if (w && cards.contains(w)) {
-                cardsSeen++;
-                if (cardsSeen == insertIdx) {
-                    y = w->geometry().bottom() + 2;
-                    break;
-                }
-            }
-        }
+        QWidget *above = col->widget(idx - 1);
+        y = above->mapTo(dashboard, QPoint(0, above->height())).y();
     }
 
-    dropIndicator->setGeometry(16, y, container->width() - 32, 3);
-    dropIndicator->show();
-    dropIndicator->raise();
+    QPoint colOrigin = col->mapTo(dashboard, QPoint(0, 0));
+    dropLine->setGeometry(colOrigin.x() + 4, y - 2, col->width() - 8, 4);
+    dropLine->raise();
+    dropLine->show();
 }
 
-int CardDragDropManager::findInsertIndex(const QPoint &globalPos)
+void DashboardGridManager::hideDropLine()
 {
-    QPoint localPos = container->mapFromGlobal(globalPos);
-    int y = localPos.y();
-
-    // Find which position the cursor is closest to
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(container->layout());
-    if (!layout)
-        return -1;
-
-    int idx = 0;
-    for (int i = 0; i < layout->count(); i++) {
-        QWidget *w = layout->itemAt(i)->widget();
-        if (!w || !cards.contains(w))
-            continue;
-
-        int cardMid = w->geometry().center().y();
-        if (y > cardMid)
-            idx++;
-        else
-            break;
-    }
-    return idx;
+    if (dropLine) dropLine->hide();
 }
 
-void CardDragDropManager::finishDrop(const QPoint &globalPos)
+// ---------------------------------------------------------------------------
+//  Persistence
+// ---------------------------------------------------------------------------
+
+void DashboardGridManager::saveLayout()
 {
-    if (!dragging || !dragSource)
-        return;
+    if (!leftColumn || !rightColumn || !hSplitter) return;
 
-    // Reset cursor and styling
-    dragSource->setCursor(Qt::OpenHandCursor);
-    dragSource->setStyleSheet("");
+    QSettings settings;
+    QStringList leftNames, rightNames;
 
-    if (dropIndicator)
-        dropIndicator->hide();
+    for (int i = 0; i < leftColumn->count(); i++)
+        leftNames << leftColumn->widget(i)->objectName();
+    for (int i = 0; i < rightColumn->count(); i++)
+        rightNames << rightColumn->widget(i)->objectName();
 
-    int targetIdx = findInsertIndex(globalPos);
-    if (targetIdx < 0) {
-        cancelDrag();
-        return;
-    }
-
-    // Find the current index of the dragged card among our registered cards
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(container->layout());
-    if (!layout) {
-        cancelDrag();
-        return;
-    }
-
-    // Get current card order (only our registered cards)
-    QList<int> cardLayoutIndices;
-    for (int i = 0; i < layout->count(); i++) {
-        QWidget *w = layout->itemAt(i)->widget();
-        if (w && cards.contains(w))
-            cardLayoutIndices.append(i);
-    }
-
-    // Find source position in card-only ordering
-    int sourceCardIdx = -1;
-    int sourceLayoutIdx = -1;
-    for (int i = 0; i < cardLayoutIndices.size(); i++) {
-        QWidget *w = layout->itemAt(cardLayoutIndices[i])->widget();
-        if (w == dragSource) {
-            sourceCardIdx = i;
-            sourceLayoutIdx = cardLayoutIndices[i];
-            break;
-        }
-    }
-
-    if (sourceCardIdx < 0 || sourceCardIdx == targetIdx) {
-        cancelDrag();
-        return;
-    }
-
-    // Remove from layout and reinsert
-    QLayoutItem *item = layout->takeAt(sourceLayoutIdx);
-    if (!item) {
-        cancelDrag();
-        return;
-    }
-
-    // Calculate new layout index based on target card position
-    // After takeAt, indices shift, so recalculate
-    int newLayoutIdx = 0;
-    if (targetIdx == 0) {
-        // Insert before first card
-        for (int i = 0; i < layout->count(); i++) {
-            QWidget *w = layout->itemAt(i)->widget();
-            if (w && cards.contains(w)) {
-                newLayoutIdx = i;
-                break;
-            }
-        }
-    } else {
-        // Insert after the (targetIdx-1)th card
-        int cardsSeen = 0;
-        for (int i = 0; i < layout->count(); i++) {
-            QWidget *w = layout->itemAt(i)->widget();
-            if (w && cards.contains(w)) {
-                cardsSeen++;
-                if (cardsSeen == targetIdx) {
-                    newLayoutIdx = i + 1;
-                    break;
-                }
-            }
-        }
-    }
-
-    layout->insertItem(newLayoutIdx, item);
-
-    dragging = false;
-    dragSource = 0;
-
-    saveOrder();
+    settings.setValue("DashGridLeft", leftNames);
+    settings.setValue("DashGridRight", rightNames);
+    settings.setValue("DashGridH", hSplitter->saveState());
+    settings.setValue("DashGridLV", leftColumn->saveState());
+    settings.setValue("DashGridRV", rightColumn->saveState());
 }
 
-void CardDragDropManager::cancelDrag()
-{
-    if (dragSource) {
-        dragSource->setCursor(Qt::OpenHandCursor);
-        dragSource->setStyleSheet("");
-    }
-    if (dropIndicator)
-        dropIndicator->hide();
-    dragging = false;
-    dragSource = 0;
-}
-
-// --- Persistence ---
-
-void CardDragDropManager::saveOrder()
-{
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(container->layout());
-    if (!layout)
-        return;
-
-    QStringList order;
-    QMap<QString, QVariant> sizes;
-
-    for (int i = 0; i < layout->count(); i++) {
-        QWidget *w = layout->itemAt(i)->widget();
-        if (w && cards.contains(w) && !w->objectName().isEmpty()) {
-            order.append(w->objectName());
-            sizes[w->objectName()] = w->minimumHeight();
-        }
-    }
-
-    if (!order.isEmpty()) {
-        QSettings settings;
-        settings.setValue(SETTINGS_KEY, order);
-        settings.setValue(SIZES_KEY, sizes);
-    }
-}
-
-void CardDragDropManager::restoreOrder()
+bool DashboardGridManager::restoreFromSettings()
 {
     QSettings settings;
-    QStringList order = settings.value(SETTINGS_KEY).toStringList();
-    QMap<QString, QVariant> sizes = settings.value(SIZES_KEY).toMap();
+    QStringList leftNames = settings.value("DashGridLeft").toStringList();
+    QStringList rightNames = settings.value("DashGridRight").toStringList();
 
-    // Restore sizes first (before reordering)
-    for (int i = 0; i < cards.size(); i++) {
-        QString name = cards[i]->objectName();
-        if (!name.isEmpty() && sizes.contains(name)) {
-            int h = sizes[name].toInt();
-            if (h >= MIN_CARD_HEIGHT) {
-                cards[i]->setMinimumHeight(h);
-            }
-        }
-    }
+    if (leftNames.isEmpty() && rightNames.isEmpty())
+        return false;
 
-    if (order.isEmpty())
-        return;
-
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(container->layout());
-    if (!layout)
-        return;
-
-    // Build a map of card name -> widget
+    // Build name → widget map
     QMap<QString, QWidget*> cardMap;
-    for (int i = 0; i < cards.size(); i++) {
-        if (!cards[i]->objectName().isEmpty())
-            cardMap[cards[i]->objectName()] = cards[i];
+    Q_FOREACH(QWidget *card, allCards)
+        cardMap[card->objectName()] = card;
+
+    Q_FOREACH(const QString &name, leftNames) {
+        if (cardMap.contains(name))
+            leftColumn->addWidget(cardMap.take(name));
+    }
+    Q_FOREACH(const QString &name, rightNames) {
+        if (cardMap.contains(name))
+            rightColumn->addWidget(cardMap.take(name));
     }
 
-    // Collect current card layout items in order (reverse to keep indices valid)
-    QList<QPair<int, QLayoutItem*>> cardItems;
-    for (int i = layout->count() - 1; i >= 0; i--) {
-        QWidget *w = layout->itemAt(i)->widget();
-        if (w && cards.contains(w)) {
-            cardItems.prepend(qMakePair(i, layout->takeAt(i)));
-        }
-    }
+    // Any cards not in the saved layout go to left column
+    Q_FOREACH(QWidget *card, cardMap.values())
+        leftColumn->addWidget(card);
 
-    // Re-insert cards in saved order
-    int insertPoint = 0;
-    if (!cardItems.isEmpty())
-        insertPoint = cardItems.first().first;
+    // Restore splitter geometry
+    QByteArray hState = settings.value("DashGridH").toByteArray();
+    QByteArray lvState = settings.value("DashGridLV").toByteArray();
+    QByteArray rvState = settings.value("DashGridRV").toByteArray();
 
-    int pos = insertPoint;
-    for (int i = 0; i < order.size(); i++) {
-        QString name = order[i];
-        for (int j = 0; j < cardItems.size(); j++) {
-            QWidget *w = cardItems[j].second->widget();
-            if (w && w->objectName() == name) {
-                layout->insertItem(pos, cardItems[j].second);
-                cardItems.removeAt(j);
-                pos++;
-                break;
-            }
-        }
-    }
+    if (!hState.isEmpty()) hSplitter->restoreState(hState);
+    if (!lvState.isEmpty()) leftColumn->restoreState(lvState);
+    if (!rvState.isEmpty()) rightColumn->restoreState(rvState);
 
-    // Insert any remaining cards that weren't in saved order
-    for (int j = 0; j < cardItems.size(); j++) {
-        layout->insertItem(pos, cardItems[j].second);
-        pos++;
-    }
+    return true;
 }

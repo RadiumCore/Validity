@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,6 +17,7 @@ class ClientModel;
 class TransactionFilterProxy;
 class TxViewDelegate;
 class PlatformStyle;
+class DashboardGridManager;
 class StakingChartWidget;
 class WalletModel;
 
@@ -78,11 +80,9 @@ private:
     int64_t cachedNetworkWeight;
 
     StakingChartWidget *stakingChart;
-    QSplitter *mainSplitter;
-    QSplitter *topSplitter;
+    DashboardGridManager *gridManager;
 
 private Q_SLOTS:
-    void saveSplitterState();
     void deferredStatsLoad();
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);

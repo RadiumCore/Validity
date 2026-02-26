@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,6 +21,8 @@
 #include <util.h>
 #include "wallet/wallet.h"
 #include "walletframe.h"
+
+#include "carddragdrop.h"
 
 #include <QAbstractItemDelegate>
 #include <QDateTime>
@@ -132,8 +135,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchOnlyStake(-1),
     txdelegate(new TxViewDelegate(platformStyle, this)),
     stakingChart(0),
-    mainSplitter(0),
-    topSplitter(0),
+    gridManager(0),
     initialStatsLoaded(false),
     cachedWalletTxCount(0),
     cachedBlockHeight(0),
@@ -192,45 +194,21 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->chartPlaceholder->addWidget(stakingChart);
     stakingChart->setMinimumHeight(140);
 
-    // Rearrange cards into a QSplitter grid layout for resizable snapping
+    // Rearrange cards into a 2-column drag-and-drop grid
     QVBoxLayout *topLayout = qobject_cast<QVBoxLayout*>(layout());
     if (topLayout) {
-        // Remove cards from the flat layout (setupUi put them all in topLayout)
         topLayout->removeWidget(ui->frame);
         topLayout->removeWidget(ui->frame_2);
         topLayout->removeWidget(ui->transactionsCard);
         topLayout->removeWidget(ui->networkCard);
 
-        // Top row: balance card | staking chart card (side by side)
-        topSplitter = new QSplitter(Qt::Horizontal, this);
-        topSplitter->setChildrenCollapsible(false);
-        topSplitter->addWidget(ui->frame);
-        topSplitter->addWidget(ui->frame_2);
-        topSplitter->setStretchFactor(0, 1);
-        topSplitter->setStretchFactor(1, 1);
+        // Card order: balance, staking, network on left; transactions (tall) on right
+        QList<QWidget*> cards;
+        cards << ui->frame << ui->frame_2 << ui->networkCard << ui->transactionsCard;
 
-        // Main vertical splitter: top row | transactions | network
-        mainSplitter = new QSplitter(Qt::Vertical, this);
-        mainSplitter->setChildrenCollapsible(false);
-        mainSplitter->addWidget(topSplitter);
-        mainSplitter->addWidget(ui->transactionsCard);
-        mainSplitter->addWidget(ui->networkCard);
-        mainSplitter->setStretchFactor(0, 2);
-        mainSplitter->setStretchFactor(1, 3);
-        mainSplitter->setStretchFactor(2, 1);
-
-        topLayout->addWidget(mainSplitter);
-
-        // Restore saved splitter sizes
-        QSettings settings;
-        QByteArray mainState = settings.value("OverviewMainSplitter").toByteArray();
-        QByteArray topState = settings.value("OverviewTopSplitter").toByteArray();
-        if (!mainState.isEmpty()) mainSplitter->restoreState(mainState);
-        if (!topState.isEmpty()) topSplitter->restoreState(topState);
-
-        // Save state when splitters are moved
-        connect(mainSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(saveSplitterState()));
-        connect(topSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(saveSplitterState()));
+        gridManager = new DashboardGridManager(this);
+        QSplitter *grid = gridManager->setupGrid(cards);
+        topLayout->addWidget(grid);
     }
 }
 
@@ -247,17 +225,7 @@ void OverviewPage::handleOutOfSyncWarningClicks()
 
 OverviewPage::~OverviewPage()
 {
-    saveSplitterState();
     delete ui;
-}
-
-void OverviewPage::saveSplitterState()
-{
-    QSettings settings;
-    if (mainSplitter)
-        settings.setValue("OverviewMainSplitter", mainSplitter->saveState());
-    if (topSplitter)
-        settings.setValue("OverviewTopSplitter", topSplitter->saveState());
 }
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake)
@@ -444,8 +412,16 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
         {
             LOCK(cs_main);
             nNetworkWeight = GetPoSKernelPS();
-            // Only rescan UTXO set if block height changed
-            if (count != cachedBlockHeight || cachedSupply == 0) {
+
+            // Cache validation: rescan UTXO if block height changed,
+            // network weight drifted significantly, or cache is empty
+            bool cacheValid = (cachedSupply > 0) &&
+                              (count == cachedBlockHeight) &&
+                              (cachedNetworkWeight > 0) &&
+                              (qAbs(nNetworkWeight - cachedNetworkWeight) <
+                               cachedNetworkWeight / 5); // <20% drift
+
+            if (!cacheValid) {
                 nCoinSupply = GetSupply();
                 cachedSupply = nCoinSupply;
                 cachedNetworkWeight = nNetworkWeight;
@@ -457,9 +433,11 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
 
        int unit = walletModel->getOptionsModel()->getDisplayUnit();
 
-       // Only rescan wallet transactions if new txs have been added
+       // Cache validation: rescan wallet txs if count changed or
+       // staking status changed (new stakes may have matured)
        size_t currentTxCount = pwalletMain->mapWallet.size();
-       if (currentTxCount != cachedWalletTxCount) {
+       bool stakingChanged = (lastStaking != staking);
+       if (currentTxCount != cachedWalletTxCount || stakingChanged) {
            UpdateHistoricalStakingStats(unit);
            cachedWalletTxCount = currentTxCount;
        }
