@@ -7,7 +7,6 @@
 #include "rpc/blockchain.cpp"
 
 #include "bitcoinunits.h"
-#include "carddragdrop.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -25,6 +24,8 @@
 #include <QAbstractItemDelegate>
 #include <QDateTime>
 #include <QPainter>
+#include <QSplitter>
+#include <QSettings>
 
 #define DECORATION_SIZE 54
 #define NUM_ITEMS 7
@@ -131,7 +132,8 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchOnlyStake(-1),
     txdelegate(new TxViewDelegate(platformStyle, this)),
     stakingChart(0),
-    cardDragDrop(0)
+    mainSplitter(0),
+    topSplitter(0)
 {
     ui->setupUi(this);
 
@@ -184,17 +186,46 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->chartPlaceholder->addWidget(stakingChart);
     stakingChart->setMinimumHeight(140);
 
-    // Set up drag-and-drop reordering for dashboard cards
-    cardDragDrop = new CardDragDropManager(this, this);
-    ui->frame->setObjectName("balanceCard");
-    ui->frame_2->setObjectName("stakingCard");
-    ui->transactionsCard->setObjectName("transactionsCard");
-    ui->networkCard->setObjectName("networkCard");
-    cardDragDrop->registerCard(ui->frame);
-    cardDragDrop->registerCard(ui->frame_2);
-    cardDragDrop->registerCard(ui->transactionsCard);
-    cardDragDrop->registerCard(ui->networkCard);
-    cardDragDrop->restoreOrder();
+    // Rearrange cards into a QSplitter grid layout for resizable snapping
+    QVBoxLayout *topLayout = qobject_cast<QVBoxLayout*>(layout());
+    if (topLayout) {
+        // Remove cards from the flat layout (setupUi put them all in topLayout)
+        topLayout->removeWidget(ui->frame);
+        topLayout->removeWidget(ui->frame_2);
+        topLayout->removeWidget(ui->transactionsCard);
+        topLayout->removeWidget(ui->networkCard);
+
+        // Top row: balance card | staking chart card (side by side)
+        topSplitter = new QSplitter(Qt::Horizontal, this);
+        topSplitter->setChildrenCollapsible(false);
+        topSplitter->addWidget(ui->frame);
+        topSplitter->addWidget(ui->frame_2);
+        topSplitter->setStretchFactor(0, 1);
+        topSplitter->setStretchFactor(1, 1);
+
+        // Main vertical splitter: top row | transactions | network
+        mainSplitter = new QSplitter(Qt::Vertical, this);
+        mainSplitter->setChildrenCollapsible(false);
+        mainSplitter->addWidget(topSplitter);
+        mainSplitter->addWidget(ui->transactionsCard);
+        mainSplitter->addWidget(ui->networkCard);
+        mainSplitter->setStretchFactor(0, 2);
+        mainSplitter->setStretchFactor(1, 3);
+        mainSplitter->setStretchFactor(2, 1);
+
+        topLayout->addWidget(mainSplitter);
+
+        // Restore saved splitter sizes
+        QSettings settings;
+        QByteArray mainState = settings.value("OverviewMainSplitter").toByteArray();
+        QByteArray topState = settings.value("OverviewTopSplitter").toByteArray();
+        if (!mainState.isEmpty()) mainSplitter->restoreState(mainState);
+        if (!topState.isEmpty()) topSplitter->restoreState(topState);
+
+        // Save state when splitters are moved
+        connect(mainSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(saveSplitterState()));
+        connect(topSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(saveSplitterState()));
+    }
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
@@ -210,7 +241,17 @@ void OverviewPage::handleOutOfSyncWarningClicks()
 
 OverviewPage::~OverviewPage()
 {
+    saveSplitterState();
     delete ui;
+}
+
+void OverviewPage::saveSplitterState()
+{
+    QSettings settings;
+    if (mainSplitter)
+        settings.setValue("OverviewMainSplitter", mainSplitter->saveState());
+    if (topSplitter)
+        settings.setValue("OverviewTopSplitter", topSplitter->saveState());
 }
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake)

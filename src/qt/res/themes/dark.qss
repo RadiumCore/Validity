@@ -1541,3 +1541,25 @@ QToolTip {
     padding: 6px 10px;
     font-size: 12px;
 }
+
+/* ================================================================
+   QSplitter — Resizable grid handles
+   ================================================================ */
+QSplitter::handle {
+    background-color: transparent;
+}
+QSplitter::handle:horizontal {
+    width: 6px;
+    background-color: transparent;
+}
+QSplitter::handle:vertical {
+    height: 6px;
+    background-color: transparent;
+}
+QSplitter::handle:hover {
+    background-color: rgba(67, 181, 129, 0.3);
+    border-radius: 2px;
+}
+QSplitter::handle:pressed {
+    background-color: rgba(67, 181, 129, 0.5);
+}

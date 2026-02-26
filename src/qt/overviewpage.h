@@ -8,9 +8,9 @@
 #include "amount.h"
 
 #include <QWidget>
+#include <QSplitter>
 #include <memory>
 
-class CardDragDropManager;
 class ClientModel;
 class TransactionFilterProxy;
 class TxViewDelegate;
@@ -70,9 +70,11 @@ private:
     bool lastStaking;
 
     StakingChartWidget *stakingChart;
-    CardDragDropManager *cardDragDrop;
+    QSplitter *mainSplitter;
+    QSplitter *topSplitter;
 
 private Q_SLOTS:
+    void saveSplitterState();
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);

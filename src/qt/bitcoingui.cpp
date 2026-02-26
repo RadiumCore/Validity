@@ -498,44 +498,47 @@ void BitcoinGUI::createToolBars()
     }
 }
 
+static QIcon colorizeIcon(const QIcon &oldIcon, const QColor &color)
+{
+    QIcon newIcon;
+    QList<QSize> sizes = oldIcon.availableSizes();
+    if (sizes.isEmpty())
+        sizes << QSize(24, 24);
+    Q_FOREACH(QSize sz, sizes) {
+        QImage img(oldIcon.pixmap(sz).toImage());
+        img = img.convertToFormat(QImage::Format_ARGB32);
+        for (int x = img.width(); x--; )
+            for (int y = img.height(); y--; ) {
+                QRgb rgb = img.pixel(x, y);
+                img.setPixel(x, y, qRgba(color.red(), color.green(), color.blue(), qAlpha(rgb)));
+            }
+        newIcon.addPixmap(QPixmap::fromImage(img));
+    }
+    return newIcon;
+}
+
 void BitcoinGUI::recolorToolbarIcons()
 {
-    if (!navToolbar)
-        return;
-
     // Use the current palette's WindowText color for icons
     // Dark theme: light color (~#e8e8f0), Light theme: dark color (~black)
     QColor iconColor = QApplication::palette().color(QPalette::WindowText);
 
-    Q_FOREACH(QToolButton *btn, navToolbar->findChildren<QToolButton*>()) {
-        QAction *action = btn->defaultAction();
-        if (!action || action->icon().isNull())
-            continue;
+    // Recolor all QAction icons across the entire application
+    QList<QAction*> allActions = findChildren<QAction*>();
+    Q_FOREACH(QAction *action, allActions) {
+        if (!action->icon().isNull()) {
+            action->setIcon(colorizeIcon(action->icon(), iconColor));
+        }
+    }
 
-        QIcon oldIcon = action->icon();
-        QIcon newIcon;
-        Q_FOREACH(QSize sz, oldIcon.availableSizes()) {
-            QImage img(oldIcon.pixmap(sz).toImage());
-            img = img.convertToFormat(QImage::Format_ARGB32);
-            for (int x = img.width(); x--; )
-                for (int y = img.height(); y--; ) {
-                    QRgb rgb = img.pixel(x, y);
-                    img.setPixel(x, y, qRgba(iconColor.red(), iconColor.green(), iconColor.blue(), qAlpha(rgb)));
-                }
-            newIcon.addPixmap(QPixmap::fromImage(img));
+    // Also recolor toolbar button icons specifically (in case btn->setIcon was used)
+    if (navToolbar) {
+        Q_FOREACH(QToolButton *btn, navToolbar->findChildren<QToolButton*>()) {
+            QAction *action = btn->defaultAction();
+            if (action && !action->icon().isNull()) {
+                btn->setIcon(colorizeIcon(action->icon(), iconColor));
+            }
         }
-        // If no sizes available (resource icons), use a default size
-        if (oldIcon.availableSizes().isEmpty()) {
-            QPixmap pm = oldIcon.pixmap(QSize(24, 24));
-            QImage img = pm.toImage().convertToFormat(QImage::Format_ARGB32);
-            for (int x = img.width(); x--; )
-                for (int y = img.height(); y--; ) {
-                    QRgb rgb = img.pixel(x, y);
-                    img.setPixel(x, y, qRgba(iconColor.red(), iconColor.green(), iconColor.blue(), qAlpha(rgb)));
-                }
-            newIcon.addPixmap(QPixmap::fromImage(img));
-        }
-        btn->setIcon(newIcon);
     }
 }
 
