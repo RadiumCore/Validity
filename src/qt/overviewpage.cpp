@@ -133,7 +133,12 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     txdelegate(new TxViewDelegate(platformStyle, this)),
     stakingChart(0),
     mainSplitter(0),
-    topSplitter(0)
+    topSplitter(0),
+    initialStatsLoaded(false),
+    cachedWalletTxCount(0),
+    cachedBlockHeight(0),
+    cachedSupply(0),
+    cachedNetworkWeight(0)
 {
     ui->setupUi(this);
 
@@ -403,14 +408,14 @@ static double roundTo2(double value){
 
 void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header){
 
-    //if flast update time was less than 5 seconds ago, do nothing
+    //if last update time was less than 5 seconds ago, do nothing
      if ((GetTime() - nLastReportUpdate) < 5)
         return;
 
-// if initial block download, do nothing
+    // if initial block download, do nothing
     if(IsInitialBlockDownload())
         return;
-    // if walletmodel is not avalible, do nothing
+    // if walletmodel is not available, do nothing
     if (!walletModel || !walletModel->getOptionsModel())
         return;
 
@@ -419,38 +424,82 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
 
     bool staking = pwalletMain->IsStaking();
 
-
-
-// if staking status has changed, force update
+    // if staking status has changed, force update
     if(lastStaking != staking)
         nLastReportUpdate = 0;
     lastStaking = staking;
 
+    // Defer the very first stats load so the UI renders immediately
+    if (!initialStatsLoaded) {
+        initialStatsLoaded = true;
+        QTimer::singleShot(2000, this, SLOT(deferredStatsLoad()));
+        return;
+    }
 
     if ((GetTime() - nLastReportUpdate) > 300) {
         int64_t nMyWeight = pwalletMain ? pwalletMain->GetStakeWeight() : 0;
         int64_t nNetworkWeight;
-        int64_t nCoinSupply ;
+        int64_t nCoinSupply;
 
         {
             LOCK(cs_main);
             nNetworkWeight = GetPoSKernelPS();
-            nCoinSupply = GetSupply();
-
+            // Only rescan UTXO set if block height changed
+            if (count != cachedBlockHeight || cachedSupply == 0) {
+                nCoinSupply = GetSupply();
+                cachedSupply = nCoinSupply;
+                cachedNetworkWeight = nNetworkWeight;
+                cachedBlockHeight = count;
+            } else {
+                nCoinSupply = cachedSupply;
+            }
         }
-
 
        int unit = walletModel->getOptionsModel()->getDisplayUnit();
 
-       UpdateHistoricalStakingStats(unit);
+       // Only rescan wallet transactions if new txs have been added
+       size_t currentTxCount = pwalletMain->mapWallet.size();
+       if (currentTxCount != cachedWalletTxCount) {
+           UpdateHistoricalStakingStats(unit);
+           cachedWalletTxCount = currentTxCount;
+       }
+
        UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
-
-       UpdateCurrentStakingStats(staking, nMyWeight,nNetworkWeight, unit, count);
-
+       UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, count);
 
        // Save the last update
        nLastReportUpdate = GetTime();
     }
+}
+
+void OverviewPage::deferredStatsLoad()
+{
+    if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain)
+        return;
+
+    bool staking = pwalletMain->IsStaking();
+    int64_t nMyWeight = pwalletMain->GetStakeWeight();
+    int64_t nNetworkWeight;
+    int64_t nCoinSupply;
+
+    {
+        LOCK(cs_main);
+        nNetworkWeight = GetPoSKernelPS();
+        nCoinSupply = GetSupply();
+        cachedSupply = nCoinSupply;
+        cachedNetworkWeight = nNetworkWeight;
+        cachedBlockHeight = chainActive.Height();
+    }
+
+    int unit = walletModel->getOptionsModel()->getDisplayUnit();
+
+    UpdateHistoricalStakingStats(unit);
+    cachedWalletTxCount = pwalletMain->mapWallet.size();
+
+    UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
+    UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, chainActive.Height());
+
+    nLastReportUpdate = GetTime();
 }
 
 void OverviewPage::UpdateHistoricalStakingStats(int unit){

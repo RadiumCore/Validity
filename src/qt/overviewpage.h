@@ -9,6 +9,7 @@
 
 #include <QWidget>
 #include <QSplitter>
+#include <QTimer>
 #include <memory>
 
 class ClientModel;
@@ -68,6 +69,13 @@ private:
     std::unique_ptr<TransactionFilterProxy> filter;
     qint64 nLastReportUpdate = 0;
     bool lastStaking;
+    bool initialStatsLoaded;
+
+    // Caches to avoid rescanning wallet/UTXO on every update
+    size_t cachedWalletTxCount;
+    int cachedBlockHeight;
+    int64_t cachedSupply;
+    int64_t cachedNetworkWeight;
 
     StakingChartWidget *stakingChart;
     QSplitter *mainSplitter;
@@ -75,6 +83,7 @@ private:
 
 private Q_SLOTS:
     void saveSplitterState();
+    void deferredStatsLoad();
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);
