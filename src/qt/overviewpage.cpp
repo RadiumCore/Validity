@@ -26,7 +26,7 @@
 #include <QPainter>
 
 #define DECORATION_SIZE 54
-#define NUM_ITEMS 5
+#define NUM_ITEMS 7
 
 class TxViewDelegate : public QAbstractItemDelegate
 {
@@ -358,6 +358,8 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
     if (!walletModel || !walletModel->getOptionsModel())
         return;
 
+    if (!pwalletMain)
+        return;
 
     bool staking = pwalletMain->IsStaking();
 
@@ -449,14 +451,14 @@ void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, in
         return;
 
     //Set user stake weight progress bar
-    double pMyWeight = ((double)nMyWeight/(double)nNetworkWeight);
+    double pMyWeight = (nNetworkWeight > 0) ? ((double)nMyWeight/(double)nNetworkWeight) : 0;
     ui->progressBar_MyWeight->setValue(pMyWeight*100);
     ui->progressBar_MyWeight->setFormat(tr("%1%").arg(roundTo2(pMyWeight*100)));
 
     double nStakeSubsidy = getFixedStakeSubsidy(nHeight);
     double nAnnualCoins = ((nStakeSubsidy * 60 * 25 * 365) * pMyWeight);
     double nTotalBalance = currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentStake;
-    double pAnualPercent = roundTo2(nAnnualCoins/nTotalBalance);
+    double pAnualPercent = (nTotalBalance > 0) ? roundTo2(nAnnualCoins/nTotalBalance) : 0;
 
     //set stake generation bar
     ui->progressBar_AnnualGeneration->setValue(pAnualPercent*100);
@@ -469,7 +471,7 @@ void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, in
 void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit){
 
     double pCoinSupply = (((double)nCoinSupply/100000000)/(double)9000000) *100  ;
-    double pStakingCoins = ((double)nNetworkWeight/(double)nCoinSupply) *100;
+    double pStakingCoins = (nCoinSupply > 0) ? (((double)nNetworkWeight/(double)nCoinSupply) *100) : 0;
     //update total staking coins bar
     ui->progressBar_TotalStaking->setValue(pStakingCoins);
     ui->progressBar_TotalStaking->setFormat(tr("%1% (%2)").arg(roundTo2(pStakingCoins)).arg(BitcoinUnits::format(unit, nNetworkWeight, false, BitcoinUnits::separatorNever, 0)));

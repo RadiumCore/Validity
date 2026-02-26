@@ -614,6 +614,23 @@ QLabel#labelAlerts {
     font-size: 12px;
 }
 
+/* Staking stats period labels */
+QLabel#label24hStakingStatsText, QLabel#label7dStakingStatsText,
+QLabel#label30dStakingStatsText, QLabel#label1yStakingStatsText,
+QLabel#labelallStakingStatsText, QLabel#labelExpectedStakingStatsText {
+    color: #8888a8;
+    font-size: 11px;
+    padding-right: 2px;
+}
+
+/* Staking stats value labels */
+QLabel#label24hStakingStats, QLabel#label7dStakingStats,
+QLabel#label30dStakingStats, QLabel#label1yStakingStats,
+QLabel#labelallStakingStats, QLabel#labelExpectedStakingStats {
+    font-size: 12px;
+    padding-left: 2px;
+}
+
 /* Recent transactions list */
 QListView#listTransactions {
     background: transparent;
@@ -621,13 +638,50 @@ QListView#listTransactions {
 }
 
 /* === Send Coins Page === */
-QFrame#SendCoinsEntry {
+QFrame#SendCoins {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
         stop:0 #181838, stop:1 #141430);
     border: 1px solid #2a2a4d;
     border-radius: 12px;
     padding: 16px;
     margin: 4px 0;
+}
+
+/* Payment request frames — subtle accent borders */
+QFrame#SendCoins_UnauthenticatedPaymentRequest {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #1a1a30, stop:1 #141430);
+    border: 1px solid #4a4a2d;
+    border-left: 3px solid #c4a32f;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 4px 0;
+}
+
+QFrame#SendCoins_AuthenticatedPaymentRequest {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #1a2a1a, stop:1 #142014);
+    border: 1px solid #2d4a2d;
+    border-left: 3px solid #43b581;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 4px 0;
+}
+
+/* Coin control frame */
+QFrame#frameCoinControl {
+    background-color: #151530;
+    border: 1px solid #2a2a4d;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+/* Fee section frame */
+QFrame#frameFee {
+    background-color: #111128;
+    border: 1px solid #1a1a3a;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 /* === Coin Control Dialog === */
@@ -728,4 +782,224 @@ QDialog#HelpMessageDialog {
 
 QDialog#HelpMessageDialog QTextEdit {
     background-color: #0a0a1a;
+}
+
+/* === Receive Coins Page === */
+QFrame#frame2 {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #181838, stop:1 #141430);
+    border: 1px solid #2a2a4d;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+/* QR Code dialog */
+QDialog#ReceiveRequestDialog {
+    background-color: #0f0f24;
+}
+
+QDialog#ReceiveRequestDialog QTextEdit {
+    background-color: #0a0a1a;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* === Transaction View === */
+QWidget#TransactionView {
+    background-color: #0f0f24;
+}
+
+/* Filter bar styling */
+QWidget#TransactionView QComboBox {
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+QWidget#TransactionView QLineEdit {
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+/* Date range picker frame */
+QWidget#TransactionView QFrame {
+    background-color: #151530;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+}
+
+/* === Address Book Page === */
+QWidget#AddressBookPage QPushButton {
+    min-width: 90px;
+}
+
+/* === Coin Control Dialog === */
+QDialog#CoinControlDialog {
+    background-color: #0f0f24;
+}
+
+QDialog#CoinControlDialog QTreeWidget {
+    background-color: #0a0a1a;
+    alternate-background-color: #0d0d20;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+}
+
+QDialog#CoinControlDialog QTreeWidget::item {
+    padding: 4px 8px;
+    border-bottom: 1px solid #1a1a3a;
+}
+
+QDialog#CoinControlDialog QTreeWidget::item:hover {
+    background-color: rgba(67, 181, 129, 0.08);
+}
+
+QDialog#CoinControlDialog QTreeWidget::item:selected {
+    background-color: rgba(67, 181, 129, 0.15);
+}
+
+/* Coin control stat labels */
+QDialog#CoinControlDialog QLabel#labelCoinControlQuantityText,
+QDialog#CoinControlDialog QLabel#labelCoinControlBytesText,
+QDialog#CoinControlDialog QLabel#labelCoinControlAmountText,
+QDialog#CoinControlDialog QLabel#labelCoinControlFeeText,
+QDialog#CoinControlDialog QLabel#labelCoinControlAfterFeeText,
+QDialog#CoinControlDialog QLabel#labelCoinControlChangeText,
+QDialog#CoinControlDialog QLabel#labelCoinControlLowOutputText {
+    color: #8888a8;
+    font-size: 11px;
+}
+
+QDialog#CoinControlDialog QLabel#labelCoinControlQuantity,
+QDialog#CoinControlDialog QLabel#labelCoinControlBytes,
+QDialog#CoinControlDialog QLabel#labelCoinControlAmount,
+QDialog#CoinControlDialog QLabel#labelCoinControlFee,
+QDialog#CoinControlDialog QLabel#labelCoinControlAfterFee,
+QDialog#CoinControlDialog QLabel#labelCoinControlChange,
+QDialog#CoinControlDialog QLabel#labelCoinControlLowOutput {
+    color: #e8e8f0;
+    font-weight: bold;
+}
+
+/* === RPC Console Enhanced === */
+QWidget#RPCConsole {
+    background-color: #0f0f24;
+}
+
+QWidget#RPCConsole QPlainTextEdit {
+    background-color: #050510;
+    color: #43b581;
+    font-family: "Consolas", "Fira Code", "Monaco", monospace;
+    font-size: 12px;
+    border: 1px solid #1a1a3a;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+QWidget#RPCConsole QLineEdit#lineEdit {
+    background-color: #0a0a1a;
+    color: #43b581;
+    font-family: "Consolas", "Fira Code", "Monaco", monospace;
+    font-size: 13px;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+QWidget#RPCConsole QLineEdit#lineEdit:focus {
+    border-color: #43b581;
+}
+
+/* Info panel labels */
+QWidget#RPCConsole QLabel {
+    font-size: 12px;
+}
+
+/* === Sign/Verify Message Dialog === */
+QDialog#SignVerifyMessageDialog QTextEdit {
+    background-color: #0a0a1a;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+    font-family: "Consolas", "Fira Code", monospace;
+    font-size: 12px;
+}
+
+/* === Edit Address Dialog === */
+QDialog#EditAddressDialog {
+    background-color: #0f0f24;
+}
+
+/* === Transaction Description Dialog === */
+QDialog#TransactionDescDialog {
+    background-color: #0f0f24;
+}
+
+QDialog#TransactionDescDialog QTextEdit {
+    background-color: #0a0a1a;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+}
+
+/* === Date/Time Pickers === */
+QDateTimeEdit {
+    background-color: #0a0a1a;
+    color: #e8e8f0;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+QDateTimeEdit:focus {
+    border-color: #43b581;
+}
+
+QDateTimeEdit::drop-down {
+    border: none;
+    width: 24px;
+}
+
+QCalendarWidget {
+    background-color: #151530;
+    color: #e8e8f0;
+}
+
+QCalendarWidget QAbstractItemView {
+    background-color: #0f0f24;
+    color: #e8e8f0;
+    selection-background-color: #43b581;
+    selection-color: #ffffff;
+    alternate-background-color: #111128;
+}
+
+QCalendarWidget QToolButton {
+    background-color: #1a1a3a;
+    color: #e8e8f0;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+QCalendarWidget QToolButton:hover {
+    background-color: #222245;
+}
+
+/* === Scroll Area (used in Send page) === */
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+
+QScrollArea > QWidget > QWidget {
+    background: transparent;
+}
+
+/* === Dialog Button Box === */
+QDialogButtonBox QPushButton {
+    min-width: 80px;
+}
+
+/* === Form Layout Labels (Coin Control, etc.) === */
+QFormLayout QLabel {
+    color: #8888a8;
 }

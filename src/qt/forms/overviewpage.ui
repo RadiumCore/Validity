@@ -516,16 +516,23 @@
         <item>
          <layout class="QVBoxLayout" name="chartPlaceholder"/>
         </item>
-        <!-- Staking summary stats below chart -->
+        <!-- Staking summary stats below chart: paired label+value with visual separators -->
         <item>
          <layout class="QGridLayout" name="reportlayout">
-          <property name="spacing">
-           <number>8</number>
+          <property name="horizontalSpacing">
+           <number>2</number>
           </property>
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <!-- Row 0: 24h / 7d / 30d -->
           <item row="0" column="0">
            <widget class="QLabel" name="label24hStakingStatsText">
             <property name="text">
              <string>24h:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -541,24 +548,41 @@
              <string>Total VAL staked in the past 24 Hours</string>
             </property>
             <property name="text">
-             <string notr="true">0.000 000 00 BTC</string>
+             <string notr="true">0.00 VAL</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
+          <!-- Separator column -->
           <item row="0" column="2">
-           <widget class="QLabel" name="label7dStakingStatsText">
+           <widget class="QLabel" name="sep1_row0">
             <property name="text">
-             <string>7d:</string>
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
             </property>
            </widget>
           </item>
           <item row="0" column="3">
+           <widget class="QLabel" name="label7dStakingStatsText">
+            <property name="text">
+             <string>7d:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
            <widget class="QLabel" name="label7dStakingStats">
             <property name="font">
              <font><weight>75</weight><bold>true</bold></font>
@@ -570,24 +594,41 @@
              <string>Total VAL staked in the past Week</string>
             </property>
             <property name="text">
-             <string notr="true">0.000 000 00 BTC</string>
+             <string notr="true">0.00 VAL</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
+          <!-- Separator column -->
+          <item row="0" column="5">
+           <widget class="QLabel" name="sep2_row0">
+            <property name="text">
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
            <widget class="QLabel" name="label30dStakingStatsText">
             <property name="text">
              <string>30d:</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
-          <item row="0" column="5">
+          <item row="0" column="7">
            <widget class="QLabel" name="label30dStakingStats">
             <property name="font">
              <font><weight>75</weight><bold>true</bold></font>
@@ -599,20 +640,24 @@
              <string>Total VAL staked in the past 30 days</string>
             </property>
             <property name="text">
-             <string notr="true">0.000 000 00 BTC</string>
+             <string notr="true">0.00 VAL</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
+          <!-- Row 1: 1y / All time / Est. daily -->
           <item row="1" column="0">
            <widget class="QLabel" name="label1yStakingStatsText">
             <property name="text">
              <string>1y:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -628,10 +673,10 @@
              <string>Total VAL staked in the past Year</string>
             </property>
             <property name="text">
-             <string notr="true">0.000 000 00 BTC</string>
+             <string notr="true">0.00 VAL</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -639,13 +684,29 @@
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QLabel" name="labelallStakingStatsText">
+           <widget class="QLabel" name="sep1_row1">
             <property name="text">
-             <string>All time:</string>
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
             </property>
            </widget>
           </item>
           <item row="1" column="3">
+           <widget class="QLabel" name="labelallStakingStatsText">
+            <property name="text">
+             <string>All time:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
            <widget class="QLabel" name="labelallStakingStats">
             <property name="font">
              <font><weight>75</weight><bold>true</bold></font>
@@ -657,24 +718,40 @@
              <string>Total VAL staked in the history of this wallet</string>
             </property>
             <property name="text">
-             <string notr="true">0.000 000 00 BTC</string>
+             <string notr="true">0.00 VAL</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
-          <item row="1" column="4">
+          <item row="1" column="5">
+           <widget class="QLabel" name="sep2_row1">
+            <property name="text">
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6">
            <widget class="QLabel" name="labelExpectedStakingStatsText">
             <property name="text">
              <string>Est. daily:</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
-          <item row="1" column="5">
+          <item row="1" column="7">
            <widget class="QLabel" name="labelExpectedStakingStats">
             <property name="font">
              <font><weight>75</weight><bold>true</bold></font>
@@ -686,10 +763,10 @@
              <string>Estimated rewards for 24 hours of staking</string>
             </property>
             <property name="text">
-             <string notr="true">0.000 000 00 BTC</string>
+             <string notr="true">0.00 VAL</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -703,27 +780,23 @@
      </item>
     </layout>
    </item>
-   <!-- Bottom Row: Network Card + Recent Transactions Card -->
+   <!-- Middle Row: Recent Transactions (full width) -->
    <item>
-    <layout class="QHBoxLayout" name="bottomRow" stretch="1,1">
-     <property name="spacing">
-      <number>12</number>
+    <widget class="QFrame" name="transactionsCard">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <!-- NETWORK STATS CARD -->
-     <item>
-      <widget class="QFrame" name="networkCard">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="networkCardLayout">
-        <property name="spacing">
-         <number>8</number>
-        </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="transactionsCardLayout">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="txHeaderLayout">
         <item>
-         <widget class="QLabel" name="label_Network_Text">
+         <widget class="QLabel" name="label_4">
           <property name="font">
            <font>
             <weight>75</weight>
@@ -732,202 +805,189 @@
            </font>
           </property>
           <property name="text">
-           <string>Network</string>
+           <string>Recent Transactions</string>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QGridLayout" name="networkGridLayout">
-          <property name="spacing">
-           <number>8</number>
+         <widget class="QPushButton" name="labelTransactionsStatus">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="labelSupplyText">
-            <property name="text">
-             <string>Circulating / Max Supply</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QProgressBar" name="progressBar_Supply">
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>-1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="labelTotalStakingText">
-            <property name="text">
-             <string>Total Staking Coins</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QProgressBar" name="progressBar_TotalStaking">
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>-1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="labelAnualGenerationText">
-            <property name="text">
-             <string>Annual Generation</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QProgressBar" name="progressBar_AnnualGeneration">
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>-1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="labelMyWeightText">
-            <property name="text">
-             <string>Your Network Stake</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QProgressBar" name="progressBar_MyWeight">
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="value">
-             <number>-1</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>:/icons/warning</normaloff>
+            <disabledoff>:/icons/warning</disabledoff>
+           </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
-         <spacer name="networkBottomSpacer">
+         <spacer name="txHeaderSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>10</height>
+            <width>40</width>
+            <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
        </layout>
-      </widget>
-     </item>
-     <!-- RECENT TRANSACTIONS CARD -->
-     <item>
-      <widget class="QFrame" name="transactionsCard">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="transactionsCardLayout">
-        <property name="spacing">
-         <number>8</number>
+      </item>
+      <item>
+       <widget class="QListView" name="listTransactions">
+        <property name="styleSheet">
+         <string notr="true">QListView { background: transparent; }</string>
         </property>
-        <item>
-         <layout class="QHBoxLayout" name="txHeaderLayout">
-          <item>
-           <widget class="QLabel" name="label_4">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-              <pointsize>11</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Recent Transactions</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="labelTransactionsStatus">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/icons/warning</normaloff>
-              <disabledoff>:/icons/warning</disabledoff>
-             </iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>24</width>
-              <height>24</height>
-             </size>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="txHeaderSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::NoSelection</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- Bottom Row: Network Stats (full width, compact horizontal layout) -->
+   <item>
+    <widget class="QFrame" name="networkCard">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="networkCardLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_Network_Text">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Network</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="networkGridLayout">
+        <property name="horizontalSpacing">
+         <number>16</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>4</number>
+        </property>
+        <!-- All 4 bars on a single row pair for compact horizontal layout -->
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelSupplyText">
+          <property name="text">
+           <string>Circulating / Max Supply</string>
+          </property>
+         </widget>
         </item>
-        <item>
-         <widget class="QListView" name="listTransactions">
-          <property name="styleSheet">
-           <string notr="true">QListView { background: transparent; }</string>
+        <item row="1" column="0">
+         <widget class="QProgressBar" name="progressBar_Supply">
+          <property name="maximum">
+           <number>100</number>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
+          <property name="value">
+           <number>-1</number>
           </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="labelTotalStakingText">
+          <property name="text">
+           <string>Total Staking Coins</string>
           </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QProgressBar" name="progressBar_TotalStaking">
+          <property name="maximum">
+           <number>100</number>
           </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::NoSelection</enum>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="labelMyWeightText">
+          <property name="text">
+           <string>Your Network Stake</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QProgressBar" name="progressBar_MyWeight">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="labelAnualGenerationText">
+          <property name="text">
+           <string>Annual Generation</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QProgressBar" name="progressBar_AnnualGeneration">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
           </property>
          </widget>
         </item>
        </layout>
-      </widget>
-     </item>
-    </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
