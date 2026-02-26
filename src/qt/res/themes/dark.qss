@@ -1003,3 +1003,15 @@ QDialogButtonBox QPushButton {
 QFormLayout QLabel {
     color: #8888a8;
 }
+
+/* === Backup Wizard Dialog === */
+QDialog#BackupWizard {
+    background-color: #0f0f24;
+}
+
+/* === Peer Map Widget === */
+PeerMapWidget {
+    background-color: #0a0a1a;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
+}

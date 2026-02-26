@@ -6,6 +6,7 @@
 
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
+#include "backupwizard.h"
 #include "bitcoingui.h"
 #include "clientmodel.h"
 #include "guiutil.h"
@@ -260,6 +261,12 @@ void WalletView::backupWallet()
         Q_EMIT message(tr("Backup Successful"), tr("The wallet data was successfully saved to %1.").arg(filename),
             CClientUIInterface::MSG_INFORMATION);
     }
+}
+
+void WalletView::backupWizard()
+{
+    BackupWizard wizard(walletModel, this);
+    wizard.exec();
 }
 
 void WalletView::changePassphrase()
