@@ -458,14 +458,31 @@ void BitcoinGUI::createToolBars()
 {
     if(walletFrame)
     {
-        QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
+        QToolBar *toolbar = new QToolBar(tr("Navigation"));
+        toolbar->setObjectName("navSidebar");
         toolbar->setMovable(false);
-        toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->setFloatable(false);
+        toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        toolbar->setIconSize(QSize(24, 24));
+
+        // Add spacing at top for branding area
+        QWidget *topSpacer = new QWidget();
+        topSpacer->setFixedHeight(12);
+        toolbar->addWidget(topSpacer);
+
         toolbar->addAction(overviewAction);
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
+
         overviewAction->setChecked(true);
+
+        // Add stretch to push content to top
+        QWidget *spacer = new QWidget();
+        spacer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        toolbar->addWidget(spacer);
+
+        addToolBar(Qt::LeftToolBarArea, toolbar);
     }
 }
 
@@ -1156,20 +1173,30 @@ void BitcoinGUI::updateStakingIcon()
         nNetworkWeight /= COIN;
         labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
         labelStakingIcon->setToolTip(tr("Staking.<br>Your weight is %1<br>Network weight is %2<br>Expected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+#ifndef Q_OS_MAC
+        if (trayIcon)
+            trayIcon->setToolTip(tr("%1 - Staking (reward in ~%2)").arg(tr(PACKAGE_NAME)).arg(text));
+#endif
     }
     else
     {
         labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        QString stakingMsg;
         if (vNodes.empty())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is offline"));
+            stakingMsg = tr("Not staking because wallet is offline");
         else if (IsInitialBlockDownload())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is syncing"));
+            stakingMsg = tr("Not staking because wallet is syncing");
         else if (!nWeight)
-            labelStakingIcon->setToolTip(tr("Not staking because you don't have mature coins"));
-		else if (pwalletMain && pwalletMain->IsLocked())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is locked"));
+            stakingMsg = tr("Not staking because you don't have mature coins");
+        else if (pwalletMain && pwalletMain->IsLocked())
+            stakingMsg = tr("Not staking because wallet is locked");
         else
-            labelStakingIcon->setToolTip(tr("Not staking"));
+            stakingMsg = tr("Not staking");
+        labelStakingIcon->setToolTip(stakingMsg);
+#ifndef Q_OS_MAC
+        if (trayIcon)
+            trayIcon->setToolTip(tr("%1 - %2").arg(tr(PACKAGE_NAME)).arg(stakingMsg));
+#endif
     }
 }
 
@@ -1266,7 +1293,8 @@ UnitDisplayStatusBarControl::UnitDisplayStatusBarControl(const PlatformStyle *pl
     }
     setMinimumSize(max_width, 0);
     setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    setStyleSheet(QString("QLabel { color : %1 }").arg(platformStyle->SingleColor().name()));
+    // Let QSS theme handle the color instead of hardcoding from platformStyle
+    setStyleSheet("");
 }
 
 /** So that it responds to button clicks */

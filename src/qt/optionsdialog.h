@@ -56,6 +56,7 @@ private Q_SLOTS:
     void showRestartWarning(bool fPersistent = false);
     void clearStatusLabel();
     void updateProxyValidationState();
+    void onThemeChanged(int index);
     /* query the networks, for which the default proxy is used */
     void updateDefaultProxyNets();
 

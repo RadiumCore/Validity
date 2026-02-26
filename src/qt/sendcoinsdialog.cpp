@@ -752,7 +752,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
     {
         // Default to no change address until verified
         CoinControlDialog::coinControl->destChange = CNoDestination();
-        ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:red;}");
+        ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:#e05555;}");
 
         const CTxDestination dest = DecodeDestination(text.toStdString());
 
@@ -784,14 +784,14 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
                 else
                 {
                     ui->lineEditCoinControlChange->setText("");
-                    ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:black;}");
+                    ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:#e8e8f0;}");
                     ui->labelCoinControlChangeLabel->setText("");
                 }
             }
             else
             {
                 // Known change address
-                ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:black;}");
+                ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:#e8e8f0;}");
 
                 // Query label
                 QString associatedLabel = model->getAddressTableModel()->labelForAddress(text);

@@ -17,11 +17,11 @@ static const int CHART_PADDING_TOP = 10;
 static const int CHART_PADDING_BOTTOM = 30;
 
 static const QColor COLOR_BAR_NORMAL(67, 181, 129);        // #43b581 Validity green
-static const QColor COLOR_BAR_HOVER(87, 201, 149);         // lighter green on hover
-static const QColor COLOR_BAR_ZERO(67, 181, 129, 40);      // very faint for zero-amount days
-static const QColor COLOR_GRID(255, 255, 255, 25);         // subtle grid lines
-static const QColor COLOR_AXIS_TEXT(160, 160, 176);         // #a0a0b0
-static const QColor COLOR_TOOLTIP_BG(42, 42, 61, 230);     // #2a2a3d semi-transparent
+static const QColor COLOR_BAR_HOVER(78, 204, 146);         // #4ecc92 brighter green on hover
+static const QColor COLOR_BAR_ZERO(67, 181, 129, 30);      // very faint for zero-amount days
+static const QColor COLOR_GRID(255, 255, 255, 12);         // ultra-subtle grid lines
+static const QColor COLOR_AXIS_TEXT(136, 136, 168);         // #8888a8 muted text
+static const QColor COLOR_TOOLTIP_BG(21, 21, 48, 240);     // #151530 cosmic dark
 
 StakingChartWidget::StakingChartWidget(QWidget *parent) :
     QWidget(parent),
