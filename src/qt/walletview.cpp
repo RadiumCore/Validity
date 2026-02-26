@@ -24,6 +24,7 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QTimer>
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QProgressDialog>
@@ -34,32 +35,10 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, const Config *cfg, Q
     QStackedWidget(parent),
     clientModel(0),
     walletModel(0),
-    transactionsPage(0),
-    receiveCoinsPage(0),
-    usedSendingAddressesPage(0),
-    usedReceivingAddressesPage(0),
-    transactionView(0),
-    platformStyle(_platformStyle),
-    walletCfg(cfg),
-    bitcoinGUI(0)
+    platformStyle(_platformStyle)
 {
-    // Create only the landing page and send page eagerly.
-    // Transactions, receive, and address book pages are created on first use.
+    // Create all tabs (widgets are cheap; the heavy part is setModel)
     overviewPage = new OverviewPage(platformStyle);
-    sendCoinsPage = new SendCoinsDialog(platformStyle);
-
-    addWidget(overviewPage);
-    addWidget(sendCoinsPage);
-
-    connect(overviewPage, SIGNAL(outOfSyncWarningClicked()), this, SLOT(requestedSyncWarningInfo()));
-
-    // Pass through messages from sendCoinsPage
-    connect(sendCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
-}
-
-void WalletView::ensureTransactionsPage()
-{
-    if (transactionsPage) return;
 
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -76,29 +55,37 @@ void WalletView::ensureTransactionsPage()
     vbox->addLayout(hbox_buttons);
     transactionsPage->setLayout(vbox);
 
+    receiveCoinsPage = new ReceiveCoinsDialog(platformStyle, cfg);
+    sendCoinsPage = new SendCoinsDialog(platformStyle);
+
+    usedSendingAddressesPage = new AddressBookPage(platformStyle, AddressBookPage::ForEditing, AddressBookPage::SendingTab, this);
+    usedReceivingAddressesPage = new AddressBookPage(platformStyle, AddressBookPage::ForEditing, AddressBookPage::ReceivingTab, this);
+
+    addWidget(overviewPage);
     addWidget(transactionsPage);
+    addWidget(receiveCoinsPage);
+    addWidget(sendCoinsPage);
 
-    // Wire up connections now that transactionView exists
+    // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
-    connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
-    connect(exportButton, SIGNAL(clicked()), transactionView, SLOT(exportClicked()));
-    connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+    connect(overviewPage, SIGNAL(outOfSyncWarningClicked()), this, SLOT(requestedSyncWarningInfo()));
 
-    if (walletModel)
-        transactionView->setModel(walletModel);
-    if (bitcoinGUI)
-        connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), bitcoinGUI, SLOT(gotoHistoryPage()));
+    // Double-clicking on a transaction on the transaction history page shows details
+    connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
+
+    // Clicking on "Export" allows to export the transaction list
+    connect(exportButton, SIGNAL(clicked()), transactionView, SLOT(exportClicked()));
+
+    // Pass through messages from sendCoinsPage
+    connect(sendCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+    // Pass through messages from transactionView
+    connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
 }
 
-void WalletView::ensureReceivePage()
+void WalletView::deferredModelLoad()
 {
-    if (receiveCoinsPage) return;
-
-    receiveCoinsPage = new ReceiveCoinsDialog(platformStyle, walletCfg);
-    addWidget(receiveCoinsPage);
-
-    if (walletModel)
-        receiveCoinsPage->setModel(walletModel);
+    if (walletModel && transactionView)
+        transactionView->setModel(walletModel);
 }
 
 WalletView::~WalletView()
@@ -107,9 +94,11 @@ WalletView::~WalletView()
 
 void WalletView::setBitcoinGUI(BitcoinGUI *gui)
 {
-    bitcoinGUI = gui;
     if (gui)
     {
+        // Clicking on a transaction on the overview page simply sends you to transaction history page
+        connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), gui, SLOT(gotoHistoryPage()));
+
         // Receive and report messages
         connect(this, SIGNAL(message(QString,QString,unsigned int)), gui, SLOT(message(QString,QString,unsigned int)));
 
@@ -136,9 +125,15 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 {
     this->walletModel = walletModel;
 
-    // Only set models on eagerly-created pages; lazy pages get theirs on creation
+    // Set models on lightweight pages immediately
     overviewPage->setWalletModel(walletModel);
+    receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
+    usedReceivingAddressesPage->setModel(walletModel ? walletModel->getAddressTableModel() : 0);
+    usedSendingAddressesPage->setModel(walletModel ? walletModel->getAddressTableModel() : 0);
+
+    // Defer the heavy transaction table model load so the dashboard renders first
+    QTimer::singleShot(0, this, SLOT(deferredModelLoad()));
 
     if (walletModel)
     {
@@ -192,13 +187,11 @@ void WalletView::gotoOverviewPage()
 
 void WalletView::gotoHistoryPage()
 {
-    ensureTransactionsPage();
     setCurrentWidget(transactionsPage);
 }
 
 void WalletView::gotoReceiveCoinsPage()
 {
-    ensureReceivePage();
     setCurrentWidget(receiveCoinsPage);
 }
 
@@ -326,10 +319,6 @@ void WalletView::usedSendingAddresses()
     if(!walletModel)
         return;
 
-    if (!usedSendingAddressesPage) {
-        usedSendingAddressesPage = new AddressBookPage(platformStyle, AddressBookPage::ForEditing, AddressBookPage::SendingTab, this);
-        usedSendingAddressesPage->setModel(walletModel->getAddressTableModel());
-    }
     usedSendingAddressesPage->show();
     usedSendingAddressesPage->raise();
     usedSendingAddressesPage->activateWindow();
@@ -340,10 +329,6 @@ void WalletView::usedReceivingAddresses()
     if(!walletModel)
         return;
 
-    if (!usedReceivingAddressesPage) {
-        usedReceivingAddressesPage = new AddressBookPage(platformStyle, AddressBookPage::ForEditing, AddressBookPage::ReceivingTab, this);
-        usedReceivingAddressesPage->setModel(walletModel->getAddressTableModel());
-    }
     usedReceivingAddressesPage->show();
     usedReceivingAddressesPage->raise();
     usedReceivingAddressesPage->activateWindow();
