@@ -144,6 +144,7 @@ private:
     const Config *cfg;
     ThemeManager *themeManager;
     QToolBar *navToolbar;
+    QMap<QAction*, QIcon> originalIcons;
 
     /** Create the main UI actions. */
     void createActions();

@@ -517,6 +517,8 @@ void RPCConsole::setClientModel(ClientModel *model)
         connect(model->getPeerTableModel(), SIGNAL(layoutChanged()), this, SLOT(peerLayoutChanged()));
         // update peer map when peer list changes
         connect(model->getPeerTableModel(), SIGNAL(layoutChanged()), this, SLOT(updatePeerMap()));
+        // Force initial peer map population
+        updatePeerMap();
 
         // set up ban table
         ui->banlistWidget->setModel(model->getBanTableModel());

@@ -1,4 +1,4 @@
-// Copyright (c) 2026 The Validity developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -128,19 +128,39 @@ static int octetToRegion(int firstOctet)
 
 QPair<double, double> lookup(const QString &ipAddress)
 {
-    // Strip port if present (handle both "1.2.3.4:8333" and "[::1]:8333")
+    // Strip port and handle IPv6 notation
     QString ip = ipAddress;
     if (ip.startsWith('[')) {
-        // IPv6 - place at center
-        return QPair<double,double>(0.0, 0.0);
+        // Bracketed IPv6 - extract content between brackets
+        int closeBracket = ip.indexOf(']');
+        if (closeBracket > 0)
+            ip = ip.mid(1, closeBracket - 1);
+        else
+            ip = ip.mid(1);
+
+        // Check for IPv4-mapped IPv6 (::ffff:1.2.3.4)
+        if (ip.contains("::ffff:")) {
+            ip = ip.section("::ffff:", 1, 1);
+        } else {
+            // Pure IPv6 - use a hash to spread around a visible location
+            uint hash = qHash(ipAddress);
+            double latJitter = ((hash & 0xFF) % 30 - 15) * 0.5;
+            double lonJitter = (((hash >> 8) & 0xFF) % 40 - 20) * 0.5;
+            return QPair<double,double>(48.0 + latJitter, 8.0 + lonJitter);
+        }
     }
     if (ip.contains(':')) {
         ip = ip.section(':', 0, 0);
     }
 
     QStringList parts = ip.split('.');
-    if (parts.size() != 4)
-        return QPair<double,double>(0.0, 0.0);
+    if (parts.size() != 4) {
+        // Fallback for unparseable addresses - spread them visibly
+        uint hash = qHash(ipAddress);
+        double latJitter = ((hash & 0xFF) % 30 - 15) * 0.5;
+        double lonJitter = (((hash >> 8) & 0xFF) % 40 - 20) * 0.5;
+        return QPair<double,double>(48.0 + latJitter, 8.0 + lonJitter);
+    }
 
     int firstOctet = parts[0].toInt();
     int regionIdx = octetToRegion(firstOctet);
@@ -160,8 +180,15 @@ QPair<double, double> lookup(const QString &ipAddress)
 QString regionName(const QString &ipAddress)
 {
     QString ip = ipAddress;
-    if (ip.startsWith('['))
-        return "Unknown";
+    if (ip.startsWith('[')) {
+        int closeBracket = ip.indexOf(']');
+        if (closeBracket > 0)
+            ip = ip.mid(1, closeBracket - 1);
+        if (ip.contains("::ffff:"))
+            ip = ip.section("::ffff:", 1, 1);
+        else
+            return "Unknown";
+    }
     if (ip.contains(':'))
         ip = ip.section(':', 0, 0);
 

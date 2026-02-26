@@ -112,11 +112,19 @@ void AskPassphraseDialog::accept()
     oldpass.reserve(MAX_PASSPHRASE_SIZE);
     newpass1.reserve(MAX_PASSPHRASE_SIZE);
     newpass2.reserve(MAX_PASSPHRASE_SIZE);
-    // TODO: get rid of this .c_str() by implementing SecureString::operator=(std::string)
-    // Alternately, find a way to make this input mlock()'d to begin with.
-    oldpass.assign(ui->passEdit1->text().toStdString().c_str());
-    newpass1.assign(ui->passEdit2->text().toStdString().c_str());
-    newpass2.assign(ui->passEdit3->text().toStdString().c_str());
+    // Convert passphrase via QByteArray and zero immediately to avoid
+    // leaving plaintext on the ordinary (non-mlock'd) heap.
+    QByteArray raw1 = ui->passEdit1->text().toUtf8();
+    oldpass.assign(raw1.constData(), raw1.size());
+    raw1.fill(0);
+
+    QByteArray raw2 = ui->passEdit2->text().toUtf8();
+    newpass1.assign(raw2.constData(), raw2.size());
+    raw2.fill(0);
+
+    QByteArray raw3 = ui->passEdit3->text().toUtf8();
+    newpass2.assign(raw3.constData(), raw3.size());
+    raw3.fill(0);
 
     secureClearPassFields();
 

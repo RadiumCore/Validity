@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
-// Copyright (c) 2025 The Validity developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -102,13 +102,24 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     pixPaint.drawText(versionX, titleY + 24, versionText);
 
     // === Copyright text ===
-    QString copyrightText = QChar(0xA9) + QString(" %1 The Validity developers").arg(COPYRIGHT_YEAR);
-    QFont copyrightFont(font, 9);
+    QFont copyrightFont(font, 8);
     pixPaint.setFont(copyrightFont);
     pixPaint.setPen(QColor(90, 90, 122));    // #5a5a7a dim
     fm = pixPaint.fontMetrics();
-    int copyrightX = (w - fm.width(copyrightText)) / 2;
-    pixPaint.drawText(copyrightX, titleY + 48, copyrightText);
+
+    QStringList copyrightLines;
+    copyrightLines << QChar(0xA9) + QString(" 2009-%1 The Bitcoin Core developers").arg(COPYRIGHT_YEAR);
+    copyrightLines << QChar(0xA9) + QString(" 2014-2018 The Blackcoin developers");
+    copyrightLines << QChar(0xA9) + QString(" 2018-%1 The Blackcoin More developers").arg(COPYRIGHT_YEAR);
+    copyrightLines << QChar(0xA9) + QString(" 2019-%1 The Radium Core developers").arg(COPYRIGHT_YEAR);
+    copyrightLines << QChar(0xA9) + QString(" 2020-%1 The Validity developers").arg(COPYRIGHT_YEAR);
+
+    int lineHeight = fm.height() + 2;
+    int copyrightY = titleY + 40;
+    for (int i = 0; i < copyrightLines.size(); i++) {
+        int cx = (w - fm.width(copyrightLines[i])) / 2;
+        pixPaint.drawText(cx, copyrightY + i * lineHeight, copyrightLines[i]);
+    }
 
     // === Bottom accent line ===
     QLinearGradient lineGradient(w * 0.2, 0, w * 0.8, 0);

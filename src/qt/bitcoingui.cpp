@@ -490,8 +490,8 @@ void BitcoinGUI::createToolBars()
 
         addToolBar(Qt::LeftToolBarArea, navToolbar);
 
-        // Colorize toolbar icons to match current theme
-        recolorToolbarIcons();
+        // Defer icon colorization until after window is visible
+        QTimer::singleShot(0, this, SLOT(recolorToolbarIcons()));
 
         // Re-colorize when theme changes
         connect(themeManager, SIGNAL(themeChanged(int)), this, SLOT(recolorToolbarIcons()));
@@ -519,26 +519,20 @@ static QIcon colorizeIcon(const QIcon &oldIcon, const QColor &color)
 
 void BitcoinGUI::recolorToolbarIcons()
 {
-    // Use the current palette's WindowText color for icons
-    // Dark theme: light color (~#e8e8f0), Light theme: dark color (~black)
     QColor iconColor = QApplication::palette().color(QPalette::WindowText);
 
-    // Recolor all QAction icons across the entire application
-    QList<QAction*> allActions = findChildren<QAction*>();
-    Q_FOREACH(QAction *action, allActions) {
-        if (!action->icon().isNull()) {
-            action->setIcon(colorizeIcon(action->icon(), iconColor));
+    // On first call, snapshot original icons before colorization
+    if (originalIcons.isEmpty()) {
+        QList<QAction*> allActions = findChildren<QAction*>();
+        Q_FOREACH(QAction *action, allActions) {
+            if (!action->icon().isNull())
+                originalIcons[action] = action->icon();
         }
     }
 
-    // Also recolor toolbar button icons specifically (in case btn->setIcon was used)
-    if (navToolbar) {
-        Q_FOREACH(QToolButton *btn, navToolbar->findChildren<QToolButton*>()) {
-            QAction *action = btn->defaultAction();
-            if (action && !action->icon().isNull()) {
-                btn->setIcon(colorizeIcon(action->icon(), iconColor));
-            }
-        }
+    // Always colorize from the stored originals to avoid degradation
+    for (auto it = originalIcons.constBegin(); it != originalIcons.constEnd(); ++it) {
+        it.key()->setIcon(colorizeIcon(it.value(), iconColor));
     }
 }
 

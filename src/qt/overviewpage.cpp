@@ -5,7 +5,6 @@
 
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
-#include "rpc/blockchain.cpp"
 
 #include "bitcoinunits.h"
 #include "clientmodel.h"
@@ -24,9 +23,12 @@
 
 #include "carddragdrop.h"
 
+#include "rpc/server.h"
+
 #include <QAbstractItemDelegate>
 #include <QDateTime>
 #include <QPainter>
+#include <QPointer>
 #include <QSplitter>
 #include <QSettings>
 
@@ -136,6 +138,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     txdelegate(new TxViewDelegate(platformStyle, this)),
     stakingChart(0),
     gridManager(0),
+    lastStaking(false),
     initialStatsLoaded(false),
     cachedWalletTxCount(0),
     cachedBlockHeight(0),
@@ -353,8 +356,6 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
     ui->labelWalletStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
-using namespace boost;
-
 struct StakePeriodRange_T {
     int64_t Start;
     int64_t End;
@@ -367,10 +368,10 @@ typedef std::vector<StakePeriodRange_T> vStakePeriodRange_T;
 
 extern vStakePeriodRange_T PrepareRangeForStakeReport();
 extern int GetsStakeSubTotal(vStakePeriodRange_T& aRange);
+extern double GetSupply();
 
 static double roundTo2(double value){
-    int64_t pre_round = (int64_t)(value * 100);
-    return ((double)pre_round) / 100.0;
+    return (double)((int64_t)(value * 100)) / 100.0;
 }
 
 
@@ -390,7 +391,11 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
     if (!pwalletMain)
         return;
 
-    bool staking = pwalletMain->IsStaking();
+    bool staking;
+    {
+        LOCK(pwalletMain->cs_wallet);
+        staking = pwalletMain->IsStaking();
+    }
 
     // if staking status has changed, force update
     if(lastStaking != staking)
@@ -400,12 +405,19 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
     // Defer the very first stats load so the UI renders immediately
     if (!initialStatsLoaded) {
         initialStatsLoaded = true;
-        QTimer::singleShot(2000, this, SLOT(deferredStatsLoad()));
+        QPointer<OverviewPage> guard(this);
+        QTimer::singleShot(2000, [guard]() {
+            if (guard) guard->deferredStatsLoad();
+        });
         return;
     }
 
     if ((GetTime() - nLastReportUpdate) > 300) {
-        int64_t nMyWeight = pwalletMain ? pwalletMain->GetStakeWeight() : 0;
+        int64_t nMyWeight;
+        {
+            LOCK(pwalletMain->cs_wallet);
+            nMyWeight = pwalletMain->GetStakeWeight();
+        }
         int64_t nNetworkWeight;
         int64_t nCoinSupply;
 
@@ -435,9 +447,12 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
 
        // Cache validation: rescan wallet txs if count changed or
        // staking status changed (new stakes may have matured)
-       size_t currentTxCount = pwalletMain->mapWallet.size();
-       bool stakingChanged = (lastStaking != staking);
-       if (currentTxCount != cachedWalletTxCount || stakingChanged) {
+       size_t currentTxCount;
+       {
+           LOCK(pwalletMain->cs_wallet);
+           currentTxCount = pwalletMain->mapWallet.size();
+       }
+       if (currentTxCount != cachedWalletTxCount) {
            UpdateHistoricalStakingStats(unit);
            cachedWalletTxCount = currentTxCount;
        }
@@ -455,8 +470,14 @@ void OverviewPage::deferredStatsLoad()
     if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain)
         return;
 
-    bool staking = pwalletMain->IsStaking();
-    int64_t nMyWeight = pwalletMain->GetStakeWeight();
+    bool staking;
+    int64_t nMyWeight;
+    {
+        LOCK(pwalletMain->cs_wallet);
+        staking = pwalletMain->IsStaking();
+        nMyWeight = pwalletMain->GetStakeWeight();
+    }
+
     int64_t nNetworkWeight;
     int64_t nCoinSupply;
 
@@ -472,7 +493,10 @@ void OverviewPage::deferredStatsLoad()
     int unit = walletModel->getOptionsModel()->getDisplayUnit();
 
     UpdateHistoricalStakingStats(unit);
-    cachedWalletTxCount = pwalletMain->mapWallet.size();
+    {
+        LOCK(pwalletMain->cs_wallet);
+        cachedWalletTxCount = pwalletMain->mapWallet.size();
+    }
 
     UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
     UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, chainActive.Height());
@@ -485,12 +509,15 @@ void OverviewPage::UpdateHistoricalStakingStats(int unit){
     vStakePeriodRange_T aRange = PrepareRangeForStakeReport();
     GetsStakeSubTotal(aRange);
 
-    // Prepare the subtotals
-    CAmount amount24h = roundTo2(aRange[30].Total);
-    CAmount amount7d = roundTo2(aRange[31].Total);
-    CAmount amount30d = roundTo2(aRange[32].Total);
-    CAmount amount1y = roundTo2(aRange[33].Total);
-    CAmount amountAll = roundTo2(aRange[34].Total);
+    if (aRange.size() < 35)
+        return;
+
+    // Prepare the subtotals (indices 30-34 are the summary periods)
+    CAmount amount24h = aRange[30].Total;
+    CAmount amount7d  = aRange[31].Total;
+    CAmount amount30d = aRange[32].Total;
+    CAmount amount1y  = aRange[33].Total;
+    CAmount amountAll = aRange[34].Total;
 
     // Display staking history
     ui->label24hStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount24h, false, BitcoinUnits::separatorAlways, 2));
@@ -538,16 +565,18 @@ void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, in
     ui->progressBar_MyWeight->setValue(pMyWeight*100);
     ui->progressBar_MyWeight->setFormat(tr("%1%").arg(roundTo2(pMyWeight*100)));
 
-    double nStakeSubsidy = getFixedStakeSubsidy(nHeight);
-    double nAnnualCoins = ((nStakeSubsidy * 60 * 25 * 365) * pMyWeight);
-    double nTotalBalance = currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentStake;
-    double pAnualPercent = (nTotalBalance > 0) ? roundTo2(nAnnualCoins/nTotalBalance) : 0;
+    double nStakeSubsidy = (double)getFixedStakeSubsidy(nHeight);
+    double nAnnualCoins = (nStakeSubsidy * 60.0 * 25.0 * 365.0) * pMyWeight;
+    double nTotalBalance = (double)(currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentStake);
+    double pAnualPercent = (nTotalBalance > 0) ? roundTo2(nAnnualCoins / nTotalBalance) : 0;
 
     //set stake generation bar
     ui->progressBar_AnnualGeneration->setValue(pAnualPercent*100);
     ui->progressBar_AnnualGeneration->setFormat(tr("%1% ").arg(roundTo2(pAnualPercent*100)));
 
-    CAmount nExpectedDailyReward = (1440 * nStakeSubsidy) * pMyWeight ;
+    double rawDailyReward = (1440.0 * nStakeSubsidy) * pMyWeight;
+    CAmount nExpectedDailyReward = (rawDailyReward > 0 && rawDailyReward < (double)MAX_MONEY)
+        ? (CAmount)rawDailyReward : 0;
     ui->labelExpectedStakingStats->setText(BitcoinUnits::formatWithUnit(unit, nExpectedDailyReward, false, BitcoinUnits::separatorAlways, 2));
 }
 

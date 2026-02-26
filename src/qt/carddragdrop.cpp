@@ -32,7 +32,15 @@ DashboardGridManager::DashboardGridManager(QWidget *parent)
 DashboardGridManager::~DashboardGridManager()
 {
     saveLayout();
-    if (isDragging) abortDrag();
+    if (isDragging) {
+        qApp->removeEventFilter(this);
+        isDragging = false;
+        if (dragPreview) {
+            delete dragPreview;
+            dragPreview = 0;
+        }
+        if (dropLine) dropLine->hide();
+    }
 }
 
 // ---------------------------------------------------------------------------
