@@ -70,6 +70,11 @@ private:
 
     QProgressDialog *progressDialog;
     const PlatformStyle *platformStyle;
+    const Config *walletCfg;
+    BitcoinGUI *bitcoinGUI;
+
+    void ensureTransactionsPage();
+    void ensureReceivePage();
 
 public Q_SLOTS:
     /** Switch to overview (home) page */
