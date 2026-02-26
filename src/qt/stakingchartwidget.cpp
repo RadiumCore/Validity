@@ -9,6 +9,7 @@
 #include <QPainterPath>
 #include <QMouseEvent>
 #include <QToolTip>
+#include <QResizeEvent>
 
 static const int BAR_SPACING = 2;
 static const int CHART_PADDING_LEFT = 60;
@@ -21,12 +22,13 @@ static const QColor COLOR_BAR_HOVER(78, 204, 146);         // #4ecc92 brighter g
 static const QColor COLOR_BAR_ZERO(67, 181, 129, 30);      // very faint for zero-amount days
 static const QColor COLOR_GRID(255, 255, 255, 12);         // ultra-subtle grid lines
 static const QColor COLOR_AXIS_TEXT(136, 136, 168);         // #8888a8 muted text
-static const QColor COLOR_TOOLTIP_BG(21, 21, 48, 240);     // #151530 cosmic dark
 
 StakingChartWidget::StakingChartWidget(QWidget *parent) :
     QWidget(parent),
     displayUnit(0),
-    hoveredBar(-1)
+    hoveredBar(-1),
+    cacheDirty(true),
+    cachedHoverBar(-1)
 {
     setMouseTracking(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -36,12 +38,14 @@ void StakingChartWidget::setData(const QVector<StakeDayData> &data)
 {
     chartData = data;
     hoveredBar = -1;
+    cacheDirty = true;
     update();
 }
 
 void StakingChartWidget::setUnit(int unit)
 {
     displayUnit = unit;
+    cacheDirty = true;
     update();
 }
 
@@ -53,6 +57,12 @@ QSize StakingChartWidget::minimumSizeHint() const
 QSize StakingChartWidget::sizeHint() const
 {
     return QSize(400, 180);
+}
+
+void StakingChartWidget::resizeEvent(QResizeEvent *event)
+{
+    cacheDirty = true;
+    QWidget::resizeEvent(event);
 }
 
 QRect StakingChartWidget::getBarRect(int index, int chartLeft, int chartTop, int chartWidth, int chartHeight, CAmount maxAmount) const
@@ -75,15 +85,18 @@ QRect StakingChartWidget::getBarRect(int index, int chartLeft, int chartTop, int
     return QRect(x, y, (int)barWidth, barHeight);
 }
 
-void StakingChartWidget::paintEvent(QPaintEvent *)
+void StakingChartWidget::rebuildCache()
 {
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-
     int w = width();
     int h = height();
+    if (w <= 0 || h <= 0) return;
 
-    // Chart area
+    paintCache = QPixmap(w, h);
+    paintCache.fill(Qt::transparent);
+
+    QPainter painter(&paintCache);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
     int chartLeft = CHART_PADDING_LEFT;
     int chartTop = CHART_PADDING_TOP;
     int chartWidth = w - CHART_PADDING_LEFT - CHART_PADDING_RIGHT;
@@ -105,7 +118,9 @@ void StakingChartWidget::paintEvent(QPaintEvent *)
         QFont emptyFont = painter.font();
         emptyFont.setPixelSize(12);
         painter.setFont(emptyFont);
-        painter.drawText(rect(), Qt::AlignCenter, "No staking rewards in the last 30 days");
+        painter.drawText(QRect(0, 0, w, h), Qt::AlignCenter, "No staking rewards in the last 30 days");
+        cacheDirty = false;
+        cachedHoverBar = hoveredBar;
         return;
     }
 
@@ -140,7 +155,6 @@ void StakingChartWidget::paintEvent(QPaintEvent *)
 
         QColor barColor;
         if (chartData[i].amount == 0) {
-            // Draw a tiny placeholder for zero days
             barRect = QRect(barRect.x(), chartTop + chartHeight - 1, (int)barWidth, 1);
             barColor = COLOR_BAR_ZERO;
         } else if (i == hoveredBar) {
@@ -166,7 +180,7 @@ void StakingChartWidget::paintEvent(QPaintEvent *)
 
         painter.fillPath(path, barColor);
 
-        // X-axis date labels (show every Nth to avoid crowding)
+        // X-axis date labels
         int labelEvery = numBars > 15 ? 5 : (numBars > 7 ? 3 : 1);
         if (i % labelEvery == 0 || i == numBars - 1) {
             painter.setPen(COLOR_AXIS_TEXT);
@@ -176,6 +190,22 @@ void StakingChartWidget::paintEvent(QPaintEvent *)
             painter.drawText(labelX, chartTop + chartHeight + 4, labelW, 20,
                            Qt::AlignLeft | Qt::AlignTop, chartData[i].label);
         }
+    }
+
+    cacheDirty = false;
+    cachedHoverBar = hoveredBar;
+}
+
+void StakingChartWidget::paintEvent(QPaintEvent *)
+{
+    // Only rebuild cache when data, size, or hover state changed
+    if (cacheDirty || cachedHoverBar != hoveredBar || paintCache.size() != size()) {
+        rebuildCache();
+    }
+
+    QPainter painter(this);
+    if (!paintCache.isNull()) {
+        painter.drawPixmap(0, 0, paintCache);
     }
 }
 
@@ -189,21 +219,17 @@ void StakingChartWidget::mouseMoveEvent(QMouseEvent *event)
             maxAmount = chartData[i].amount;
     }
     if (maxAmount == 0) return;
-    maxAmount = (CAmount)(maxAmount * 1.1);
 
     int chartLeft = CHART_PADDING_LEFT;
-    int chartTop = CHART_PADDING_TOP;
     int chartWidth = width() - CHART_PADDING_LEFT - CHART_PADDING_RIGHT;
-    int chartHeight = height() - CHART_PADDING_TOP - CHART_PADDING_BOTTOM;
 
     int newHover = -1;
-    for (int i = 0; i < chartData.size(); i++) {
-        int numBars = chartData.size();
-        double barWidth = (double)(chartWidth - (numBars - 1) * BAR_SPACING) / numBars;
-        int x = chartLeft + (int)(i * (barWidth + BAR_SPACING));
+    int numBars = chartData.size();
+    double barWidth = (double)(chartWidth - (numBars - 1) * BAR_SPACING) / numBars;
 
-        // Check if mouse is in this bar's column (full height)
-        int mouseX = event->pos().x();
+    int mouseX = event->pos().x();
+    for (int i = 0; i < numBars; i++) {
+        int x = chartLeft + (int)(i * (barWidth + BAR_SPACING));
         if (mouseX >= x && mouseX < x + (int)barWidth) {
             newHover = i;
             break;
@@ -212,7 +238,7 @@ void StakingChartWidget::mouseMoveEvent(QMouseEvent *event)
 
     if (newHover != hoveredBar) {
         hoveredBar = newHover;
-        update();
+        update(); // will rebuild cache with new hover bar
 
         if (hoveredBar >= 0 && hoveredBar < chartData.size()) {
             QString tip = QString("%1\n%2")

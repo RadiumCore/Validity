@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QVector>
 #include <QString>
+#include <QPixmap>
 
 struct StakeDayData {
     QString label;     // e.g. "Feb 25"
@@ -31,6 +32,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event);
+    void resizeEvent(QResizeEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void leaveEvent(QEvent *event);
 
@@ -38,6 +40,12 @@ private:
     QVector<StakeDayData> chartData;
     int displayUnit;
     int hoveredBar;
+
+    // Paint cache — avoids full repaint on every frame
+    QPixmap paintCache;
+    bool cacheDirty;
+    int cachedHoverBar;
+    void rebuildCache();
 
     QRect getBarRect(int index, int chartLeft, int chartTop, int chartWidth, int chartHeight, CAmount maxAmount) const;
 };

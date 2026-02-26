@@ -806,11 +806,6 @@ CoinControlDialog QPushButton#pushButtonSelectAll:hover {
     background-color: rgba(45, 143, 94, 0.08);
 }
 
-/* === Options Dialog === */
-QDialog#OptionsDialog QTabWidget::pane {
-    padding: 12px;
-}
-
 QLabel#statusLabel {
     color: #d04040;
     font-weight: bold;
@@ -846,15 +841,6 @@ QScrollArea {
 
 QScrollArea > QWidget > QWidget {
     background: transparent;
-}
-
-/* === Splitter === */
-QSplitter::handle {
-    background-color: #d0d4da;
-}
-
-QSplitter::handle:hover {
-    background-color: #2d8f5e;
 }
 
 /* === Frames (separators) === */
@@ -921,15 +907,6 @@ QTextEdit#outUri {
     padding: 8px;
 }
 
-/* === Dialog Button Box === */
-QDialogButtonBox QPushButton {
-    min-width: 80px;
-}
-
-/* === Form Labels === */
-QFormLayout QLabel {
-    color: #5a6270;
-}
 
 /* === QSplitter Handles === */
 QSplitter::handle {

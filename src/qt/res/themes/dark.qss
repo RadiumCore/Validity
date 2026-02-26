@@ -553,26 +553,6 @@ QDialog {
     background-color: #0f0f24;
 }
 
-/* === Tool Tip (Green accent border) === */
-QToolTip {
-    background-color: #151530;
-    color: #e8e8f0;
-    border: 1px solid #43b581;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 12px;
-}
-
-/* === Splitter === */
-QSplitter::handle {
-    background: #1a1a3a;
-    width: 1px;
-}
-
-QSplitter::handle:hover {
-    background: #43b581;
-}
-
 /* === Line (separator) === */
 QFrame[frameShape="4"],
 QFrame[frameShape="5"] {
@@ -684,11 +664,6 @@ QFrame#frameFee {
     padding: 10px;
 }
 
-/* === Coin Control Dialog === */
-QDialog#CoinControlDialog QTreeView {
-    background-color: #0a0a1a;
-}
-
 /* === Modal Overlay === */
 QWidget#bgWidget {
     background-color: rgba(10, 10, 26, 0.92);
@@ -743,27 +718,10 @@ QWidget#BitcoinAmountField QLineEdit {
     font-weight: bold;
 }
 
-/* === Options Dialog === */
-QDialog#OptionsDialog QTabWidget::pane {
-    background-color: #0f0f24;
-    border: 1px solid #2a2a4d;
-    border-radius: 8px;
-}
-
 /* === Wallet Encryption/Passphrase === */
 QDialog#AskPassphraseDialog QLineEdit {
     font-size: 14px;
     padding: 10px 14px;
-}
-
-/* === Debug Window Tabs === */
-QWidget#RPCConsole QTabBar::tab {
-    min-width: 100px;
-}
-
-/* === Transaction View Filter Row === */
-QWidget#TransactionView QComboBox {
-    min-width: 120px;
 }
 
 /* === Intro/Welcome Dialog === */
@@ -773,15 +731,6 @@ QDialog#Intro {
 
 QDialog#Intro QRadioButton {
     padding: 8px;
-}
-
-/* === About Dialog === */
-QDialog#HelpMessageDialog {
-    background-color: #0f0f24;
-}
-
-QDialog#HelpMessageDialog QTextEdit {
-    background-color: #0a0a1a;
 }
 
 /* === Receive Coins Page === */
@@ -803,82 +752,6 @@ QDialog#ReceiveRequestDialog QTextEdit {
     border: 1px solid #2a2a4d;
     border-radius: 8px;
     padding: 12px;
-}
-
-/* === Transaction View === */
-QWidget#TransactionView {
-    background-color: #0f0f24;
-}
-
-/* Filter bar styling */
-QWidget#TransactionView QComboBox {
-    border-radius: 8px;
-    padding: 6px 12px;
-}
-
-QWidget#TransactionView QLineEdit {
-    border-radius: 8px;
-    padding: 6px 12px;
-}
-
-/* Date range picker frame */
-QWidget#TransactionView QFrame {
-    background-color: #151530;
-    border: 1px solid #2a2a4d;
-    border-radius: 8px;
-}
-
-/* === Address Book Page === */
-QWidget#AddressBookPage QPushButton {
-    min-width: 90px;
-}
-
-/* === Coin Control Dialog === */
-QDialog#CoinControlDialog {
-    background-color: #0f0f24;
-}
-
-QDialog#CoinControlDialog QTreeWidget {
-    background-color: #0a0a1a;
-    alternate-background-color: #0d0d20;
-    border: 1px solid #2a2a4d;
-    border-radius: 8px;
-}
-
-QDialog#CoinControlDialog QTreeWidget::item {
-    padding: 4px 8px;
-    border-bottom: 1px solid #1a1a3a;
-}
-
-QDialog#CoinControlDialog QTreeWidget::item:hover {
-    background-color: rgba(67, 181, 129, 0.08);
-}
-
-QDialog#CoinControlDialog QTreeWidget::item:selected {
-    background-color: rgba(67, 181, 129, 0.15);
-}
-
-/* Coin control stat labels */
-QDialog#CoinControlDialog QLabel#labelCoinControlQuantityText,
-QDialog#CoinControlDialog QLabel#labelCoinControlBytesText,
-QDialog#CoinControlDialog QLabel#labelCoinControlAmountText,
-QDialog#CoinControlDialog QLabel#labelCoinControlFeeText,
-QDialog#CoinControlDialog QLabel#labelCoinControlAfterFeeText,
-QDialog#CoinControlDialog QLabel#labelCoinControlChangeText,
-QDialog#CoinControlDialog QLabel#labelCoinControlLowOutputText {
-    color: #8888a8;
-    font-size: 11px;
-}
-
-QDialog#CoinControlDialog QLabel#labelCoinControlQuantity,
-QDialog#CoinControlDialog QLabel#labelCoinControlBytes,
-QDialog#CoinControlDialog QLabel#labelCoinControlAmount,
-QDialog#CoinControlDialog QLabel#labelCoinControlFee,
-QDialog#CoinControlDialog QLabel#labelCoinControlAfterFee,
-QDialog#CoinControlDialog QLabel#labelCoinControlChange,
-QDialog#CoinControlDialog QLabel#labelCoinControlLowOutput {
-    color: #e8e8f0;
-    font-weight: bold;
 }
 
 /* === RPC Console Enhanced === */
@@ -994,16 +867,6 @@ QScrollArea > QWidget > QWidget {
     background: transparent;
 }
 
-/* === Dialog Button Box === */
-QDialogButtonBox QPushButton {
-    min-width: 80px;
-}
-
-/* === Form Layout Labels (Coin Control, etc.) === */
-QFormLayout QLabel {
-    color: #8888a8;
-}
-
 /* === Backup Wizard Dialog === */
 QDialog#BackupWizard {
     background-color: #0f0f24;
@@ -1081,6 +944,7 @@ QLabel#labelCoinControlChange {
     font-family: "Consolas", "Courier New", monospace;
     color: #e8e8f0;
     font-size: 12px;
+    font-weight: bold;
 }
 
 QLabel#labelCoinControlLowOutput {
@@ -1292,13 +1156,13 @@ QDialog#OptionsDialog QTabBar::tab {
     font-size: 13px;
 }
 
-QDialog#OptionsDialog QLabel#themeLabel {
+QLabel#themeLabel {
     font-weight: bold;
     font-size: 13px;
     color: #b8b8d0;
 }
 
-QDialog#OptionsDialog QComboBox#themeCombo {
+QComboBox#themeCombo {
     min-width: 160px;
     font-size: 13px;
 }
@@ -1308,16 +1172,6 @@ QLabel#statusLabel {
     color: #e05555;
     font-weight: bold;
     font-size: 12px;
-}
-
-/* --- Edit Address Dialog --- */
-QDialog#EditAddressDialog QLabel {
-    font-size: 13px;
-    color: #b8b8d0;
-}
-
-QDialog#EditAddressDialog QLineEdit {
-    font-size: 13px;
 }
 
 /* --- Send Confirmation Dialog --- */
@@ -1453,20 +1307,24 @@ TransactionView QMenu::item:selected {
    ================================================================ */
 
 CoinControlDialog QTreeWidget {
-    alternate-background-color: #111128;
+    background-color: #0a0a1a;
+    alternate-background-color: #0d0d20;
+    border: 1px solid #2a2a4d;
+    border-radius: 8px;
     gridline-color: #1a1a3a;
 }
 
 CoinControlDialog QTreeWidget::item {
-    padding: 4px 6px;
+    padding: 4px 8px;
+    border-bottom: 1px solid #1a1a3a;
 }
 
 CoinControlDialog QTreeWidget::item:hover {
-    background-color: rgba(67, 181, 129, 0.06);
+    background-color: rgba(67, 181, 129, 0.08);
 }
 
 CoinControlDialog QTreeWidget::item:selected {
-    background-color: rgba(67, 181, 129, 0.18);
+    background-color: rgba(67, 181, 129, 0.15);
 }
 
 CoinControlDialog QTreeWidget::indicator:unchecked {
