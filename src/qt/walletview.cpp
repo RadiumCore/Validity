@@ -84,8 +84,16 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, const Config *cfg, Q
 
 void WalletView::deferredModelLoad()
 {
-    if (walletModel && transactionView)
+    if (!walletModel)
+        return;
+
+    // Set the heavy transaction model on the history view
+    if (transactionView)
         transactionView->setModel(walletModel);
+
+    // Connect balloon pop-up for new transactions (triggers model creation if not already done)
+    connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(processNewTransaction(QModelIndex,int,int)));
 }
 
 WalletView::~WalletView()
@@ -133,7 +141,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     usedSendingAddressesPage->setModel(walletModel ? walletModel->getAddressTableModel() : 0);
 
     // Defer the heavy transaction table model load so the dashboard renders first
-    QTimer::singleShot(0, this, SLOT(deferredModelLoad()));
+    QTimer::singleShot(750, this, SLOT(deferredModelLoad()));
 
     if (walletModel)
     {
@@ -147,9 +155,8 @@ void WalletView::setWalletModel(WalletModel *walletModel)
         // update HD status
         Q_EMIT hdEnabledStatusChanged(walletModel->hdEnabled());
 
-        // Balloon pop-up for new transaction
-        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
-                this, SLOT(processNewTransaction(QModelIndex,int,int)));
+        // NOTE: getTransactionTableModel() connection moved to deferredModelLoad()
+        // to avoid triggering the full wallet scan during startup
 
         // Ask for passphrase if needed
         connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));

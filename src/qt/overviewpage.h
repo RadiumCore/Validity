@@ -84,6 +84,7 @@ private:
 
 private Q_SLOTS:
     void deferredStatsLoad();
+    void setupTransactionList();
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);

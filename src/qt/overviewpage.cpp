@@ -304,19 +304,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
     this->walletModel = model;
     if(model && model->getOptionsModel())
     {
-        // Set up transaction list
-        filter.reset(new TransactionFilterProxy());
-        filter->setSourceModel(model->getTransactionTableModel());
-        filter->setLimit(NUM_ITEMS);
-        filter->setDynamicSortFilter(true);
-        filter->setSortRole(Qt::EditRole);
-        filter->setShowInactive(false);
-        filter->sort(TransactionTableModel::Date, Qt::DescendingOrder);
-
-        ui->listTransactions->setModel(filter.get());
-        ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
-
-        // Keep up to date with wallet
+        // Show balances immediately (lightweight)
         setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getStake(),
                            model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getWatchStake());
         connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
@@ -324,10 +312,30 @@ void OverviewPage::setWalletModel(WalletModel *model)
 
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
+
+        // Defer the heavy transaction list setup — it triggers full wallet scan
+        QTimer::singleShot(500, this, SLOT(setupTransactionList()));
     }
 
     // update the display unit, to not use the default ("BTC")
     updateDisplayUnit();
+}
+
+void OverviewPage::setupTransactionList()
+{
+    if (!walletModel || !walletModel->getOptionsModel())
+        return;
+
+    filter.reset(new TransactionFilterProxy());
+    filter->setSourceModel(walletModel->getTransactionTableModel());
+    filter->setLimit(NUM_ITEMS);
+    filter->setDynamicSortFilter(true);
+    filter->setSortRole(Qt::EditRole);
+    filter->setShowInactive(false);
+    filter->sort(TransactionTableModel::Date, Qt::DescendingOrder);
+
+    ui->listTransactions->setModel(filter.get());
+    ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
 }
 
 void OverviewPage::updateDisplayUnit()
