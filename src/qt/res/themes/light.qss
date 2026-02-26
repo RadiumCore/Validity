@@ -1,0 +1,50 @@
+/* Validity Light Theme - preserves classic look with minor polish */
+
+/* Minimal overrides - mostly relies on system defaults */
+/* This file keeps the wallet looking familiar for existing users */
+
+QFrame#balanceCard, QFrame#stakingChartCard,
+QFrame#networkCard, QFrame#transactionsCard {
+    background-color: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+QFrame#frame, QFrame#frame_2 {
+    background-color: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+}
+
+QLabel#labelTotal, QLabel#labelWatchTotal {
+    color: #2d8f5e;
+}
+
+QProgressBar {
+    background-color: #f0f0f0;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    padding: 1px;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #3a9d6e, stop:1 #43b581);
+    border-radius: 3px;
+}
+
+QToolTip {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #43b581;
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+
+/* Recent transactions list */
+QListView#listTransactions {
+    background: transparent;
+    border: none;
+}

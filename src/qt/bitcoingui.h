@@ -27,6 +27,7 @@ class OptionsModel;
 class PlatformStyle;
 class RPCConsole;
 class SendCoinsRecipient;
+class ThemeManager;
 class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
@@ -139,6 +140,7 @@ private:
 
     const PlatformStyle *platformStyle;
     const Config *cfg;
+    ThemeManager *themeManager;
 
     /** Create the main UI actions. */
     void createActions();

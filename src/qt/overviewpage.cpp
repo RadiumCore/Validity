@@ -12,6 +12,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "platformstyle.h"
+#include "stakingchartwidget.h"
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
@@ -21,6 +22,7 @@
 #include "walletframe.h"
 
 #include <QAbstractItemDelegate>
+#include <QDateTime>
 #include <QPainter>
 
 #define DECORATION_SIZE 54
@@ -126,7 +128,8 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchUnconfBalance(-1),
     currentWatchImmatureBalance(-1),
     currentWatchOnlyStake(-1),
-    txdelegate(new TxViewDelegate(platformStyle, this))
+    txdelegate(new TxViewDelegate(platformStyle, this)),
+    stakingChart(0)
 {
     ui->setupUi(this);
 
@@ -146,51 +149,38 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
-    //NewBlock(false);
     connect(ui->labelWalletStatus, SIGNAL(clicked()), this, SLOT(handleOutOfSyncWarningClicks()));
     connect(ui->labelTransactionsStatus, SIGNAL(clicked()), this, SLOT(handleOutOfSyncWarningClicks()));
 
+    // Initially hide staking-specific widgets
     ui->progressBar_AnnualGeneration->setVisible(false);
-    ui->labelAnualGenerationText->setVisible(false); 
+    ui->labelAnualGenerationText->setVisible(false);
     ui->progressBar_MyWeight->setVisible(false);
     ui->labelMyWeightText->setVisible(false);
     ui->labelExpectedStakingStats->setVisible(false);
     ui->labelExpectedStakingStatsText->setVisible(false);
 
-    
-   
-    
-	
-
-
-   
-   
-    ui->progressBar_AnnualGeneration->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
-    ui->progressBar_MyWeight->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }");
-    ui->progressBar_Supply->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
-    ui->progressBar_TotalStaking->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
-
-    ui->labelSupplyText->setVisible(true);
-     ui->progressBar_Supply->setVisible(true); 
-     ui->labelTotalStakingText->setVisible(true);
-     ui->progressBar_TotalStaking->setVisible(true);
-
+    // Progress bar styling is handled by the theme QSS now,
+    // but set alignment and max values
     ui->progressBar_MyWeight->setAlignment(Qt::AlignCenter);
     ui->progressBar_Supply->setAlignment(Qt::AlignCenter);
     ui->progressBar_TotalStaking->setAlignment(Qt::AlignCenter);
     ui->progressBar_AnnualGeneration->setAlignment(Qt::AlignCenter);
-   
 
     ui->progressBar_Supply->setMaximum(100);
     ui->progressBar_TotalStaking->setMaximum(100);
     ui->progressBar_MyWeight->setMaximum(100);
     ui->progressBar_AnnualGeneration->setMaximum(100);
-  
-        
-        
-       
 
+    ui->labelSupplyText->setVisible(true);
+    ui->progressBar_Supply->setVisible(true);
+    ui->labelTotalStakingText->setVisible(true);
+    ui->progressBar_TotalStaking->setVisible(true);
 
+    // Create and insert the staking chart widget
+    stakingChart = new StakingChartWidget(this);
+    ui->chartPlaceholder->addWidget(stakingChart);
+    stakingChart->setMinimumHeight(140);
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
@@ -208,9 +198,6 @@ OverviewPage::~OverviewPage()
 {
     delete ui;
 }
-
-
-
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake)
 {
@@ -248,7 +235,6 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelStake->setVisible(showStake || showWatchOnlyStake);
     ui->labelStakeText->setVisible(showStake || showWatchOnlyStake);
     ui->labelWatchStake->setVisible(showWatchOnlyStake); // show watch-only stake balance
-
 }
 
 // show/hide watch-only labels
@@ -275,7 +261,7 @@ void OverviewPage::setClientModel(ClientModel *model)
     {
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
-      
+
         connect(model, SIGNAL(numBlocksChanged(int, QDateTime, double, bool)), this, SLOT(BlockCountChanged(int, QDateTime, double, bool)));
         updateAlerts(model->getStatusBarWarnings());
     }
@@ -317,8 +303,8 @@ void OverviewPage::updateDisplayUnit()
     if(walletModel && walletModel->getOptionsModel())
     {
         if(currentBalance != -1)
-        	 setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentStake,
-        	 currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentWatchOnlyStake);
+             setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentStake,
+             currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentWatchOnlyStake);
 
         // Update txdelegate->unit with the current unit
         txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();
@@ -340,35 +326,31 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
 }
 using namespace boost;
 
-
-using namespace std;
-
-
 struct StakePeriodRange_T {
     int64_t Start;
     int64_t End;
     int64_t Total;
     int Count;
-    string Name;
+    std::string Name;
 };
 
-typedef vector<StakePeriodRange_T> vStakePeriodRange_T;
+typedef std::vector<StakePeriodRange_T> vStakePeriodRange_T;
 
 extern vStakePeriodRange_T PrepareRangeForStakeReport();
 extern int GetsStakeSubTotal(vStakePeriodRange_T& aRange);
 
-double round(double value){
-     int64_t pre_round = value * 100;;
-    return ((double)pre_round) / 100;
+static double roundTo2(double value){
+    int64_t pre_round = (int64_t)(value * 100);
+    return ((double)pre_round) / 100.0;
 }
 
 
 void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header){
 
     //if flast update time was less than 5 seconds ago, do nothing
-	 if ((GetTime() - nLastReportUpdate) < 5)       
+     if ((GetTime() - nLastReportUpdate) < 5)
         return;
-    
+
 // if initial block download, do nothing
     if(IsInitialBlockDownload())
         return;
@@ -376,16 +358,15 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
     if (!walletModel || !walletModel->getOptionsModel())
         return;
 
-    
+
     bool staking = pwalletMain->IsStaking();
-    
-   
+
+
 
 // if staking status has changed, force update
     if(lastStaking != staking)
         nLastReportUpdate = 0;
     lastStaking = staking;
-   
 
 
     if ((GetTime() - nLastReportUpdate) > 300) {
@@ -395,20 +376,19 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
 
         {
             LOCK(cs_main);
-            nNetworkWeight = GetPoSKernelPS();    
-            nCoinSupply = GetSupply(); 
-        
+            nNetworkWeight = GetPoSKernelPS();
+            nCoinSupply = GetSupply();
+
         }
-       
 
 
        int unit = walletModel->getOptionsModel()->getDisplayUnit();
-       
+
        UpdateHistoricalStakingStats(unit);
        UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
-        
+
        UpdateCurrentStakingStats(staking, nMyWeight,nNetworkWeight, unit, count);
-       
+
 
        // Save the last update
        nLastReportUpdate = GetTime();
@@ -419,16 +399,13 @@ void OverviewPage::UpdateHistoricalStakingStats(int unit){
     // Get data for staking report
     vStakePeriodRange_T aRange = PrepareRangeForStakeReport();
     GetsStakeSubTotal(aRange);
-    
 
-
-    
-    // Prepair the subtotals
-    CAmount amount24h = round(aRange[30].Total);
-    CAmount amount7d = round(aRange[31].Total);
-    CAmount amount30d = round(aRange[32].Total);
-    CAmount amount1y = round(aRange[33].Total);
-    CAmount amountAll = round(aRange[34].Total);
+    // Prepare the subtotals
+    CAmount amount24h = roundTo2(aRange[30].Total);
+    CAmount amount7d = roundTo2(aRange[31].Total);
+    CAmount amount30d = roundTo2(aRange[32].Total);
+    CAmount amount1y = roundTo2(aRange[33].Total);
+    CAmount amountAll = roundTo2(aRange[34].Total);
 
     // Display staking history
     ui->label24hStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount24h, false, BitcoinUnits::separatorAlways, 2));
@@ -439,13 +416,28 @@ void OverviewPage::UpdateHistoricalStakingStats(int unit){
 
     uiInterface.SetStaked(amountAll, amount24h, amount7d);
 
-
+    // Update the staking chart with daily data (first 30 entries are individual days)
+    QVector<StakeDayData> chartData;
+    for (int i = 0; i < 30 && i < (int)aRange.size(); i++) {
+        StakeDayData day;
+        // Convert timestamp to short date label
+        QDateTime dt;
+#if QT_VERSION >= 0x050800
+        dt = QDateTime::fromSecsSinceEpoch(aRange[i].Start);
+#else
+        dt = QDateTime::fromTime_t(aRange[i].Start);
+#endif
+        day.label = dt.toString("MMM d");
+        day.amount = aRange[i].Total;
+        chartData.append(day);
+    }
+    stakingChart->setUnit(unit);
+    stakingChart->setData(chartData);
 }
 
 void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, int64_t nNetworkWeight, int unit, int nHeight){
 
-
-    // set visability 
+    // set visability
     ui->labelMyWeightText->setVisible(staking);
     ui->progressBar_MyWeight->setVisible(staking);
     ui->labelAnualGenerationText->setVisible(staking);
@@ -455,23 +447,23 @@ void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, in
 
     if(!staking)
         return;
-    
+
     //Set user stake weight progress bar
     double pMyWeight = ((double)nMyWeight/(double)nNetworkWeight);
     ui->progressBar_MyWeight->setValue(pMyWeight*100);
-    ui->progressBar_MyWeight->setFormat(tr("%1%").arg(round(pMyWeight*100)));
+    ui->progressBar_MyWeight->setFormat(tr("%1%").arg(roundTo2(pMyWeight*100)));
 
     double nStakeSubsidy = getFixedStakeSubsidy(nHeight);
-    double nAnnualCoins = ((nStakeSubsidy * 60 * 25 * 365) * pMyWeight); 
+    double nAnnualCoins = ((nStakeSubsidy * 60 * 25 * 365) * pMyWeight);
     double nTotalBalance = currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentStake;
-    double pAnualPercent = round(nAnnualCoins/nTotalBalance);   
+    double pAnualPercent = roundTo2(nAnnualCoins/nTotalBalance);
 
     //set stake generation bar
     ui->progressBar_AnnualGeneration->setValue(pAnualPercent*100);
-    ui->progressBar_AnnualGeneration->setFormat(tr("%1% ").arg(round(pAnualPercent*100)));
+    ui->progressBar_AnnualGeneration->setFormat(tr("%1% ").arg(roundTo2(pAnualPercent*100)));
 
-    CAmount nExpectedDailyReward = (1440 * nStakeSubsidy) * pMyWeight ;          
-    ui->labelExpectedStakingStats->setText(BitcoinUnits::formatWithUnit(unit, nExpectedDailyReward, false, BitcoinUnits::separatorAlways, 2));    
+    CAmount nExpectedDailyReward = (1440 * nStakeSubsidy) * pMyWeight ;
+    ui->labelExpectedStakingStats->setText(BitcoinUnits::formatWithUnit(unit, nExpectedDailyReward, false, BitcoinUnits::separatorAlways, 2));
 }
 
 void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit){
@@ -480,9 +472,9 @@ void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeigh
     double pStakingCoins = ((double)nNetworkWeight/(double)nCoinSupply) *100;
     //update total staking coins bar
     ui->progressBar_TotalStaking->setValue(pStakingCoins);
-    ui->progressBar_TotalStaking->setFormat(tr("%1% (%2)").arg(round(pStakingCoins)).arg(BitcoinUnits::format(unit, nNetworkWeight, false, BitcoinUnits::separatorNever, 0)));
+    ui->progressBar_TotalStaking->setFormat(tr("%1% (%2)").arg(roundTo2(pStakingCoins)).arg(BitcoinUnits::format(unit, nNetworkWeight, false, BitcoinUnits::separatorNever, 0)));
     ui->progressBar_TotalStaking->setAlignment(Qt::AlignCenter);
-   
+
     // update coin supply bar
     ui->progressBar_Supply->setValue(pCoinSupply);
     ui->progressBar_Supply->setFormat(tr("%1 / %2").arg(BitcoinUnits::format(unit, nCoinSupply, false, BitcoinUnits::separatorNever, 0)).arg(9000000));
@@ -493,50 +485,4 @@ void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeigh
 
 void OverviewPage::NewBlock(bool fImmediate, int nHeight)
 {
-    
-       
-    
-
-    
-   
-
-
-    
-   
-
-    
-    
-
-   
-  
-  
-
-
-
-    
-
-
-
-
-   
-   
-       
-
-
-   
-
-
-
-
-
-
-   
-   
-   
-
 }
-
-
-
-
-

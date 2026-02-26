@@ -14,6 +14,7 @@ class ClientModel;
 class TransactionFilterProxy;
 class TxViewDelegate;
 class PlatformStyle;
+class StakingChartWidget;
 class WalletModel;
 
 namespace Ui {
@@ -42,16 +43,12 @@ public:
     void UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit);
 
 public Q_SLOTS:
-	void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
+    void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake);
-   
-     
-    
 
 Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
-    void outOfSyncWarningClicked();  
-
+    void outOfSyncWarningClicked();
 
 private:
     Ui::OverviewPage *ui;
@@ -70,9 +67,8 @@ private:
     std::unique_ptr<TransactionFilterProxy> filter;
     qint64 nLastReportUpdate = 0;
     bool lastStaking;
-    
-    
 
+    StakingChartWidget *stakingChart;
 
 private Q_SLOTS:
     void updateDisplayUnit();
