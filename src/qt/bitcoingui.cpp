@@ -634,11 +634,15 @@ void BitcoinGUI::createTrayIconMenu()
     // Configuration of the tray icon (or dock icon) icon menu
     trayIconMenu->addAction(toggleHideAction);
     trayIconMenu->addSeparator();
+    trayIconMenu->addAction(overviewAction);
     trayIconMenu->addAction(sendCoinsMenuAction);
     trayIconMenu->addAction(receiveCoinsMenuAction);
+    trayIconMenu->addAction(historyAction);
     trayIconMenu->addSeparator();
-    trayIconMenu->addAction(signMessageAction);
-    trayIconMenu->addAction(verifyMessageAction);
+    trayIconMenu->addAction(backupWizardAction);
+    trayIconMenu->addAction(encryptWalletAction);
+    trayIconMenu->addAction(unlockWalletAction);
+    trayIconMenu->addAction(lockWalletAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addAction(openRPCConsoleAction);
@@ -760,7 +764,7 @@ void BitcoinGUI::setNumConnections(int count)
     default: icon = ":/icons/connect_4"; break;
     }
     labelConnectionsIcon->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bitcoin network", "", count));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Validity network", "", count));
 }
 
 void BitcoinGUI::updateHeadersSyncProgressLabel()
@@ -884,7 +888,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
 void BitcoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
 {
-    QString strTitle = tr("Bitcoin"); // default title
+    QString strTitle = tr(PACKAGE_NAME); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -994,16 +998,33 @@ void BitcoinGUI::showEvent(QShowEvent *event)
 #ifdef ENABLE_WALLET
 void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address, const QString& label)
 {
-    // On new transaction, make an info balloon
-    QString msg = tr("Date: %1\n").arg(date) +
-                  tr("Amount: %1\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
-                  tr("Type: %1\n").arg(type);
-    if (!label.isEmpty())
-        msg += tr("Label: %1\n").arg(label);
-    else if (!address.isEmpty())
-        msg += tr("Address: %1\n").arg(address);
-    message((amount)<0 ? tr("Sent transaction") : tr("Incoming transaction"),
-             msg, CClientUIInterface::MSG_INFORMATION);
+    // Determine transaction category for better notifications
+    bool isStakingReward = (type == "Mined" || type == "mined");
+    QString title;
+
+    if (isStakingReward) {
+        title = tr("Staking Reward!");
+    } else if (amount < 0) {
+        title = tr("Sent transaction");
+    } else {
+        title = tr("Incoming transaction");
+    }
+
+    QString msg;
+    if (isStakingReward) {
+        msg = tr("You earned %1 from staking!\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
+              tr("Date: %1").arg(date);
+    } else {
+        msg = tr("Date: %1\n").arg(date) +
+              tr("Amount: %1\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
+              tr("Type: %1\n").arg(type);
+        if (!label.isEmpty())
+            msg += tr("Label: %1\n").arg(label);
+        else if (!address.isEmpty())
+            msg += tr("Address: %1\n").arg(address);
+    }
+
+    message(title, msg, CClientUIInterface::MSG_INFORMATION);
 }
 #endif // ENABLE_WALLET
 
@@ -1179,8 +1200,11 @@ void BitcoinGUI::updateStakingIcon()
         labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
         labelStakingIcon->setToolTip(tr("Staking.<br>Your weight is %1<br>Network weight is %2<br>Expected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
 #ifndef Q_OS_MAC
-        if (trayIcon)
-            trayIcon->setToolTip(tr("%1 - Staking (reward in ~%2)").arg(tr(PACKAGE_NAME)).arg(text));
+        if (trayIcon) {
+            int nConns = clientModel ? clientModel->getNumConnections() : 0;
+            trayIcon->setToolTip(tr("%1\nStaking - reward in ~%2\nWeight: %3 | Network: %4\nConnections: %5")
+                .arg(tr(PACKAGE_NAME)).arg(text).arg(nWeight).arg(nNetworkWeight).arg(nConns));
+        }
 #endif
     }
     else
@@ -1188,19 +1212,22 @@ void BitcoinGUI::updateStakingIcon()
         labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
         QString stakingMsg;
         if (vNodes.empty())
-            stakingMsg = tr("Not staking because wallet is offline");
+            stakingMsg = tr("Not staking - wallet is offline");
         else if (IsInitialBlockDownload())
-            stakingMsg = tr("Not staking because wallet is syncing");
+            stakingMsg = tr("Not staking - wallet is syncing");
         else if (!nWeight)
-            stakingMsg = tr("Not staking because you don't have mature coins");
+            stakingMsg = tr("Not staking - no mature coins");
         else if (pwalletMain && pwalletMain->IsLocked())
-            stakingMsg = tr("Not staking because wallet is locked");
+            stakingMsg = tr("Not staking - wallet is locked");
         else
             stakingMsg = tr("Not staking");
         labelStakingIcon->setToolTip(stakingMsg);
 #ifndef Q_OS_MAC
-        if (trayIcon)
-            trayIcon->setToolTip(tr("%1 - %2").arg(tr(PACKAGE_NAME)).arg(stakingMsg));
+        if (trayIcon) {
+            int nConns = clientModel ? clientModel->getNumConnections() : 0;
+            trayIcon->setToolTip(tr("%1\n%2\nConnections: %3")
+                .arg(tr(PACKAGE_NAME)).arg(stakingMsg).arg(nConns));
+        }
 #endif
     }
 }
