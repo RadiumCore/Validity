@@ -48,14 +48,8 @@
      </property>
     </widget>
    </item>
-   <!-- Top Row: Balance Card + Staking Chart Card -->
+   <!-- BALANCE CARD -->
    <item>
-    <layout class="QHBoxLayout" name="topRow" stretch="1,1">
-     <property name="spacing">
-      <number>12</number>
-     </property>
-     <!-- BALANCE CARD -->
-     <item>
       <widget class="QFrame" name="frame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -467,9 +461,9 @@
         </item>
        </layout>
       </widget>
-     </item>
-     <!-- STAKING CHART CARD -->
-     <item>
+   </item>
+   <!-- STAKING CHART CARD -->
+   <item>
       <widget class="QFrame" name="frame_2">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -777,8 +771,6 @@
         </item>
        </layout>
       </widget>
-     </item>
-    </layout>
    </item>
    <!-- Middle Row: Recent Transactions (full width) -->
    <item>

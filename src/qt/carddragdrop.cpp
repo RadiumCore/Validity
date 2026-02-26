@@ -16,9 +16,12 @@
 
 static const int DRAG_THRESHOLD = 20;
 static const char* SETTINGS_KEY = "OverviewCardOrder";
+static const char* SIZES_KEY = "OverviewCardSizes";
 
 CardDragDropManager::CardDragDropManager(QWidget *container, QObject *parent)
-    : QObject(parent), container(container), dragging(false), dragSource(0), dropIndicator(0)
+    : QObject(parent), container(container),
+      dragging(false), dragSource(0), dropIndicator(0),
+      resizing(false), resizeSource(0), resizeStartHeight(0)
 {
 }
 
@@ -29,6 +32,14 @@ void CardDragDropManager::registerCard(QWidget *card)
     cards.append(card);
     card->installEventFilter(this);
     card->setCursor(Qt::OpenHandCursor);
+    card->setMouseTracking(true);
+}
+
+bool CardDragDropManager::isNearBottomEdge(QWidget *card, const QPoint &localPos) const
+{
+    return localPos.y() >= (card->height() - RESIZE_EDGE_MARGIN) &&
+           localPos.y() <= card->height() &&
+           localPos.x() >= 0 && localPos.x() <= card->width();
 }
 
 bool CardDragDropManager::eventFilter(QObject *obj, QEvent *event)
@@ -41,6 +52,11 @@ bool CardDragDropManager::eventFilter(QObject *obj, QEvent *event)
     case QEvent::MouseButtonPress: {
         QMouseEvent *me = static_cast<QMouseEvent*>(event);
         if (me->button() == Qt::LeftButton) {
+            QPoint localPos = card->mapFromGlobal(me->globalPos());
+            if (isNearBottomEdge(card, localPos)) {
+                startResize(card, me->globalPos());
+                return true;
+            }
             dragStartPos = me->globalPos();
             dragSource = card;
         }
@@ -48,18 +64,42 @@ bool CardDragDropManager::eventFilter(QObject *obj, QEvent *event)
     }
     case QEvent::MouseMove: {
         QMouseEvent *me = static_cast<QMouseEvent*>(event);
-        if (dragSource == card && !dragging && (me->buttons() & Qt::LeftButton)) {
-            if ((me->globalPos() - dragStartPos).manhattanLength() >= DRAG_THRESHOLD) {
-                startDrag(card, me->globalPos());
-            }
+
+        // Handle active resize
+        if (resizing && resizeSource == card) {
+            updateResize(me->globalPos());
+            return true;
         }
+
+        // Handle active drag
         if (dragging && dragSource == card) {
             updateDropIndicator(me->globalPos());
             return true;
         }
+
+        // Update cursor based on position
+        if (!dragging && !resizing) {
+            QPoint localPos = card->mapFromGlobal(me->globalPos());
+            if (isNearBottomEdge(card, localPos)) {
+                card->setCursor(Qt::SizeVerCursor);
+            } else {
+                card->setCursor(Qt::OpenHandCursor);
+            }
+        }
+
+        // Start drag if threshold exceeded
+        if (dragSource == card && !dragging && !resizing && (me->buttons() & Qt::LeftButton)) {
+            if ((me->globalPos() - dragStartPos).manhattanLength() >= DRAG_THRESHOLD) {
+                startDrag(card, me->globalPos());
+            }
+        }
         break;
     }
     case QEvent::MouseButtonRelease: {
+        if (resizing && resizeSource == card) {
+            finishResize();
+            return true;
+        }
         if (dragging && dragSource == card) {
             QMouseEvent *me = static_cast<QMouseEvent*>(event);
             finishDrop(me->globalPos());
@@ -68,12 +108,62 @@ bool CardDragDropManager::eventFilter(QObject *obj, QEvent *event)
         dragSource = 0;
         break;
     }
+    case QEvent::Leave: {
+        // Reset cursor when mouse leaves card (unless actively dragging/resizing)
+        if (!dragging && !resizing) {
+            card->setCursor(Qt::OpenHandCursor);
+        }
+        break;
+    }
     default:
         break;
     }
 
     return QObject::eventFilter(obj, event);
 }
+
+// --- Resize ---
+
+void CardDragDropManager::startResize(QWidget *card, const QPoint &globalPos)
+{
+    resizing = true;
+    resizeSource = card;
+    resizeStartPos = globalPos;
+    resizeStartHeight = card->height();
+    card->setCursor(Qt::SizeVerCursor);
+}
+
+void CardDragDropManager::updateResize(const QPoint &globalPos)
+{
+    if (!resizing || !resizeSource)
+        return;
+
+    int delta = globalPos.y() - resizeStartPos.y();
+    int newHeight = qMax(MIN_CARD_HEIGHT, resizeStartHeight + delta);
+    resizeSource->setMinimumHeight(newHeight);
+    resizeSource->setMaximumHeight(newHeight);
+}
+
+void CardDragDropManager::finishResize()
+{
+    if (!resizeSource)
+        return;
+
+    resizeSource->setCursor(Qt::OpenHandCursor);
+
+    // Allow the card to grow beyond the set size if content needs it,
+    // but keep the minimum at the user-chosen height
+    int finalHeight = resizeSource->height();
+    resizeSource->setMaximumHeight(16777215); // QWIDGETSIZE_MAX
+    resizeSource->setMinimumHeight(finalHeight);
+
+    resizing = false;
+    resizeSource = 0;
+
+    saveOrder(); // saves both order and sizes
+}
+
+// --- Drag and Drop ---
 
 void CardDragDropManager::startDrag(QWidget *card, const QPoint &pos)
 {
@@ -269,6 +359,8 @@ void CardDragDropManager::cancelDrag()
     dragSource = 0;
 }
 
+// --- Persistence ---
+
 void CardDragDropManager::saveOrder()
 {
     QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(container->layout());
@@ -276,15 +368,20 @@ void CardDragDropManager::saveOrder()
         return;
 
     QStringList order;
+    QMap<QString, QVariant> sizes;
+
     for (int i = 0; i < layout->count(); i++) {
         QWidget *w = layout->itemAt(i)->widget();
-        if (w && cards.contains(w) && !w->objectName().isEmpty())
+        if (w && cards.contains(w) && !w->objectName().isEmpty()) {
             order.append(w->objectName());
+            sizes[w->objectName()] = w->minimumHeight();
+        }
     }
 
     if (!order.isEmpty()) {
         QSettings settings;
         settings.setValue(SETTINGS_KEY, order);
+        settings.setValue(SIZES_KEY, sizes);
     }
 }
 
@@ -292,6 +389,19 @@ void CardDragDropManager::restoreOrder()
 {
     QSettings settings;
     QStringList order = settings.value(SETTINGS_KEY).toStringList();
+    QMap<QString, QVariant> sizes = settings.value(SIZES_KEY).toMap();
+
+    // Restore sizes first (before reordering)
+    for (int i = 0; i < cards.size(); i++) {
+        QString name = cards[i]->objectName();
+        if (!name.isEmpty() && sizes.contains(name)) {
+            int h = sizes[name].toInt();
+            if (h >= MIN_CARD_HEIGHT) {
+                cards[i]->setMinimumHeight(h);
+            }
+        }
+    }
+
     if (order.isEmpty())
         return;
 
@@ -306,10 +416,7 @@ void CardDragDropManager::restoreOrder()
             cardMap[cards[i]->objectName()] = cards[i];
     }
 
-    // Find layout indices of non-card items (alerts label, spacers, etc.)
-    // We only rearrange the card items, keeping everything else in place
-
-    // Collect current card layout items in order
+    // Collect current card layout items in order (reverse to keep indices valid)
     QList<QPair<int, QLayoutItem*>> cardItems;
     for (int i = layout->count() - 1; i >= 0; i--) {
         QWidget *w = layout->itemAt(i)->widget();
@@ -319,12 +426,10 @@ void CardDragDropManager::restoreOrder()
     }
 
     // Re-insert cards in saved order
-    // Find the first insertion point (where first card was)
     int insertPoint = 0;
     if (!cardItems.isEmpty())
         insertPoint = cardItems.first().first;
 
-    // First, insert cards that appear in saved order
     int pos = insertPoint;
     for (int i = 0; i < order.size(); i++) {
         QString name = order[i];

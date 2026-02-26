@@ -186,8 +186,12 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 
     // Set up drag-and-drop reordering for dashboard cards
     cardDragDrop = new CardDragDropManager(this, this);
+    ui->frame->setObjectName("balanceCard");
+    ui->frame_2->setObjectName("stakingCard");
     ui->transactionsCard->setObjectName("transactionsCard");
     ui->networkCard->setObjectName("networkCard");
+    cardDragDrop->registerCard(ui->frame);
+    cardDragDrop->registerCard(ui->frame_2);
     cardDragDrop->registerCard(ui->transactionsCard);
     cardDragDrop->registerCard(ui->networkCard);
     cardDragDrop->restoreOrder();

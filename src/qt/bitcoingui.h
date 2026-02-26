@@ -17,6 +17,7 @@
 #include <QMenu>
 #include <QPoint>
 #include <QSystemTrayIcon>
+#include <QToolBar>
 
 #include <memory>
 
@@ -142,6 +143,7 @@ private:
     const PlatformStyle *platformStyle;
     const Config *cfg;
     ThemeManager *themeManager;
+    QToolBar *navToolbar;
 
     /** Create the main UI actions. */
     void createActions();
@@ -258,6 +260,9 @@ private Q_SLOTS:
     void setTrayIconVisible(bool);
 
     void showModalOverlay();
+
+    /** Recolor toolbar icons to match current theme palette */
+    void recolorToolbarIcons();
 };
 
 class UnitDisplayStatusBarControl : public QLabel
