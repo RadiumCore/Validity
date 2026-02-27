@@ -24,6 +24,7 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QDebug>
 #include <QTimer>
 #include <QFileDialog>
 #include <QHBoxLayout>
@@ -87,6 +88,8 @@ void WalletView::deferredModelLoad()
     if (!walletModel)
         return;
 
+    qDebug() << "WalletView::deferredModelLoad START";
+
     // Set the heavy transaction model on the history view
     if (transactionView)
         transactionView->setModel(walletModel);
@@ -94,6 +97,8 @@ void WalletView::deferredModelLoad()
     // Connect balloon pop-up for new transactions (triggers model creation if not already done)
     connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(processNewTransaction(QModelIndex,int,int)));
+
+    qDebug() << "WalletView::deferredModelLoad DONE";
 }
 
 WalletView::~WalletView()

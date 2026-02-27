@@ -23,6 +23,8 @@
 
 #include "carddragdrop.h"
 
+#include <QDebug>
+
 #include "rpc/server.h"
 
 #include <QAbstractItemDelegate>
@@ -326,6 +328,9 @@ void OverviewPage::setupTransactionList()
     if (!walletModel || !walletModel->getOptionsModel())
         return;
 
+    qDebug() << "OverviewPage::setupTransactionList START";
+    int64_t nStart = GetTimeMicros();
+
     filter.reset(new TransactionFilterProxy());
     filter->setSourceModel(walletModel->getTransactionTableModel());
     filter->setLimit(NUM_ITEMS);
@@ -336,6 +341,8 @@ void OverviewPage::setupTransactionList()
 
     ui->listTransactions->setModel(filter.get());
     ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
+
+    qDebug() << "OverviewPage::setupTransactionList DONE in" << (GetTimeMicros() - nStart) / 1000 << "ms";
 }
 
 void OverviewPage::updateDisplayUnit()
@@ -478,6 +485,9 @@ void OverviewPage::deferredStatsLoad()
     if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain)
         return;
 
+    qDebug() << "OverviewPage::deferredStatsLoad START";
+    int64_t nStart = GetTimeMicros();
+
     bool staking;
     int64_t nMyWeight;
     {
@@ -510,6 +520,8 @@ void OverviewPage::deferredStatsLoad()
     UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, chainActive.Height());
 
     nLastReportUpdate = GetTime();
+
+    qDebug() << "OverviewPage::deferredStatsLoad DONE in" << (GetTimeMicros() - nStart) / 1000 << "ms";
 }
 
 void OverviewPage::UpdateHistoricalStakingStats(int unit){
