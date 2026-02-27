@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,12 +9,16 @@
 #include "amount.h"
 
 #include <QWidget>
+#include <QSplitter>
+#include <QTimer>
 #include <memory>
 
 class ClientModel;
 class TransactionFilterProxy;
 class TxViewDelegate;
 class PlatformStyle;
+class DashboardGridManager;
+class StakingChartWidget;
 class WalletModel;
 
 namespace Ui {
@@ -42,16 +47,12 @@ public:
     void UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit);
 
 public Q_SLOTS:
-	void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
+    void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake,
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake);
-   
-     
-    
 
 Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
-    void outOfSyncWarningClicked();  
-
+    void outOfSyncWarningClicked();
 
 private:
     Ui::OverviewPage *ui;
@@ -70,11 +71,20 @@ private:
     std::unique_ptr<TransactionFilterProxy> filter;
     qint64 nLastReportUpdate = 0;
     bool lastStaking;
-    
-    
+    bool initialStatsLoaded;
 
+    // Caches to avoid rescanning wallet/UTXO on every update
+    size_t cachedWalletTxCount;
+    int cachedBlockHeight;
+    int64_t cachedSupply;
+    int64_t cachedNetworkWeight;
+
+    StakingChartWidget *stakingChart;
+    DashboardGridManager *gridManager;
 
 private Q_SLOTS:
+    void deferredStatsLoad();
+    void setupTransactionList();
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);

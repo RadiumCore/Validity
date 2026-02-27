@@ -288,7 +288,7 @@ void SendCoinsDialog::on_sendButton_clicked()
     if(txFee > 0)
     {
         // append fee string if a fee is required
-        questionString.append("<hr /><span style='color:#aa0000;'>");
+        questionString.append("<hr /><span style='color:#e05555;'>");
         questionString.append(BitcoinUnits::formatHtmlWithUnit(model->getOptionsModel()->getDisplayUnit(), txFee));
         questionString.append("</span> ");
         questionString.append(tr("added as transaction fee"));
@@ -752,7 +752,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
     {
         // Default to no change address until verified
         CoinControlDialog::coinControl->destChange = CNoDestination();
-        ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:red;}");
+        ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:#e05555;}");
 
         const CTxDestination dest = DecodeDestination(text.toStdString());
 
@@ -763,7 +763,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
         else if (!IsValidDestination(dest))
         {
             // Invalid address
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Bitcoin address"));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Validity address"));
         }
         else
         {
@@ -784,14 +784,14 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
                 else
                 {
                     ui->lineEditCoinControlChange->setText("");
-                    ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:black;}");
+                    ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:#e8e8f0;}");
                     ui->labelCoinControlChangeLabel->setText("");
                 }
             }
             else
             {
                 // Known change address
-                ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:black;}");
+                ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:#e8e8f0;}");
 
                 // Query label
                 QString associatedLabel = model->getAddressTableModel()->labelForAddress(text);

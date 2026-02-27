@@ -7,6 +7,7 @@
 
 #include "guiutil.h"
 #include "peertablemodel.h"
+#include "peermapwidget.h"
 
 #include "net.h"
 
@@ -52,7 +53,8 @@ public:
         TAB_INFO = 0,
         TAB_CONSOLE = 1,
         TAB_GRAPH = 2,
-        TAB_PEERS = 3
+        TAB_PEERS = 3,
+        TAB_PEERMAP = 4
     };
 
 protected:
@@ -109,6 +111,8 @@ public Q_SLOTS:
     void unbanSelectedNode();
     /** set which tab has the focus (is visible) */
     void setTabFocus(enum TabTypes tabType);
+    /** update peer map widget with current peer data */
+    void updatePeerMap();
 
 Q_SIGNALS:
     // For RPC command executor
@@ -144,6 +148,7 @@ private:
     int consoleFontSize;
     QCompleter *autoCompleter;
     QThread thread;
+    PeerMapWidget *peerMapWidget;
 };
 
 #endif // BITCOIN_QT_RPCCONSOLE_H

@@ -20,6 +20,7 @@
 #include "optionsmodel.h"
 #include "platformstyle.h"
 #include "rpcconsole.h"
+#include "thememanager.h"
 #include "utilitydialog.h"
 
 #ifdef ENABLE_WALLET
@@ -56,6 +57,7 @@
 #include <QStyle>
 #include <QTimer>
 #include <QToolBar>
+#include <QToolButton>
 #include <QUrlQuery>
 #include <QVBoxLayout>
 
@@ -119,8 +121,13 @@ BitcoinGUI::BitcoinGUI(const Config *cfg, const PlatformStyle *platformStyle, co
     prevBlocks(0),
     spinnerFrame(0),
     platformStyle(platformStyle),
-    cfg(cfg)
+    cfg(cfg),
+    themeManager(new ThemeManager(this)),
+    navToolbar(0)
 {
+    // Apply saved theme (dark by default)
+    themeManager->loadSavedTheme();
+
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
 
     QString windowTitle = tr(PACKAGE_NAME) + " - ";
@@ -226,14 +233,7 @@ BitcoinGUI::BitcoinGUI(const Config *cfg, const PlatformStyle *platformStyle, co
     progressBar->setAlignment(Qt::AlignCenter);
     progressBar->setVisible(false);
 
-    // Override style sheet for progress bar for styles that have a segmented progress bar,
-    // as they make the text unreadable (workaround for issue #1071)
-    // See https://doc.qt.io/qt-5/gallery.html
-    QString curStyle = QApplication::style()->metaObject()->className();
-    if(curStyle == "QWindowsStyle" || curStyle == "QWindowsXPStyle")
-    {
-        progressBar->setStyleSheet("QProgressBar { background-color: #e8e8e8; border: 1px solid grey; border-radius: 7px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #FF8000, stop: 1 orange); border-radius: 7px; margin: 0px; }");
-    }
+    // Progress bar styling is now handled by the theme system (QSS)
 
     statusBar()->addWidget(progressBarLabel);
     statusBar()->addWidget(progressBar);
@@ -283,7 +283,7 @@ void BitcoinGUI::createActions()
     tabGroup->addAction(overviewAction);
 
     sendCoinsAction = new QAction(platformStyle->SingleColorIcon(":/icons/send"), tr("&Send"), this);
-    sendCoinsAction->setStatusTip(tr("Send coins to a Bitcoin address"));
+    sendCoinsAction->setStatusTip(tr("Send coins to a Validity address"));
     sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
     sendCoinsAction->setCheckable(true);
     sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
@@ -351,6 +351,8 @@ void BitcoinGUI::createActions()
     encryptWalletAction->setCheckable(true);
     backupWalletAction = new QAction(platformStyle->TextColorIcon(":/icons/filesave"), tr("&Backup Wallet..."), this);
     backupWalletAction->setStatusTip(tr("Backup wallet to another location"));
+    backupWizardAction = new QAction(platformStyle->TextColorIcon(":/icons/filesave"), tr("Backup &Wizard..."), this);
+    backupWizardAction->setStatusTip(tr("Guided backup of your wallet"));
     changePassphraseAction = new QAction(platformStyle->TextColorIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
     unlockWalletAction = new QAction(platformStyle->TextColorIcon(":/icons/lock_open"), tr("&Unlock Wallet..."), this);
@@ -358,9 +360,9 @@ void BitcoinGUI::createActions()
     lockWalletAction = new QAction(platformStyle->TextColorIcon(":/icons/lock_closed"),  tr("&Lock Wallet"), this);
     lockWalletAction->setToolTip(tr("Lock wallet"));
     signMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/edit"), tr("Sign &message..."), this);
-    signMessageAction->setStatusTip(tr("Sign messages with your Bitcoin addresses to prove you own them"));
+    signMessageAction->setStatusTip(tr("Sign messages with your Validity addresses to prove you own them"));
     verifyMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/verify"), tr("&Verify message..."), this);
-    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Bitcoin addresses"));
+    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Validity addresses"));
 
     openRPCConsoleAction = new QAction(platformStyle->TextColorIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
@@ -377,7 +379,7 @@ void BitcoinGUI::createActions()
 
     showHelpMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/info"), tr("&Command-line options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
-    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible Bitcoin command-line options").arg(tr(PACKAGE_NAME)));
+    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible command-line options").arg(tr(PACKAGE_NAME)));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -394,6 +396,7 @@ void BitcoinGUI::createActions()
     {
         connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
         connect(backupWalletAction, SIGNAL(triggered()), walletFrame, SLOT(backupWallet()));
+        connect(backupWizardAction, SIGNAL(triggered()), walletFrame, SLOT(backupWizard()));
         connect(changePassphraseAction, SIGNAL(triggered()), walletFrame, SLOT(changePassphrase()));
         connect(unlockWalletAction, SIGNAL(triggered()), walletFrame, SLOT(unlockWallet()));
         connect(lockWalletAction, SIGNAL(triggered()), walletFrame, SLOT(lockWallet()));
@@ -425,6 +428,7 @@ void BitcoinGUI::createMenuBar()
     {
         file->addAction(openAction);
         file->addAction(backupWalletAction);
+        file->addAction(backupWizardAction);
         file->addAction(signMessageAction);
         file->addAction(verifyMessageAction);
         file->addSeparator();
@@ -460,14 +464,75 @@ void BitcoinGUI::createToolBars()
 {
     if(walletFrame)
     {
-        QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
-        toolbar->setMovable(false);
-        toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addAction(overviewAction);
-        toolbar->addAction(sendCoinsAction);
-        toolbar->addAction(receiveCoinsAction);
-        toolbar->addAction(historyAction);
+        navToolbar = new QToolBar(tr("Navigation"));
+        navToolbar->setObjectName("navSidebar");
+        navToolbar->setMovable(false);
+        navToolbar->setFloatable(false);
+        navToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        navToolbar->setIconSize(QSize(24, 24));
+
+        // Add spacing at top for branding area
+        QWidget *topSpacer = new QWidget();
+        topSpacer->setFixedHeight(12);
+        navToolbar->addWidget(topSpacer);
+
+        navToolbar->addAction(overviewAction);
+        navToolbar->addAction(sendCoinsAction);
+        navToolbar->addAction(receiveCoinsAction);
+        navToolbar->addAction(historyAction);
+
         overviewAction->setChecked(true);
+
+        // Add stretch to push content to top
+        QWidget *spacer = new QWidget();
+        spacer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        navToolbar->addWidget(spacer);
+
+        addToolBar(Qt::LeftToolBarArea, navToolbar);
+
+        // Defer icon colorization until after window is visible
+        QTimer::singleShot(0, this, SLOT(recolorToolbarIcons()));
+
+        // Re-colorize when theme changes
+        connect(themeManager, SIGNAL(themeChanged(int)), this, SLOT(recolorToolbarIcons()));
+    }
+}
+
+static QIcon colorizeIcon(const QIcon &oldIcon, const QColor &color)
+{
+    QIcon newIcon;
+    QList<QSize> sizes = oldIcon.availableSizes();
+    if (sizes.isEmpty())
+        sizes << QSize(24, 24);
+    Q_FOREACH(QSize sz, sizes) {
+        QImage img(oldIcon.pixmap(sz).toImage());
+        img = img.convertToFormat(QImage::Format_ARGB32);
+        for (int x = img.width(); x--; )
+            for (int y = img.height(); y--; ) {
+                QRgb rgb = img.pixel(x, y);
+                img.setPixel(x, y, qRgba(color.red(), color.green(), color.blue(), qAlpha(rgb)));
+            }
+        newIcon.addPixmap(QPixmap::fromImage(img));
+    }
+    return newIcon;
+}
+
+void BitcoinGUI::recolorToolbarIcons()
+{
+    QColor iconColor = QApplication::palette().color(QPalette::WindowText);
+
+    // On first call, snapshot original icons before colorization
+    if (originalIcons.isEmpty()) {
+        QList<QAction*> allActions = findChildren<QAction*>();
+        Q_FOREACH(QAction *action, allActions) {
+            if (!action->icon().isNull())
+                originalIcons[action] = action->icon();
+        }
+    }
+
+    // Always colorize from the stored originals to avoid degradation
+    for (auto it = originalIcons.constBegin(); it != originalIcons.constEnd(); ++it) {
+        it.key()->setIcon(colorizeIcon(it.value(), iconColor));
     }
 }
 
@@ -568,6 +633,7 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     historyAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
+    backupWizardAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
     unlockWalletAction->setEnabled(enabled);
     signMessageAction->setEnabled(enabled);
@@ -614,11 +680,15 @@ void BitcoinGUI::createTrayIconMenu()
     // Configuration of the tray icon (or dock icon) icon menu
     trayIconMenu->addAction(toggleHideAction);
     trayIconMenu->addSeparator();
+    trayIconMenu->addAction(overviewAction);
     trayIconMenu->addAction(sendCoinsMenuAction);
     trayIconMenu->addAction(receiveCoinsMenuAction);
+    trayIconMenu->addAction(historyAction);
     trayIconMenu->addSeparator();
-    trayIconMenu->addAction(signMessageAction);
-    trayIconMenu->addAction(verifyMessageAction);
+    trayIconMenu->addAction(backupWizardAction);
+    trayIconMenu->addAction(encryptWalletAction);
+    trayIconMenu->addAction(unlockWalletAction);
+    trayIconMenu->addAction(lockWalletAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addAction(openRPCConsoleAction);
@@ -740,7 +810,7 @@ void BitcoinGUI::setNumConnections(int count)
     default: icon = ":/icons/connect_4"; break;
     }
     labelConnectionsIcon->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bitcoin network", "", count));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Validity network", "", count));
 }
 
 void BitcoinGUI::updateHeadersSyncProgressLabel()
@@ -864,7 +934,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
 void BitcoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
 {
-    QString strTitle = tr("Bitcoin"); // default title
+    QString strTitle = tr(PACKAGE_NAME); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -890,7 +960,7 @@ void BitcoinGUI::message(const QString &title, const QString &message, unsigned 
             break;
         }
     }
-    // Append title to "Bitcoin - "
+    // Append title to "Validity - "
     if (!msgType.isEmpty())
         strTitle += " - " + msgType;
 
@@ -974,16 +1044,33 @@ void BitcoinGUI::showEvent(QShowEvent *event)
 #ifdef ENABLE_WALLET
 void BitcoinGUI::incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address, const QString& label)
 {
-    // On new transaction, make an info balloon
-    QString msg = tr("Date: %1\n").arg(date) +
-                  tr("Amount: %1\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
-                  tr("Type: %1\n").arg(type);
-    if (!label.isEmpty())
-        msg += tr("Label: %1\n").arg(label);
-    else if (!address.isEmpty())
-        msg += tr("Address: %1\n").arg(address);
-    message((amount)<0 ? tr("Sent transaction") : tr("Incoming transaction"),
-             msg, CClientUIInterface::MSG_INFORMATION);
+    // Determine transaction category for better notifications
+    bool isStakingReward = (type == "Mined" || type == "mined");
+    QString title;
+
+    if (isStakingReward) {
+        title = tr("Staking Reward!");
+    } else if (amount < 0) {
+        title = tr("Sent transaction");
+    } else {
+        title = tr("Incoming transaction");
+    }
+
+    QString msg;
+    if (isStakingReward) {
+        msg = tr("You earned %1 from staking!\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
+              tr("Date: %1").arg(date);
+    } else {
+        msg = tr("Date: %1\n").arg(date) +
+              tr("Amount: %1\n").arg(BitcoinUnits::formatWithUnit(unit, amount, true)) +
+              tr("Type: %1\n").arg(type);
+        if (!label.isEmpty())
+            msg += tr("Label: %1\n").arg(label);
+        else if (!address.isEmpty())
+            msg += tr("Address: %1\n").arg(address);
+    }
+
+    message(title, msg, CClientUIInterface::MSG_INFORMATION);
 }
 #endif // ENABLE_WALLET
 
@@ -1158,20 +1245,36 @@ void BitcoinGUI::updateStakingIcon()
         nNetworkWeight /= COIN;
         labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
         labelStakingIcon->setToolTip(tr("Staking.<br>Your weight is %1<br>Network weight is %2<br>Expected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+#ifndef Q_OS_MAC
+        if (trayIcon) {
+            int nConns = clientModel ? clientModel->getNumConnections() : 0;
+            trayIcon->setToolTip(tr("%1\nStaking - reward in ~%2\nWeight: %3 | Network: %4\nConnections: %5")
+                .arg(tr(PACKAGE_NAME)).arg(text).arg(nWeight).arg(nNetworkWeight).arg(nConns));
+        }
+#endif
     }
     else
     {
         labelStakingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        QString stakingMsg;
         if (vNodes.empty())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is offline"));
+            stakingMsg = tr("Not staking - wallet is offline");
         else if (IsInitialBlockDownload())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is syncing"));
+            stakingMsg = tr("Not staking - wallet is syncing");
         else if (!nWeight)
-            labelStakingIcon->setToolTip(tr("Not staking because you don't have mature coins"));
-		else if (pwalletMain && pwalletMain->IsLocked())
-            labelStakingIcon->setToolTip(tr("Not staking because wallet is locked"));
+            stakingMsg = tr("Not staking - no mature coins");
+        else if (pwalletMain && pwalletMain->IsLocked())
+            stakingMsg = tr("Not staking - wallet is locked");
         else
-            labelStakingIcon->setToolTip(tr("Not staking"));
+            stakingMsg = tr("Not staking");
+        labelStakingIcon->setToolTip(stakingMsg);
+#ifndef Q_OS_MAC
+        if (trayIcon) {
+            int nConns = clientModel ? clientModel->getNumConnections() : 0;
+            trayIcon->setToolTip(tr("%1\n%2\nConnections: %3")
+                .arg(tr(PACKAGE_NAME)).arg(stakingMsg).arg(nConns));
+        }
+#endif
     }
 }
 
@@ -1268,7 +1371,8 @@ UnitDisplayStatusBarControl::UnitDisplayStatusBarControl(const PlatformStyle *pl
     }
     setMinimumSize(max_width, 0);
     setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    setStyleSheet(QString("QLabel { color : %1 }").arg(platformStyle->SingleColor().name()));
+    // Let QSS theme handle the color instead of hardcoding from platformStyle
+    setStyleSheet("");
 }
 
 /** So that it responds to button clicks */

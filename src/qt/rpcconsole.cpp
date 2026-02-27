@@ -14,6 +14,8 @@
 #include "guiutil.h"
 #include "platformstyle.h"
 #include "bantablemodel.h"
+#include "peermapwidget.h"
+#include "geoip.h"
 
 #include "chainparams.h"
 #include "netbase.h"
@@ -385,6 +387,10 @@ RPCConsole::RPCConsole(const PlatformStyle *platformStyle, QWidget *parent) :
     ui->detailWidget->hide();
     ui->peerHeading->setText(tr("Select a peer to view detailed information."));
 
+    // Add Peer Map tab
+    peerMapWidget = new PeerMapWidget();
+    ui->tabWidget->addTab(peerMapWidget, tr("Peer &Map"));
+
     QSettings settings;
     consoleFontSize = settings.value(fontSizeSettingsKey, QFontInfo(QFont()).pointSize()).toInt();
     clear();
@@ -509,6 +515,10 @@ void RPCConsole::setClientModel(ClientModel *model)
             this, SLOT(peerSelected(const QItemSelection &, const QItemSelection &)));
         // peer table signal handling - update peer details when new nodes are added to the model
         connect(model->getPeerTableModel(), SIGNAL(layoutChanged()), this, SLOT(peerLayoutChanged()));
+        // update peer map when peer list changes
+        connect(model->getPeerTableModel(), SIGNAL(layoutChanged()), this, SLOT(updatePeerMap()));
+        // Force initial peer map population
+        updatePeerMap();
 
         // set up ban table
         ui->banlistWidget->setModel(model->getBanTableModel());
@@ -1046,4 +1056,38 @@ void RPCConsole::showOrHideBanTableIfRequired()
 void RPCConsole::setTabFocus(enum TabTypes tabType)
 {
     ui->tabWidget->setCurrentIndex(tabType);
+}
+
+void RPCConsole::updatePeerMap()
+{
+    if (!clientModel || !clientModel->getPeerTableModel() || !peerMapWidget)
+        return;
+
+    QVector<PeerMapNode> peers;
+    PeerTableModel *peerTable = clientModel->getPeerTableModel();
+    int rowCount = peerTable->getRowByNodeId(-1); // get total count indirectly
+
+    // Iterate through all rows in the peer table
+    for (int i = 0; ; i++) {
+        const CNodeCombinedStats *stats = peerTable->getNodeStats(i);
+        if (!stats)
+            break;
+
+        PeerMapNode node;
+        node.address = QString::fromStdString(stats->nodeStats.addrName);
+        node.subversion = QString::fromStdString(stats->nodeStats.cleanSubVer);
+        node.pingMs = (stats->nodeStats.dPingTime > 0) ?
+            (int)(stats->nodeStats.dPingTime * 1000) : -1;
+        node.bytesIn = stats->nodeStats.nRecvBytes;
+        node.bytesOut = stats->nodeStats.nSendBytes;
+        node.isInbound = stats->nodeStats.fInbound;
+
+        QPair<double,double> coords = GeoIP::lookup(node.address);
+        node.latitude = coords.first;
+        node.longitude = coords.second;
+
+        peers.append(node);
+    }
+
+    peerMapWidget->setPeers(peers);
 }

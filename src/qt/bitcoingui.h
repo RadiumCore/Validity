@@ -17,6 +17,7 @@
 #include <QMenu>
 #include <QPoint>
 #include <QSystemTrayIcon>
+#include <QToolBar>
 
 #include <memory>
 
@@ -27,6 +28,7 @@ class OptionsModel;
 class PlatformStyle;
 class RPCConsole;
 class SendCoinsRecipient;
+class ThemeManager;
 class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
@@ -116,6 +118,7 @@ private:
     QAction *toggleHideAction;
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
+    QAction *backupWizardAction;
     QAction *changePassphraseAction;
     QAction *unlockWalletAction;
     QAction *lockWalletAction;
@@ -139,6 +142,9 @@ private:
 
     const PlatformStyle *platformStyle;
     const Config *cfg;
+    ThemeManager *themeManager;
+    QToolBar *navToolbar;
+    QMap<QAction*, QIcon> originalIcons;
 
     /** Create the main UI actions. */
     void createActions();
@@ -255,6 +261,9 @@ private Q_SLOTS:
     void setTrayIconVisible(bool);
 
     void showModalOverlay();
+
+    /** Recolor toolbar icons to match current theme palette */
+    void recolorToolbarIcons();
 };
 
 class UnitDisplayStatusBarControl : public QLabel

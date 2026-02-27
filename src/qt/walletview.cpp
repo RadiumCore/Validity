@@ -6,6 +6,7 @@
 
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
+#include "backupwizard.h"
 #include "bitcoingui.h"
 #include "clientmodel.h"
 #include "guiutil.h"
@@ -23,6 +24,7 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QTimer>
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QProgressDialog>
@@ -35,7 +37,7 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, const Config *cfg, Q
     walletModel(0),
     platformStyle(_platformStyle)
 {
-    // Create tabs
+    // Create all tabs (widgets are cheap; the heavy part is setModel)
     overviewPage = new OverviewPage(platformStyle);
 
     transactionsPage = new QWidget(this);
@@ -80,6 +82,20 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, const Config *cfg, Q
     connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
 }
 
+void WalletView::deferredModelLoad()
+{
+    if (!walletModel)
+        return;
+
+    // Set the heavy transaction model on the history view
+    if (transactionView)
+        transactionView->setModel(walletModel);
+
+    // Connect balloon pop-up for new transactions (triggers model creation if not already done)
+    connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(processNewTransaction(QModelIndex,int,int)));
+}
+
 WalletView::~WalletView()
 {
 }
@@ -100,7 +116,7 @@ void WalletView::setBitcoinGUI(BitcoinGUI *gui)
         // Pass through transaction notifications
         connect(this, SIGNAL(incomingTransaction(QString,int,CAmount,QString,QString,QString)), gui, SLOT(incomingTransaction(QString,int,CAmount,QString,QString,QString)));
 
-        // Connect HD enabled state signal 
+        // Connect HD enabled state signal
         connect(this, SIGNAL(hdEnabledStatusChanged(int)), gui, SLOT(setHDStatus(int)));
     }
 }
@@ -117,13 +133,15 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 {
     this->walletModel = walletModel;
 
-    // Put transaction list in tabs
-    transactionView->setModel(walletModel);
+    // Set models on lightweight pages immediately
     overviewPage->setWalletModel(walletModel);
     receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
-    usedReceivingAddressesPage->setModel(walletModel->getAddressTableModel());
-    usedSendingAddressesPage->setModel(walletModel->getAddressTableModel());
+    usedReceivingAddressesPage->setModel(walletModel ? walletModel->getAddressTableModel() : 0);
+    usedSendingAddressesPage->setModel(walletModel ? walletModel->getAddressTableModel() : 0);
+
+    // Defer the heavy transaction table model load so the dashboard renders first
+    QTimer::singleShot(750, this, SLOT(deferredModelLoad()));
 
     if (walletModel)
     {
@@ -137,9 +155,8 @@ void WalletView::setWalletModel(WalletModel *walletModel)
         // update HD status
         Q_EMIT hdEnabledStatusChanged(walletModel->hdEnabled());
 
-        // Balloon pop-up for new transaction
-        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
-                this, SLOT(processNewTransaction(QModelIndex,int,int)));
+        // NOTE: getTransactionTableModel() connection moved to deferredModelLoad()
+        // to avoid triggering the full wallet scan during startup
 
         // Ask for passphrase if needed
         connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
@@ -260,6 +277,12 @@ void WalletView::backupWallet()
         Q_EMIT message(tr("Backup Successful"), tr("The wallet data was successfully saved to %1.").arg(filename),
             CClientUIInterface::MSG_INFORMATION);
     }
+}
+
+void WalletView::backupWizard()
+{
+    BackupWizard wizard(walletModel, this);
+    wizard.exec();
 }
 
 void WalletView::changePassphrase()

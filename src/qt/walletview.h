@@ -71,6 +71,9 @@ private:
     QProgressDialog *progressDialog;
     const PlatformStyle *platformStyle;
 
+private Q_SLOTS:
+    void deferredModelLoad();
+
 public Q_SLOTS:
     /** Switch to overview (home) page */
     void gotoOverviewPage();
@@ -95,6 +98,8 @@ public Q_SLOTS:
     void encryptWallet(bool status);
     /** Backup the wallet */
     void backupWallet();
+    /** Open backup wizard */
+    void backupWizard();
     /** Change encrypted wallet passphrase */
     void changePassphrase();
     /** Ask for passphrase to unlock wallet temporarily */

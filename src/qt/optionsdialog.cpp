@@ -23,11 +23,15 @@
 
 #include <boost/thread.hpp>
 
+#include "thememanager.h"
+
+#include <QComboBox>
 #include <QDataWidgetMapper>
 #include <QDir>
 #include <QIntValidator>
 #include <QLocale>
 #include <QMessageBox>
+#include <QSettings>
 #include <QTimer>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
@@ -37,6 +41,18 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     mapper(0)
 {
     ui->setupUi(this);
+
+    /* Theme picker init */
+    ui->themeCombo->addItem(tr("Dark"), ThemeManager::Dark);
+    ui->themeCombo->addItem(tr("Light"), ThemeManager::Light);
+    {
+        QSettings settings;
+        int savedTheme = settings.value("nTheme", ThemeManager::Dark).toInt();
+        int idx = ui->themeCombo->findData(savedTheme);
+        if (idx >= 0)
+            ui->themeCombo->setCurrentIndex(idx);
+    }
+    connect(ui->themeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onThemeChanged(int)));
 
     /* Main elements init */
     ui->databaseCache->setMinimum(nMinDbCache);
@@ -271,7 +287,7 @@ void OptionsDialog::on_hideTrayIcon_stateChanged(int fState)
 
 void OptionsDialog::showRestartWarning(bool fPersistent)
 {
-    ui->statusLabel->setStyleSheet("QLabel { color: red; }");
+    ui->statusLabel->setStyleSheet("QLabel { color: #e05555; }");
 
     if(fPersistent)
     {
@@ -303,7 +319,7 @@ void OptionsDialog::updateProxyValidationState()
     else
     {
         setOkButtonState(false);
-        ui->statusLabel->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel->setStyleSheet("QLabel { color: #e05555; }");
         ui->statusLabel->setText(tr("The supplied proxy address is invalid."));
     }
 }
@@ -333,6 +349,21 @@ void OptionsDialog::updateDefaultProxyNets()
 ProxyAddressValidator::ProxyAddressValidator(QObject *parent) :
 QValidator(parent)
 {
+}
+
+void OptionsDialog::onThemeChanged(int index)
+{
+    int themeId = ui->themeCombo->itemData(index).toInt();
+    // Find the ThemeManager in the parent chain
+    QObject *p = parent();
+    while (p) {
+        ThemeManager *tm = p->findChild<ThemeManager*>();
+        if (tm) {
+            tm->setTheme(static_cast<ThemeManager::Theme>(themeId));
+            break;
+        }
+        p = p->parent();
+    }
 }
 
 QValidator::State ProxyAddressValidator::validate(QString &input, int &pos) const

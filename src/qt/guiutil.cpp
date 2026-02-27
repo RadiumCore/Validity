@@ -150,7 +150,7 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 #if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
-    widget->setPlaceholderText(QObject::tr("Enter a Bitcoin address (e.g. %1)")
+    widget->setPlaceholderText(QObject::tr("Enter a Validity address (e.g. %1)")
                                    .arg(QString::fromStdString(DummyAddress(params, GetConfig()))));
 #endif
     widget->setValidator(new BitcoinAddressEntryValidator(params.CashAddrPrefix(), parent));
@@ -681,15 +681,15 @@ boost::filesystem::path static StartupShortcutPath()
 {
     std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcoin.lnk";
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "Validity.lnk";
     if (chain == CBaseChainParams::TESTNET) // Remove this special case when CBaseChainParams::TESTNET = "testnet4"
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcoin (testnet).lnk";
-    return GetSpecialFolderPath(CSIDL_STARTUP) / strprintf("Bitcoin (%s).lnk", chain);
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "Validity (testnet).lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / strprintf("Validity (%s).lnk", chain);
 }
 
 bool GetStartOnSystemStartup()
 {
-    // check for Bitcoin*.lnk
+    // check for Validity*.lnk
     return boost::filesystem::exists(StartupShortcutPath());
 }
 

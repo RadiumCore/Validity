@@ -189,7 +189,7 @@
        <item>
         <widget class="QCheckBox" name="mapPortUpnp">
          <property name="toolTip">
-          <string>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</string>
+          <string>Automatically open the Validity client port on the router. This only works when your router supports UPnP and it is enabled.</string>
          </property>
          <property name="text">
           <string>Map port using &amp;UPnP</string>
@@ -209,7 +209,7 @@
        <item>
         <widget class="QCheckBox" name="connectSocks">
          <property name="toolTip">
-          <string>Connect to the Bitcoin network through a SOCKS5 proxy.</string>
+          <string>Connect to the Validity network through a SOCKS5 proxy.</string>
          </property>
          <property name="text">
           <string>&amp;Connect through SOCKS5 proxy (default proxy):</string>
@@ -396,7 +396,7 @@
        <item>
         <widget class="QCheckBox" name="connectSocksTor">
          <property name="toolTip">
-          <string>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</string>
+          <string>Connect to the Validity network through a separate SOCKS5 proxy for Tor hidden services.</string>
          </property>
          <property name="text">
           <string>Use separate SOCKS5 proxy to reach peers via Tor hidden services:</string>
@@ -554,6 +554,30 @@
        <string>&amp;Display</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_Display">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_0_Display">
+         <item>
+          <widget class="QLabel" name="themeLabel">
+           <property name="text">
+            <string>&amp;Theme:</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="buddy">
+            <cstring>themeCombo</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="themeCombo">
+           <property name="toolTip">
+            <string>Choose between Dark and Light theme for the wallet interface.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_1_Display">
          <item>

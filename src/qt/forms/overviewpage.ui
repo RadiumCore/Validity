@@ -6,21 +6,36 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>741</width>
-    <height>668</height>
+    <width>850</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="topLayout">
+   <property name="spacing">
+    <number>12</number>
+   </property>
+   <property name="leftMargin">
+    <number>16</number>
+   </property>
+   <property name="topMargin">
+    <number>16</number>
+   </property>
+   <property name="rightMargin">
+    <number>16</number>
+   </property>
+   <property name="bottomMargin">
+    <number>16</number>
+   </property>
    <item>
     <widget class="QLabel" name="labelAlerts">
      <property name="visible">
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLabel { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop:0 #F0D0A0, stop:1 #F8D488); color:#000000; }</string>
+      <string notr="true"/>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -33,965 +48,938 @@
      </property>
     </widget>
    </item>
+   <!-- BALANCE CARD -->
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="balanceCardLayout">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="balanceHeaderLayout">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLabel" name="label_5">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Balances</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="labelWalletStatus">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/icons/warning</normaloff>
-                <disabledoff>:/icons/warning</disabledoff>:/icons/warning</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QGridLayout" name="gridLayout">
-            <property name="spacing">
-             <number>12</number>
+           <widget class="QLabel" name="label_5">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+              <pointsize>11</pointsize>
+             </font>
             </property>
-            <item row="2" column="2">
-             <widget class="QLabel" name="labelWatchPending">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Unconfirmed transactions to watch-only addresses</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="labelUnconfirmed">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QLabel" name="labelWatchImmature">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Mined balance in watch-only addresses that has not yet matured</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0" colspan="2">
-             <widget class="Line" name="line">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="2">
-             <widget class="Line" name="lineWatchBalance">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>140</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QLabel" name="labelTotalText">
-              <property name="text">
-               <string>Total:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLabel" name="labelImmature">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Mined balance that has not yet matured</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="labelImmatureText">
-              <property name="text">
-               <string>Immature:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QLabel" name="labelTotal">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Your current total balance</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="2">
-             <widget class="QLabel" name="labelWatchTotal">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Current total balance in watch-only addresses</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="labelWatchonly">
-              <property name="text">
-               <string>Watch-only:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="labelBalanceText">
-              <property name="text">
-               <string>Available:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="labelBalance">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Your current spendable balance</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QLabel" name="labelWatchAvailable">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Your current balance in watch-only addresses</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="labelPendingText">
-              <property name="text">
-               <string>Pending:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="labelSpendable">
-              <property name="text">
-               <string>Spendable:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="labelStakeText">
-              <property name="text">
-               <string>Stake:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLabel" name="labelStake">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="QLabel" name="labelWatchStake">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <spacer name="horizontalSpacer_21">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>75</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_stakereport">
-            <item>
-             <widget class="QLabel" name="label_StakeReport_Text">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Staking Report</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_31">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QGridLayout" name="reportlayout">
-            <property name="spacing">
-             <number>12</number>
-            </property>
-            <item row="0" column="0" colspan="2">
-             <widget class="Line" name="line">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label1yStakingStatsText">
-              <property name="text">
-               <string>Last Year:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLabel" name="label7dStakingStats">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Total VAL staked in the past Week</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QLabel" name="labelallStakingStats">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Total VAL staked in the history of this wallet</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label24hStakingStatsText">
-              <property name="text">
-               <string>Last 24 Hours:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="label24hStakingStats">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Total VAL staked in the past 24 Hours</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QLabel" name="label1yStakingStats">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Total VAL staked in the past Year</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QLabel" name="labelallStakingStatsText">
-              <property name="text">
-               <string>Total staked:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLabel" name="label30dStakingStats">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Total VAL staked in the past 30 days</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label30dStakingStatsText">
-              <property name="text">
-               <string>Last 30 Days:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label7dStakingStatsText">
-              <property name="text">
-               <string>Last Week:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QLabel" name="spacer">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string notr="true"/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1">
-             <widget class="QLabel" name="labelExpectedStakingStats">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="cursor">
-               <cursorShape>IBeamCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Estimated rewards for 24 hours of staking</string>
-              </property>
-              <property name="text">
-               <string notr="true">0.000 000 00 BTC</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="QLabel" name="labelExpectedStakingStatsText">
-              <property name="text">
-               <string>Estimated Daily Rewards</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_stakebar"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Recent transactions</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="labelTransactionsStatus">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>:/icons/warning</normaloff>
-                <disabledoff>:/icons/warning</disabledoff>:/icons/warning</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QListView" name="listTransactions">
-            <property name="styleSheet">
-             <string notr="true">QListView { background: transparent; }</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="verticalScrollBarPolicy">
-             <enum>Qt::ScrollBarAlwaysOff</enum>
-            </property>
-            <property name="horizontalScrollBarPolicy">
-             <enum>Qt::ScrollBarAlwaysOff</enum>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::NoSelection</enum>
+            <property name="text">
+             <string>Balances</string>
             </property>
            </widget>
           </item>
           <item>
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+           <widget class="QPushButton" name="labelWalletStatus">
+            <property name="enabled">
+             <bool>true</bool>
             </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Expanding</enum>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Validity network after a connection is established, but this process has not completed yet.</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>:/icons/warning</normaloff>
+              <disabledoff>:/icons/warning</disabledoff>
+             </iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="balanceHeaderSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>20</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
            </spacer>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="stakingbarlayout">
-         <property name="spacing">
-          <number>12</number>
-         </property>
-         <item row="0" column="0" colspan="2">
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="labelSupplyText">
-           <property name="text">
-            <string>Circulating / Max Supply</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="labelTotalStakingText">
-           <property name="cursor">
-            <cursorShape>IBeamCursor</cursorShape>
-           </property>
-           <property name="toolTip">
-            <string>Total VAL staked in the past 24 Hours</string>
-           </property>
-           <property name="text">
-            <string notr="true">Total Staking Coins</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QProgressBar" name="progressBar_Supply">
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>-1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QProgressBar" name="progressBar_TotalStaking">
-           <property name="maximum">
-            <number>900000</number>
-           </property>
-           <property name="value">
-            <number>-1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="labelAnualGenerationText">
-           <property name="text">
-            <string>Annual Generation</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLabel" name="labelMyWeightText">
-           <property name="cursor">
-            <cursorShape>IBeamCursor</cursorShape>
-           </property>
-           <property name="toolTip">
-            <string>Total VAL staked in the past 30 days</string>
-           </property>
-           <property name="text">
-            <string notr="true">Your Network Stake</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QProgressBar" name="progressBar_AnnualGeneration">
-           <property name="maximum">
-            <number>0</number>
-           </property>
-           <property name="value">
-            <number>-1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QProgressBar" name="progressBar_MyWeight">
-           <property name="maximum">
-            <number>0</number>
-           </property>
-           <property name="value">
-            <number>-1</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_supplybar"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_stakingbar"/>
-       </item>
-      </layout>
-     </item>
-    </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <property name="spacing">
+           <number>10</number>
+          </property>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelSpendable">
+            <property name="text">
+             <string>Spendable:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="labelWatchonly">
+            <property name="text">
+             <string>Watch-only:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelBalanceText">
+            <property name="text">
+             <string>Available:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="labelBalance">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Your current spendable balance</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="labelWatchAvailable">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Your current balance in watch-only addresses</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelPendingText">
+            <property name="text">
+             <string>Pending:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="labelUnconfirmed">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="labelWatchPending">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Unconfirmed transactions to watch-only addresses</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelImmatureText">
+            <property name="text">
+             <string>Immature:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="labelImmature">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Mined balance that has not yet matured</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QLabel" name="labelWatchImmature">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Mined balance in watch-only addresses that has not yet matured</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelStakeText">
+            <property name="text">
+             <string>Stake:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="labelStake">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="text">
+             <string>0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QLabel" name="labelWatchStake">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="text">
+             <string>0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="Line" name="lineWatchBalance">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="labelTotalText">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="text">
+             <string>Total:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="labelTotal">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Your current total balance</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QLabel" name="labelWatchTotal">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Current total balance in watch-only addresses</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.000 000 00 BTC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="balanceBottomSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+   </item>
+   <!-- STAKING CHART CARD -->
+   <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="chartCardLayout">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="chartHeaderLayout">
+          <item>
+           <widget class="QLabel" name="label_StakeReport_Text">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Staking Rewards (30 Days)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="chartHeaderSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <!-- Chart widget inserted programmatically here via chartPlaceholder -->
+        <item>
+         <layout class="QVBoxLayout" name="chartPlaceholder"/>
+        </item>
+        <!-- Staking summary stats below chart: paired label+value with visual separators -->
+        <item>
+         <layout class="QGridLayout" name="reportlayout">
+          <property name="horizontalSpacing">
+           <number>2</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <!-- Row 0: 24h / 7d / 30d -->
+          <item row="0" column="0">
+           <widget class="QLabel" name="label24hStakingStatsText">
+            <property name="text">
+             <string>24h:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label24hStakingStats">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Total VAL staked in the past 24 Hours</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.00 VAL</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <!-- Separator column -->
+          <item row="0" column="2">
+           <widget class="QLabel" name="sep1_row0">
+            <property name="text">
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label7dStakingStatsText">
+            <property name="text">
+             <string>7d:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="label7dStakingStats">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Total VAL staked in the past Week</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.00 VAL</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <!-- Separator column -->
+          <item row="0" column="5">
+           <widget class="QLabel" name="sep2_row0">
+            <property name="text">
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label30dStakingStatsText">
+            <property name="text">
+             <string>30d:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="QLabel" name="label30dStakingStats">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Total VAL staked in the past 30 days</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.00 VAL</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <!-- Row 1: 1y / All time / Est. daily -->
+          <item row="1" column="0">
+           <widget class="QLabel" name="label1yStakingStatsText">
+            <property name="text">
+             <string>1y:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label1yStakingStats">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Total VAL staked in the past Year</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.00 VAL</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="sep1_row1">
+            <property name="text">
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="labelallStakingStatsText">
+            <property name="text">
+             <string>All time:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QLabel" name="labelallStakingStats">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Total VAL staked in the history of this wallet</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.00 VAL</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="QLabel" name="sep2_row1">
+            <property name="text">
+             <string notr="true">|</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #5a5a7a;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6">
+           <widget class="QLabel" name="labelExpectedStakingStatsText">
+            <property name="text">
+             <string>Est. daily:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="7">
+           <widget class="QLabel" name="labelExpectedStakingStats">
+            <property name="font">
+             <font><weight>75</weight><bold>true</bold></font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Estimated rewards for 24 hours of staking</string>
+            </property>
+            <property name="text">
+             <string notr="true">0.00 VAL</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+   </item>
+   <!-- Middle Row: Recent Transactions (full width) -->
+   <item>
+    <widget class="QFrame" name="transactionsCard">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="transactionsCardLayout">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="txHeaderLayout">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Recent Transactions</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="labelTransactionsStatus">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Validity network after a connection is established, but this process has not completed yet.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>:/icons/warning</normaloff>
+            <disabledoff>:/icons/warning</disabledoff>
+           </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="txHeaderSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QListView" name="listTransactions">
+        <property name="styleSheet">
+         <string notr="true">QListView { background: transparent; }</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::NoSelection</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- Bottom Row: Network Stats (full width, compact horizontal layout) -->
+   <item>
+    <widget class="QFrame" name="networkCard">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="networkCardLayout">
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_Network_Text">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Network</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="networkGridLayout">
+        <property name="horizontalSpacing">
+         <number>16</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>4</number>
+        </property>
+        <!-- All 4 bars on a single row pair for compact horizontal layout -->
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelSupplyText">
+          <property name="text">
+           <string>Circulating / Max Supply</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QProgressBar" name="progressBar_Supply">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="labelTotalStakingText">
+          <property name="text">
+           <string>Total Staking Coins</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QProgressBar" name="progressBar_TotalStaking">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="labelMyWeightText">
+          <property name="text">
+           <string>Your Network Stake</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QProgressBar" name="progressBar_MyWeight">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="labelAnualGenerationText">
+          <property name="text">
+           <string>Annual Generation</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QProgressBar" name="progressBar_AnnualGeneration">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

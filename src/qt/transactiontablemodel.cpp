@@ -27,6 +27,8 @@
 #include <QList>
 
 #include <boost/foreach.hpp>
+#include <chrono>
+#include <thread>
 
 // Amount column is right-aligned it contains numbers
 static int column_alignments[] = {
@@ -76,9 +78,11 @@ public:
 
     /* Query entire wallet anew from core.
      */
+    // Background-loaded results (written by worker thread, read by UI thread after completion)
+    QList<TransactionRecord> backgroundResult;
+
     void refreshWallet()
     {
-        qDebug() << "TransactionTablePriv::refreshWallet";
         cachedWallet.clear();
         {
             LOCK2(cs_main, wallet->cs_wallet);
@@ -88,6 +92,46 @@ public:
                     cachedWallet.append(TransactionRecord::decomposeTransaction(wallet, it->second));
             }
         }
+    }
+
+    void refreshWalletBackground()
+    {
+        // Runs in a worker thread.
+        // CRITICAL: Use chunked locking so the UI thread can acquire
+        // cs_main/cs_wallet between batches (otherwise UI freezes
+        // waiting for locks held by this thread for 10+ seconds).
+
+        // Pass 1: collect transaction hashes (fast, brief lock)
+        std::vector<uint256> txHashes;
+        {
+            LOCK2(cs_main, wallet->cs_wallet);
+            for(std::map<uint256, CWalletTx>::iterator it = wallet->mapWallet.begin(); it != wallet->mapWallet.end(); ++it)
+            {
+                if(TransactionRecord::showTransaction(it->second))
+                    txHashes.push_back(it->first);
+            }
+        }
+
+        // Pass 2: decompose in small batches, releasing locks between
+        QList<TransactionRecord> result;
+        const size_t BATCH_SIZE = 200;
+        for(size_t i = 0; i < txHashes.size(); i += BATCH_SIZE)
+        {
+            {
+                LOCK2(cs_main, wallet->cs_wallet);
+                size_t end = std::min(i + BATCH_SIZE, txHashes.size());
+                for(size_t j = i; j < end; j++)
+                {
+                    std::map<uint256, CWalletTx>::iterator it = wallet->mapWallet.find(txHashes[j]);
+                    if(it != wallet->mapWallet.end())
+                        result.append(TransactionRecord::decomposeTransaction(wallet, it->second));
+                }
+            }
+            // Yield so UI/staking threads can acquire the locks
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        backgroundResult = result;
     }
 
     /* Update our model of the wallet incrementally, to synchronize our model of the wallet
@@ -246,10 +290,17 @@ TransactionTableModel::TransactionTableModel(const PlatformStyle *platformStyle,
         walletModel(parent),
         priv(new TransactionTablePriv(wallet, this)),
         fProcessingQueuedTransactions(false),
-        platformStyle(platformStyle)
+        platformStyle(platformStyle),
+        backgroundLoadDone(false)
 {
     columns << QString() << QString() << tr("Date") << tr("Type") << tr("Label") << BitcoinUnits::getAmountColumnTitle(walletModel->getOptionsModel()->getDisplayUnit());
-    priv->refreshWallet();
+
+    // Load all 36K+ wallet transactions in a background thread
+    // so the UI stays responsive during startup
+    std::thread([this]() {
+        priv->refreshWalletBackground();
+        QMetaObject::invokeMethod(this, "onBackgroundRefreshComplete", Qt::QueuedConnection);
+    }).detach();
 
     connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
     connect(this, SIGNAL(message(QString,QString,unsigned int)), walletModel, SIGNAL(message(QString,QString,unsigned int)));
@@ -272,6 +323,10 @@ void TransactionTableModel::updateAmountColumnTitle()
 
 void TransactionTableModel::updateTransaction(const QString &hash, int status, bool showTransaction)
 {
+    // Skip incremental updates while background load is in progress
+    if (!backgroundLoadDone)
+        return;
+
     uint256 updated;
     updated.SetHex(hash.toStdString());
 
@@ -280,6 +335,10 @@ void TransactionTableModel::updateTransaction(const QString &hash, int status, b
 
 void TransactionTableModel::updateConfirmations()
 {
+    // Skip while background load is in progress
+    if (!backgroundLoadDone)
+        return;
+
     // Blocks came in since last poll.
     // Invalidate status (number of confirmations) and (possibly) description
     //  for all rows. Qt is smart enough to only actually request the data for the
@@ -715,6 +774,16 @@ void TransactionTableModel::updateDisplayUnit()
     // emit dataChanged to update Amount column with the current unit
     updateAmountColumnTitle();
     Q_EMIT dataChanged(index(0, Amount), index(priv->size()-1, Amount));
+}
+
+void TransactionTableModel::onBackgroundRefreshComplete()
+{
+    // Swap in the background-loaded data
+    beginResetModel();
+    priv->cachedWallet = priv->backgroundResult;
+    priv->backgroundResult.clear();
+    backgroundLoadDone = true;
+    endResetModel();
 }
 
 // queue notifications to show a non freezing progress dialog e.g. for rescan

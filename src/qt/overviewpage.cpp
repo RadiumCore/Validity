@@ -1,10 +1,10 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2025-2026 The Validity developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
-#include "rpc/blockchain.cpp"
 
 #include "bitcoinunits.h"
 #include "clientmodel.h"
@@ -12,6 +12,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "platformstyle.h"
+#include "stakingchartwidget.h"
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
@@ -20,11 +21,19 @@
 #include "wallet/wallet.h"
 #include "walletframe.h"
 
+#include "carddragdrop.h"
+
+#include "rpc/server.h"
+
 #include <QAbstractItemDelegate>
+#include <QDateTime>
 #include <QPainter>
+#include <QPointer>
+#include <QSplitter>
+#include <QSettings>
 
 #define DECORATION_SIZE 54
-#define NUM_ITEMS 5
+#define NUM_ITEMS 7
 
 class TxViewDelegate : public QAbstractItemDelegate
 {
@@ -126,7 +135,15 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     currentWatchUnconfBalance(-1),
     currentWatchImmatureBalance(-1),
     currentWatchOnlyStake(-1),
-    txdelegate(new TxViewDelegate(platformStyle, this))
+    txdelegate(new TxViewDelegate(platformStyle, this)),
+    stakingChart(0),
+    gridManager(0),
+    lastStaking(false),
+    initialStatsLoaded(false),
+    cachedWalletTxCount(0),
+    cachedBlockHeight(0),
+    cachedSupply(0),
+    cachedNetworkWeight(0)
 {
     ui->setupUi(this);
 
@@ -141,56 +158,61 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->listTransactions->setIconSize(QSize(DECORATION_SIZE, DECORATION_SIZE));
     ui->listTransactions->setMinimumHeight(NUM_ITEMS * (DECORATION_SIZE + 2));
     ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
+    ui->listTransactions->setUniformItemSizes(true);
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
-    //NewBlock(false);
     connect(ui->labelWalletStatus, SIGNAL(clicked()), this, SLOT(handleOutOfSyncWarningClicks()));
     connect(ui->labelTransactionsStatus, SIGNAL(clicked()), this, SLOT(handleOutOfSyncWarningClicks()));
 
+    // Initially hide staking-specific widgets
     ui->progressBar_AnnualGeneration->setVisible(false);
-    ui->labelAnualGenerationText->setVisible(false); 
+    ui->labelAnualGenerationText->setVisible(false);
     ui->progressBar_MyWeight->setVisible(false);
     ui->labelMyWeightText->setVisible(false);
     ui->labelExpectedStakingStats->setVisible(false);
     ui->labelExpectedStakingStatsText->setVisible(false);
 
-    
-   
-    
-	
-
-
-   
-   
-    ui->progressBar_AnnualGeneration->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
-    ui->progressBar_MyWeight->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }");
-    ui->progressBar_Supply->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
-    ui->progressBar_TotalStaking->setStyleSheet("QProgressBar { background-color: white; border: 0px solid grey; border-radius: 0px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #43b581, stop: 1 #43b581); border-radius: 0px; margin: 0px; }"); 
-
-    ui->labelSupplyText->setVisible(true);
-     ui->progressBar_Supply->setVisible(true); 
-     ui->labelTotalStakingText->setVisible(true);
-     ui->progressBar_TotalStaking->setVisible(true);
-
+    // Progress bar styling is handled by the theme QSS now,
+    // but set alignment and max values
     ui->progressBar_MyWeight->setAlignment(Qt::AlignCenter);
     ui->progressBar_Supply->setAlignment(Qt::AlignCenter);
     ui->progressBar_TotalStaking->setAlignment(Qt::AlignCenter);
     ui->progressBar_AnnualGeneration->setAlignment(Qt::AlignCenter);
-   
 
     ui->progressBar_Supply->setMaximum(100);
     ui->progressBar_TotalStaking->setMaximum(100);
     ui->progressBar_MyWeight->setMaximum(100);
     ui->progressBar_AnnualGeneration->setMaximum(100);
-  
-        
-        
-       
 
+    ui->labelSupplyText->setVisible(true);
+    ui->progressBar_Supply->setVisible(true);
+    ui->labelTotalStakingText->setVisible(true);
+    ui->progressBar_TotalStaking->setVisible(true);
 
+    // Create and insert the staking chart widget
+    stakingChart = new StakingChartWidget(this);
+    ui->chartPlaceholder->addWidget(stakingChart);
+    stakingChart->setMinimumHeight(140);
+
+    // Rearrange cards into a 2-column drag-and-drop grid
+    QVBoxLayout *topLayout = qobject_cast<QVBoxLayout*>(layout());
+    if (topLayout) {
+        topLayout->removeWidget(ui->frame);
+        topLayout->removeWidget(ui->frame_2);
+        topLayout->removeWidget(ui->transactionsCard);
+        topLayout->removeWidget(ui->networkCard);
+
+        // Card order: balance, staking, network on left; transactions (tall) on right
+        QList<QWidget*> cards;
+        cards << ui->frame << ui->frame_2 << ui->networkCard << ui->transactionsCard;
+
+        gridManager = new DashboardGridManager(this);
+        QSplitter *grid = gridManager->setupGrid(cards);
+        topLayout->addWidget(grid);
+    }
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
@@ -208,9 +230,6 @@ OverviewPage::~OverviewPage()
 {
     delete ui;
 }
-
-
-
 
 void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& stake, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, const CAmount& watchOnlyStake)
 {
@@ -248,7 +267,6 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelStake->setVisible(showStake || showWatchOnlyStake);
     ui->labelStakeText->setVisible(showStake || showWatchOnlyStake);
     ui->labelWatchStake->setVisible(showWatchOnlyStake); // show watch-only stake balance
-
 }
 
 // show/hide watch-only labels
@@ -275,7 +293,7 @@ void OverviewPage::setClientModel(ClientModel *model)
     {
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
-      
+
         connect(model, SIGNAL(numBlocksChanged(int, QDateTime, double, bool)), this, SLOT(BlockCountChanged(int, QDateTime, double, bool)));
         updateAlerts(model->getStatusBarWarnings());
     }
@@ -286,19 +304,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
     this->walletModel = model;
     if(model && model->getOptionsModel())
     {
-        // Set up transaction list
-        filter.reset(new TransactionFilterProxy());
-        filter->setSourceModel(model->getTransactionTableModel());
-        filter->setLimit(NUM_ITEMS);
-        filter->setDynamicSortFilter(true);
-        filter->setSortRole(Qt::EditRole);
-        filter->setShowInactive(false);
-        filter->sort(TransactionTableModel::Date, Qt::DescendingOrder);
-
-        ui->listTransactions->setModel(filter.get());
-        ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
-
-        // Keep up to date with wallet
+        // Show balances immediately (lightweight)
         setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getStake(),
                            model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getWatchStake());
         connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
@@ -306,10 +312,30 @@ void OverviewPage::setWalletModel(WalletModel *model)
 
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
+
+        // Defer the heavy transaction list setup — it triggers full wallet scan
+        QTimer::singleShot(500, this, SLOT(setupTransactionList()));
     }
 
     // update the display unit, to not use the default ("BTC")
     updateDisplayUnit();
+}
+
+void OverviewPage::setupTransactionList()
+{
+    if (!walletModel || !walletModel->getOptionsModel())
+        return;
+
+    filter.reset(new TransactionFilterProxy());
+    filter->setSourceModel(walletModel->getTransactionTableModel());
+    filter->setLimit(NUM_ITEMS);
+    filter->setDynamicSortFilter(true);
+    filter->setSortRole(Qt::EditRole);
+    filter->setShowInactive(false);
+    filter->sort(TransactionTableModel::Date, Qt::DescendingOrder);
+
+    ui->listTransactions->setModel(filter.get());
+    ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
 }
 
 void OverviewPage::updateDisplayUnit()
@@ -317,8 +343,8 @@ void OverviewPage::updateDisplayUnit()
     if(walletModel && walletModel->getOptionsModel())
     {
         if(currentBalance != -1)
-        	 setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentStake,
-        	 currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentWatchOnlyStake);
+             setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance, currentStake,
+             currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentWatchOnlyStake);
 
         // Update txdelegate->unit with the current unit
         txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();
@@ -338,97 +364,179 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
     ui->labelWalletStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
-using namespace boost;
-
-
-using namespace std;
-
-
 struct StakePeriodRange_T {
     int64_t Start;
     int64_t End;
     int64_t Total;
     int Count;
-    string Name;
+    std::string Name;
 };
 
-typedef vector<StakePeriodRange_T> vStakePeriodRange_T;
+typedef std::vector<StakePeriodRange_T> vStakePeriodRange_T;
 
 extern vStakePeriodRange_T PrepareRangeForStakeReport();
 extern int GetsStakeSubTotal(vStakePeriodRange_T& aRange);
+extern double GetSupply();
 
-double round(double value){
-     int64_t pre_round = value * 100;;
-    return ((double)pre_round) / 100;
+static double roundTo2(double value){
+    return (double)((int64_t)(value * 100)) / 100.0;
 }
 
 
 void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header){
 
-    //if flast update time was less than 5 seconds ago, do nothing
-	 if ((GetTime() - nLastReportUpdate) < 5)       
+    //if last update time was less than 5 seconds ago, do nothing
+     if ((GetTime() - nLastReportUpdate) < 5)
         return;
-    
-// if initial block download, do nothing
+
+    // if initial block download, do nothing
     if(IsInitialBlockDownload())
         return;
-    // if walletmodel is not avalible, do nothing
+    // if walletmodel is not available, do nothing
     if (!walletModel || !walletModel->getOptionsModel())
         return;
 
-    
-    bool staking = pwalletMain->IsStaking();
-    
-   
+    if (!pwalletMain)
+        return;
 
-// if staking status has changed, force update
+    // Don't block UI waiting for locks held by background tx loader.
+    // TRY_LOCK must stay in scope — nested LOCK() calls succeed via recursive_mutex.
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain)
+        return;
+    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+    if (!lockWallet)
+        return;
+
+    bool staking = pwalletMain->IsStaking();
+
+    // if staking status has changed, force update
     if(lastStaking != staking)
         nLastReportUpdate = 0;
     lastStaking = staking;
-   
 
+    // Defer the very first stats load so the UI renders immediately
+    if (!initialStatsLoaded) {
+        initialStatsLoaded = true;
+        QPointer<OverviewPage> guard(this);
+        QTimer::singleShot(2000, [guard]() {
+            if (guard) guard->deferredStatsLoad();
+        });
+        return;
+    }
 
     if ((GetTime() - nLastReportUpdate) > 300) {
-        int64_t nMyWeight = pwalletMain ? pwalletMain->GetStakeWeight() : 0;
+        int64_t nMyWeight;
+        {
+            LOCK(pwalletMain->cs_wallet);
+            nMyWeight = pwalletMain->GetStakeWeight();
+        }
         int64_t nNetworkWeight;
-        int64_t nCoinSupply ;
+        int64_t nCoinSupply;
 
         {
             LOCK(cs_main);
-            nNetworkWeight = GetPoSKernelPS();    
-            nCoinSupply = GetSupply(); 
-        
-        }
-       
+            nNetworkWeight = GetPoSKernelPS();
 
+            // Cache validation: rescan UTXO if block height changed,
+            // network weight drifted significantly, or cache is empty
+            bool cacheValid = (cachedSupply > 0) &&
+                              (count == cachedBlockHeight) &&
+                              (cachedNetworkWeight > 0) &&
+                              (qAbs(nNetworkWeight - cachedNetworkWeight) <
+                               cachedNetworkWeight / 5); // <20% drift
+
+            if (!cacheValid) {
+                nCoinSupply = GetSupply();
+                cachedSupply = nCoinSupply;
+                cachedNetworkWeight = nNetworkWeight;
+                cachedBlockHeight = count;
+            } else {
+                nCoinSupply = cachedSupply;
+            }
+        }
 
        int unit = walletModel->getOptionsModel()->getDisplayUnit();
-       
-       UpdateHistoricalStakingStats(unit);
+
+       // Cache validation: rescan wallet txs if count changed or
+       // staking status changed (new stakes may have matured)
+       size_t currentTxCount;
+       {
+           LOCK(pwalletMain->cs_wallet);
+           currentTxCount = pwalletMain->mapWallet.size();
+       }
+       if (currentTxCount != cachedWalletTxCount) {
+           UpdateHistoricalStakingStats(unit);
+           cachedWalletTxCount = currentTxCount;
+       }
+
        UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
-        
-       UpdateCurrentStakingStats(staking, nMyWeight,nNetworkWeight, unit, count);
-       
+       UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, count);
 
        // Save the last update
        nLastReportUpdate = GetTime();
     }
 }
 
+void OverviewPage::deferredStatsLoad()
+{
+    if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain)
+        return;
+
+    // Acquire both locks non-blocking. If the background transaction
+    // loader holds them, reschedule instead of freezing the UI.
+    // TRY_LOCK stays in scope — nested LOCK() calls succeed via recursive_mutex.
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain) {
+        QPointer<OverviewPage> guard(this);
+        QTimer::singleShot(2000, [guard]() {
+            if (guard) guard->deferredStatsLoad();
+        });
+        return;
+    }
+    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+    if (!lockWallet) {
+        QPointer<OverviewPage> guard(this);
+        QTimer::singleShot(2000, [guard]() {
+            if (guard) guard->deferredStatsLoad();
+        });
+        return;
+    }
+
+    bool staking = pwalletMain->IsStaking();
+    int64_t nMyWeight = pwalletMain->GetStakeWeight();
+
+    int64_t nNetworkWeight = GetPoSKernelPS();
+    int64_t nCoinSupply = GetSupply();
+    cachedSupply = nCoinSupply;
+    cachedNetworkWeight = nNetworkWeight;
+    cachedBlockHeight = chainActive.Height();
+
+    int unit = walletModel->getOptionsModel()->getDisplayUnit();
+
+    UpdateHistoricalStakingStats(unit);
+    cachedWalletTxCount = pwalletMain->mapWallet.size();
+
+    UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
+    UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, chainActive.Height());
+
+    nLastReportUpdate = GetTime();
+}
+
 void OverviewPage::UpdateHistoricalStakingStats(int unit){
     // Get data for staking report
     vStakePeriodRange_T aRange = PrepareRangeForStakeReport();
     GetsStakeSubTotal(aRange);
-    
 
+    if (aRange.size() < 35)
+        return;
 
-    
-    // Prepair the subtotals
-    CAmount amount24h = round(aRange[30].Total);
-    CAmount amount7d = round(aRange[31].Total);
-    CAmount amount30d = round(aRange[32].Total);
-    CAmount amount1y = round(aRange[33].Total);
-    CAmount amountAll = round(aRange[34].Total);
+    // Prepare the subtotals (indices 30-34 are the summary periods)
+    CAmount amount24h = aRange[30].Total;
+    CAmount amount7d  = aRange[31].Total;
+    CAmount amount30d = aRange[32].Total;
+    CAmount amount1y  = aRange[33].Total;
+    CAmount amountAll = aRange[34].Total;
 
     // Display staking history
     ui->label24hStakingStats->setText(BitcoinUnits::formatWithUnit(unit, amount24h, false, BitcoinUnits::separatorAlways, 2));
@@ -439,13 +547,28 @@ void OverviewPage::UpdateHistoricalStakingStats(int unit){
 
     uiInterface.SetStaked(amountAll, amount24h, amount7d);
 
-
+    // Update the staking chart with daily data (first 30 entries are individual days)
+    QVector<StakeDayData> chartData;
+    for (int i = 0; i < 30 && i < (int)aRange.size(); i++) {
+        StakeDayData day;
+        // Convert timestamp to short date label
+        QDateTime dt;
+#if QT_VERSION >= 0x050800
+        dt = QDateTime::fromSecsSinceEpoch(aRange[i].Start);
+#else
+        dt = QDateTime::fromTime_t(aRange[i].Start);
+#endif
+        day.label = dt.toString("MMM d");
+        day.amount = aRange[i].Total;
+        chartData.append(day);
+    }
+    stakingChart->setUnit(unit);
+    stakingChart->setData(chartData);
 }
 
 void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, int64_t nNetworkWeight, int unit, int nHeight){
 
-
-    // set visability 
+    // set visability
     ui->labelMyWeightText->setVisible(staking);
     ui->progressBar_MyWeight->setVisible(staking);
     ui->labelAnualGenerationText->setVisible(staking);
@@ -455,34 +578,36 @@ void OverviewPage::UpdateCurrentStakingStats(bool staking, int64_t nMyWeight, in
 
     if(!staking)
         return;
-    
-    //Set user stake weight progress bar
-    double pMyWeight = ((double)nMyWeight/(double)nNetworkWeight);
-    ui->progressBar_MyWeight->setValue(pMyWeight*100);
-    ui->progressBar_MyWeight->setFormat(tr("%1%").arg(round(pMyWeight*100)));
 
-    double nStakeSubsidy = getFixedStakeSubsidy(nHeight);
-    double nAnnualCoins = ((nStakeSubsidy * 60 * 25 * 365) * pMyWeight); 
-    double nTotalBalance = currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentStake;
-    double pAnualPercent = round(nAnnualCoins/nTotalBalance);   
+    //Set user stake weight progress bar
+    double pMyWeight = (nNetworkWeight > 0) ? ((double)nMyWeight/(double)nNetworkWeight) : 0;
+    ui->progressBar_MyWeight->setValue(pMyWeight*100);
+    ui->progressBar_MyWeight->setFormat(tr("%1%").arg(roundTo2(pMyWeight*100)));
+
+    double nStakeSubsidy = (double)getFixedStakeSubsidy(nHeight);
+    double nAnnualCoins = (nStakeSubsidy * 60.0 * 25.0 * 365.0) * pMyWeight;
+    double nTotalBalance = (double)(currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentStake);
+    double pAnualPercent = (nTotalBalance > 0) ? roundTo2(nAnnualCoins / nTotalBalance) : 0;
 
     //set stake generation bar
     ui->progressBar_AnnualGeneration->setValue(pAnualPercent*100);
-    ui->progressBar_AnnualGeneration->setFormat(tr("%1% ").arg(round(pAnualPercent*100)));
+    ui->progressBar_AnnualGeneration->setFormat(tr("%1% ").arg(roundTo2(pAnualPercent*100)));
 
-    CAmount nExpectedDailyReward = (1440 * nStakeSubsidy) * pMyWeight ;          
-    ui->labelExpectedStakingStats->setText(BitcoinUnits::formatWithUnit(unit, nExpectedDailyReward, false, BitcoinUnits::separatorAlways, 2));    
+    double rawDailyReward = (1440.0 * nStakeSubsidy) * pMyWeight;
+    CAmount nExpectedDailyReward = (rawDailyReward > 0 && rawDailyReward < (double)MAX_MONEY)
+        ? (CAmount)rawDailyReward : 0;
+    ui->labelExpectedStakingStats->setText(BitcoinUnits::formatWithUnit(unit, nExpectedDailyReward, false, BitcoinUnits::separatorAlways, 2));
 }
 
 void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeight, int unit){
 
     double pCoinSupply = (((double)nCoinSupply/100000000)/(double)9000000) *100  ;
-    double pStakingCoins = ((double)nNetworkWeight/(double)nCoinSupply) *100;
+    double pStakingCoins = (nCoinSupply > 0) ? (((double)nNetworkWeight/(double)nCoinSupply) *100) : 0;
     //update total staking coins bar
     ui->progressBar_TotalStaking->setValue(pStakingCoins);
-    ui->progressBar_TotalStaking->setFormat(tr("%1% (%2)").arg(round(pStakingCoins)).arg(BitcoinUnits::format(unit, nNetworkWeight, false, BitcoinUnits::separatorNever, 0)));
+    ui->progressBar_TotalStaking->setFormat(tr("%1% (%2)").arg(roundTo2(pStakingCoins)).arg(BitcoinUnits::format(unit, nNetworkWeight, false, BitcoinUnits::separatorNever, 0)));
     ui->progressBar_TotalStaking->setAlignment(Qt::AlignCenter);
-   
+
     // update coin supply bar
     ui->progressBar_Supply->setValue(pCoinSupply);
     ui->progressBar_Supply->setFormat(tr("%1 / %2").arg(BitcoinUnits::format(unit, nCoinSupply, false, BitcoinUnits::separatorNever, 0)).arg(9000000));
@@ -493,50 +618,4 @@ void OverviewPage::UpdateNetworkStats(int64_t nCoinSupply, int64_t nNetworkWeigh
 
 void OverviewPage::NewBlock(bool fImmediate, int nHeight)
 {
-    
-       
-    
-
-    
-   
-
-
-    
-   
-
-    
-    
-
-   
-  
-  
-
-
-
-    
-
-
-
-
-   
-   
-       
-
-
-   
-
-
-
-
-
-
-   
-   
-   
-
 }
-
-
-
-
-
