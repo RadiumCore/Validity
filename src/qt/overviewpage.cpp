@@ -23,8 +23,6 @@
 
 #include "carddragdrop.h"
 
-#include <QDebug>
-
 #include "rpc/server.h"
 
 #include <QAbstractItemDelegate>
@@ -328,9 +326,6 @@ void OverviewPage::setupTransactionList()
     if (!walletModel || !walletModel->getOptionsModel())
         return;
 
-    qDebug() << "OverviewPage::setupTransactionList START";
-    int64_t nStart = GetTimeMicros();
-
     filter.reset(new TransactionFilterProxy());
     filter->setSourceModel(walletModel->getTransactionTableModel());
     filter->setLimit(NUM_ITEMS);
@@ -341,8 +336,6 @@ void OverviewPage::setupTransactionList()
 
     ui->listTransactions->setModel(filter.get());
     ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
-
-    qDebug() << "OverviewPage::setupTransactionList DONE in" << (GetTimeMicros() - nStart) / 1000 << "ms";
 }
 
 void OverviewPage::updateDisplayUnit()
@@ -406,11 +399,16 @@ void OverviewPage::BlockCountChanged(int count, const QDateTime& blockDate, doub
     if (!pwalletMain)
         return;
 
-    bool staking;
-    {
-        LOCK(pwalletMain->cs_wallet);
-        staking = pwalletMain->IsStaking();
-    }
+    // Don't block UI waiting for locks held by background tx loader.
+    // TRY_LOCK must stay in scope — nested LOCK() calls succeed via recursive_mutex.
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain)
+        return;
+    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+    if (!lockWallet)
+        return;
+
+    bool staking = pwalletMain->IsStaking();
 
     // if staking status has changed, force update
     if(lastStaking != staking)
@@ -485,43 +483,44 @@ void OverviewPage::deferredStatsLoad()
     if (!walletModel || !walletModel->getOptionsModel() || !pwalletMain)
         return;
 
-    qDebug() << "OverviewPage::deferredStatsLoad START";
-    int64_t nStart = GetTimeMicros();
-
-    bool staking;
-    int64_t nMyWeight;
-    {
-        LOCK(pwalletMain->cs_wallet);
-        staking = pwalletMain->IsStaking();
-        nMyWeight = pwalletMain->GetStakeWeight();
+    // Acquire both locks non-blocking. If the background transaction
+    // loader holds them, reschedule instead of freezing the UI.
+    // TRY_LOCK stays in scope — nested LOCK() calls succeed via recursive_mutex.
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain) {
+        QPointer<OverviewPage> guard(this);
+        QTimer::singleShot(2000, [guard]() {
+            if (guard) guard->deferredStatsLoad();
+        });
+        return;
+    }
+    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+    if (!lockWallet) {
+        QPointer<OverviewPage> guard(this);
+        QTimer::singleShot(2000, [guard]() {
+            if (guard) guard->deferredStatsLoad();
+        });
+        return;
     }
 
-    int64_t nNetworkWeight;
-    int64_t nCoinSupply;
+    bool staking = pwalletMain->IsStaking();
+    int64_t nMyWeight = pwalletMain->GetStakeWeight();
 
-    {
-        LOCK(cs_main);
-        nNetworkWeight = GetPoSKernelPS();
-        nCoinSupply = GetSupply();
-        cachedSupply = nCoinSupply;
-        cachedNetworkWeight = nNetworkWeight;
-        cachedBlockHeight = chainActive.Height();
-    }
+    int64_t nNetworkWeight = GetPoSKernelPS();
+    int64_t nCoinSupply = GetSupply();
+    cachedSupply = nCoinSupply;
+    cachedNetworkWeight = nNetworkWeight;
+    cachedBlockHeight = chainActive.Height();
 
     int unit = walletModel->getOptionsModel()->getDisplayUnit();
 
     UpdateHistoricalStakingStats(unit);
-    {
-        LOCK(pwalletMain->cs_wallet);
-        cachedWalletTxCount = pwalletMain->mapWallet.size();
-    }
+    cachedWalletTxCount = pwalletMain->mapWallet.size();
 
     UpdateNetworkStats(nCoinSupply, nNetworkWeight, unit);
     UpdateCurrentStakingStats(staking, nMyWeight, nNetworkWeight, unit, chainActive.Height());
 
     nLastReportUpdate = GetTime();
-
-    qDebug() << "OverviewPage::deferredStatsLoad DONE in" << (GetTimeMicros() - nStart) / 1000 << "ms";
 }
 
 void OverviewPage::UpdateHistoricalStakingStats(int unit){

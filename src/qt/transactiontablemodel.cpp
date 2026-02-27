@@ -27,6 +27,7 @@
 #include <QList>
 
 #include <boost/foreach.hpp>
+#include <chrono>
 #include <thread>
 
 // Amount column is right-aligned it contains numbers
@@ -95,16 +96,41 @@ public:
 
     void refreshWalletBackground()
     {
-        // Runs in a worker thread — result stored in backgroundResult
-        QList<TransactionRecord> result;
+        // Runs in a worker thread.
+        // CRITICAL: Use chunked locking so the UI thread can acquire
+        // cs_main/cs_wallet between batches (otherwise UI freezes
+        // waiting for locks held by this thread for 10+ seconds).
+
+        // Pass 1: collect transaction hashes (fast, brief lock)
+        std::vector<uint256> txHashes;
         {
             LOCK2(cs_main, wallet->cs_wallet);
             for(std::map<uint256, CWalletTx>::iterator it = wallet->mapWallet.begin(); it != wallet->mapWallet.end(); ++it)
             {
                 if(TransactionRecord::showTransaction(it->second))
-                    result.append(TransactionRecord::decomposeTransaction(wallet, it->second));
+                    txHashes.push_back(it->first);
             }
         }
+
+        // Pass 2: decompose in small batches, releasing locks between
+        QList<TransactionRecord> result;
+        const size_t BATCH_SIZE = 200;
+        for(size_t i = 0; i < txHashes.size(); i += BATCH_SIZE)
+        {
+            {
+                LOCK2(cs_main, wallet->cs_wallet);
+                size_t end = std::min(i + BATCH_SIZE, txHashes.size());
+                for(size_t j = i; j < end; j++)
+                {
+                    std::map<uint256, CWalletTx>::iterator it = wallet->mapWallet.find(txHashes[j]);
+                    if(it != wallet->mapWallet.end())
+                        result.append(TransactionRecord::decomposeTransaction(wallet, it->second));
+                }
+            }
+            // Yield so UI/staking threads can acquire the locks
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
         backgroundResult = result;
     }
 
